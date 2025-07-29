@@ -2,6 +2,7 @@ package com.tss.app;
 
 import java.util.Scanner;
 
+import com.tss.controller.CourseController;
 import com.tss.controller.StudentController;
 
 public class StudentManagement implements MenuHandler {
@@ -27,7 +28,6 @@ public class StudentManagement implements MenuHandler {
 	@Override
 	public void chooseMenu() {
 		int choice;
-
 		StudentController controller = new StudentController();
 		while (true) {
 			showMenu();
@@ -42,8 +42,6 @@ public class StudentManagement implements MenuHandler {
 				controller.insertStudent();
 				break;
 			case 3:
-				System.out.println(">> Assigning a course to a student...");
-				// TODO: implement assignCourseToStudent()
 				break;
 			case 4:
 				System.out.println(">> Viewing all courses...");
