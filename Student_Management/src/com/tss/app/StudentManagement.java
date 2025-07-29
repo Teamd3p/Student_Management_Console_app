@@ -52,9 +52,10 @@ public class StudentManagement implements MenuHandler {
 				courseController.readAllCourseRecords();
 				break;
 			case 5:
+				controller.searchStudentById();
 				break;
 			case 6:
-				System.out.println(">> Soft deleting a student...");
+				controller.deleteStudentById();
 				break;
 			case 7:
 				System.out.println(">> Returning to main menu...");

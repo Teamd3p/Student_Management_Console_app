@@ -63,4 +63,54 @@ public class StudentDao {
 
         return false;
     }
+    
+    public Student readStudentById(int student_id) {
+		Student student = null;
+
+		try {
+			prepareStatement = connection.prepareStatement("SELECT * FROM Students WHERE student_id = ?");
+			prepareStatement.setInt(1, student_id);
+
+			ResultSet result = prepareStatement.executeQuery();
+
+			if (result.next()) {
+			    student = new Student();
+			    student.setStudentId(result.getInt("student_id"));
+			    student.setStudentName(result.getString("student_name"));
+			    student.setActive(result.getBoolean("is_active"));
+			    student.setAdmission(result.getTimestamp("admission").toLocalDateTime());
+			}
+
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return student;
+	}
+
+	public Student deleteStudentById(int student_id) {
+		Student student = null;
+		try {
+			prepareStatement = connection.prepareStatement("SELECT * FROM Students WHERE student_id = ?");
+			prepareStatement.setInt(1, student_id);
+			ResultSet result = prepareStatement.executeQuery();
+			
+			if(result.getBoolean("is_active"))
+			{
+				if (result.next()) {
+				    student = new Student();
+				    student.setStudentId(result.getInt("student_id"));
+				    student.setStudentName(result.getString("student_name"));
+				    student.setActive(result.getBoolean("is_active"));
+				    student.setAdmission(result.getTimestamp("admission").toLocalDateTime());
+				}
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return student;
+	}
 }

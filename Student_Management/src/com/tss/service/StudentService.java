@@ -28,4 +28,13 @@ public class StudentService {
 
         return studentDao.insertStudent(student);
     }
+    
+    public Student readStudentById(int student_id)
+    {
+    	return studentDao.readStudentById(student_id);
+    }
+
+	public Student deleteStudentById(int student_id) {
+		return studentDao.deleteStudentById(student_id);
+	}
 }
