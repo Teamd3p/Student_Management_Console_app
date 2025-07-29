@@ -2,6 +2,8 @@ package com.tss.app;
 
 import java.util.Scanner;
 
+import com.tss.controller.StudentController;
+
 public class StudentManagement implements MenuHandler {
 
 	private Scanner scanner = new Scanner(System.in);
@@ -26,6 +28,7 @@ public class StudentManagement implements MenuHandler {
 	public void chooseMenu() {
 		int choice;
 
+		StudentController controller = new StudentController();
 		while (true) {
 			showMenu();
 			choice = scanner.nextInt();
@@ -33,12 +36,10 @@ public class StudentManagement implements MenuHandler {
 
 			switch (choice) {
 			case 1:
-				System.out.println(">> Viewing all students...");
-				// TODO: implement viewAllStudents()
+				controller.readAllRecords();
 				break;
 			case 2:
-				System.out.println(">> Adding a new student...");
-				// TODO: implement addNewStudent()
+				controller.insertStudent();
 				break;
 			case 3:
 				System.out.println(">> Assigning a course to a student...");
