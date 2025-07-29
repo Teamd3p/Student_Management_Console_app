@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import com.tss.controller.CourseController;
 import com.tss.controller.StudentController;
+import com.tss.controller.StudentCourseController;
 
 public class StudentManagement implements MenuHandler {
 
@@ -29,6 +30,9 @@ public class StudentManagement implements MenuHandler {
 	public void chooseMenu() {
 		int choice;
 		StudentController controller = new StudentController();
+		StudentCourseController SCController = new StudentCourseController();
+		CourseController courseController = new CourseController();
+
 		while (true) {
 			showMenu();
 			choice = scanner.nextInt();
@@ -42,22 +46,19 @@ public class StudentManagement implements MenuHandler {
 				controller.insertStudent();
 				break;
 			case 3:
+				SCController.AssignCourseToStudent(controller,courseController);
 				break;
 			case 4:
-				System.out.println(">> Viewing all courses...");
-				// TODO: implement viewAllCourses()
+				courseController.readAllCourseRecords();
 				break;
 			case 5:
-				System.out.println(">> Searching for a student...");
-				// TODO: implement searchStudent()
 				break;
 			case 6:
 				System.out.println(">> Soft deleting a student...");
-				// TODO: implement softDeleteStudent()
 				break;
 			case 7:
 				System.out.println(">> Returning to main menu...");
-				return; // Go back to main menu
+				return; 
 			default:
 				System.out.println(">> Invalid choice. Please select from 1 to 7.");
 			}
