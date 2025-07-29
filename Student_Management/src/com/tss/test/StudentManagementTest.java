@@ -19,7 +19,7 @@ public class StudentManagementTest {
         while (true) {
             printMenu();
             choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:

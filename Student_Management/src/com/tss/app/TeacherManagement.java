@@ -41,7 +41,8 @@ public class TeacherManagement implements MenuHandler {
 				break;
 			case 2:
 				System.out.println(">> Adding a new teacher...");
-				// TODO: implement addNewTeacher()
+				teacherController.addTeacher();
+				teacherController.displayAllTeachers();
 				break;
 			case 3:
 				System.out.println(">> Assigning subjects to teacher...");
@@ -53,11 +54,12 @@ public class TeacherManagement implements MenuHandler {
 				break;
 			case 5:
 				System.out.println(">> Searching for a teacher...");
-				// TODO: implement searchTeacher()
+				teacherController.getTeacherById();
 				break;
 			case 6:
 				System.out.println(">> Soft deleting a teacher...");
-				// TODO: implement softDeleteTeacher()
+				teacherController.deleteTeacher();
+				teacherController.displayAllTeachers();
 				break;
 			case 7:
 				System.out.println(">> Returning to main menu...");
