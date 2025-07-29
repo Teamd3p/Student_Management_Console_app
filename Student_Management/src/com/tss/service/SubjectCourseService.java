@@ -1,7 +1,10 @@
 package com.tss.service;
 
 
+import java.util.List;
+
 import com.tss.dao.SubjectCourseDao;
+import com.tss.model.Subject;
 import com.tss.model.SubjectCourse;
 
 public class SubjectCourseService {
@@ -18,4 +21,9 @@ public class SubjectCourseService {
         courseSubject.setSubjectId(subjectId);
         return subjectCourseDao.insertCourseSubject(courseSubject);
     }
+    
+    public List<Subject> viewSubjectsOfCourse(int courseId) {
+        return subjectCourseDao.getSubjectsByCourseId(courseId);
+    }
+
 }
