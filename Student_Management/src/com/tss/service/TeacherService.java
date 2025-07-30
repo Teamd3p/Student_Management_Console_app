@@ -28,4 +28,8 @@ public class TeacherService {
 		return dao.assignSubject(teacherId, subjectId);
 	}
 
+	public boolean removeSubject(int teacherId, int subjectId) {
+		return dao.removeSubject(teacherId, subjectId);
+	}
+
 }

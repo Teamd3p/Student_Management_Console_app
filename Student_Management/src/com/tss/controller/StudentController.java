@@ -67,5 +67,10 @@ public class StudentController {
         }
     }
 
+	public void searchStudentById() {
+		
+	}
+    
+
 }
 

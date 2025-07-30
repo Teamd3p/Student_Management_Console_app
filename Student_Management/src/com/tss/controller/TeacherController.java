@@ -11,6 +11,7 @@ import com.tss.service.TeacherService;
 public class TeacherController {
 	Scanner scanner = new Scanner(System.in);
 	private TeacherService teacherService = new TeacherService();
+	SubjectController subjectController = new SubjectController();
 
 	public void displayAllTeachers() {
 		List<Teacher> teachers = teacherService.getAllTeachers();
@@ -70,6 +71,10 @@ public class TeacherController {
 	public boolean assignSubject() {
 		System.out.print("Enter Teacher ID: ");
 		int teacherId = scanner.nextInt();
+		
+		System.out.println("Subjects Tables");
+		subjectController.readAllSubjects();
+		
 		System.out.print("Enter Subject ID: ");
 		int subjectId = scanner.nextInt();
 		boolean assigned = teacherService.assignSubject(teacherId, subjectId);
@@ -80,5 +85,24 @@ public class TeacherController {
 		}
 		return assigned;
 
+	}
+
+	public boolean removeSubject() {
+		System.out.print("Enter Teacher ID: ");
+		int teacherId = scanner.nextInt();
+		
+		System.out.println("Subjects Tables");
+		subjectController.readAllSubjects();
+		
+		System.out.print("Enter Subject ID: ");
+		int subjectId = scanner.nextInt();
+		boolean removed = teacherService.removeSubject(teacherId, subjectId);
+		if (removed) {
+			System.out.println("Subject removed From Teacher successfully!");
+		} else {
+			System.out.println("Remove Operation failed.");
+		}
+		return removed;
+		
 	}
 }

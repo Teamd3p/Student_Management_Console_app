@@ -46,11 +46,16 @@ public class TeacherManagement implements MenuHandler {
 				break;
 			case 3:
 				System.out.println(">> Assigning subjects to teacher...");
-				// TODO: implement assignSubjects()
+				System.out.println("Teachers Tables");
+				teacherController.displayAllTeachers();
+				teacherController.assignSubject();
+				
 				break;
 			case 4:
 				System.out.println(">> Removing a subject from teacher...");
-				// TODO: implement removeSubject()
+				System.out.println("Teachers Tables");
+				teacherController.displayAllTeachers();
+				teacherController.removeSubject();
 				break;
 			case 5:
 				System.out.println(">> Searching for a teacher...");

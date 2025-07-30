@@ -2,6 +2,9 @@ package com.tss.app;
 
 import java.util.Scanner;
 
+import com.tss.controller.CourseController;
+import com.tss.controller.SubjectCourseController;
+
 public class CourseManagement implements MenuHandler {
 
     Scanner scanner = new Scanner(System.in);
@@ -26,23 +29,24 @@ public class CourseManagement implements MenuHandler {
     public void chooseMenu() {
         int choice;
 
-        while (true) {
+        CourseController controller = new CourseController();
+        SubjectCourseController subjectCourseController = new SubjectCourseController();
+         while (true) {
             showMenu();
             choice = scanner.nextInt();
             scanner.nextLine(); // consume newline
 
             switch (choice) {
                 case 1:
-                    System.out.println(">> Viewing all courses...");
-                    // TODO: implement viewAllCourses()
+                	controller.readAllCourseRecords();
                     break;
                 case 2:
-                    System.out.println(">> Adding a new course...");
-                    // TODO: implement addNewCourse()
+//                    System.out.println(">> Adding a new course...");
+                    controller.addNewCourse();
                     break;
                 case 3:
-                    System.out.println(">> Adding subjects to a course...");
-                    // TODO: implement addSubjectsToCourse()
+//                    System.out.println(">> Adding subjects to a course...");
+                    subjectCourseController.addSubjectsToCourse();
                     break;
                 case 4:
                     System.out.println(">> Viewing subjects of a course...");

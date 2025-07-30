@@ -110,8 +110,105 @@ public class TeacherDao {
 
 	
 	public boolean assignSubject(int teacherId, int subjectId) {
-		
-		
+	    String checkTeacher = "SELECT teacher_id FROM Teachers WHERE teacher_id = ?";
+	    String checkSubject = "SELECT subject_id FROM Subjects WHERE subject_id = ?";
+	    String checkAssignment = "SELECT * FROM TeacherSubjects WHERE teacher_id = ? AND subject_id = ?";
+	    String insertSql = "INSERT INTO TeacherSubjects(teacher_id, subject_id) VALUES (?, ?)";
+
+	    try {
+	        // 1. Check if teacher exists
+	        PreparedStatement checkTec = conn.prepareStatement(checkTeacher);
+	        checkTec.setInt(1, teacherId);
+	        ResultSet tecRs = checkTec.executeQuery();
+	        if (!tecRs.next()) {
+	            System.out.println("Teacher ID not found.");
+	            return false;
+	        }
+
+	        // 2. Check if subject exists
+	        PreparedStatement checkSub = conn.prepareStatement(checkSubject);
+	        checkSub.setInt(1, subjectId);
+	        ResultSet subRs = checkSub.executeQuery();
+	        if (!subRs.next()) {
+	            System.out.println("Subject ID not found.");
+	            return false;
+	        }
+
+	        // 3. Check if already assigned
+	        PreparedStatement checkAssign = conn.prepareStatement(checkAssignment);
+	        checkAssign.setInt(1, teacherId);
+	        checkAssign.setInt(2, subjectId);
+	        ResultSet assignRs = checkAssign.executeQuery();
+	        if (assignRs.next()) {
+	            System.out.println("Teacher already has this subject assigned.");
+	            return false;
+	        }
+
+	        // 4. Insert assignment
+	        PreparedStatement insertQuery = conn.prepareStatement(insertSql);
+	        insertQuery.setInt(1, teacherId);
+	        insertQuery.setInt(2, subjectId);
+	        int rowsInserted = insertQuery.executeUpdate();
+	        return rowsInserted > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
+
+	public boolean removeSubject(int teacherId, int subjectId) {
+	    String checkTeacher = "SELECT teacher_id FROM Teachers WHERE teacher_id = ?";
+	    String checkSubject = "SELECT subject_id FROM Subjects WHERE subject_id = ?";
+	    String checkAssignment = "SELECT * FROM TeacherSubjects WHERE teacher_id = ? AND subject_id = ?";
+	    String deleteSql = "DELETE FROM TeacherSubjects WHERE teacher_id = ? AND subject_id = ?";
+
+	    try {
+	        // 1. Check if teacher exists
+	        PreparedStatement checkTec = conn.prepareStatement(checkTeacher);
+	        checkTec.setInt(1, teacherId);
+	        ResultSet tecRs = checkTec.executeQuery();
+	        if (!tecRs.next()) {
+	            System.out.println("Teacher ID not found.");
+	            return false;
+	        }
+
+	        // 2. Check if subject exists
+	        PreparedStatement checkSub = conn.prepareStatement(checkSubject);
+	        checkSub.setInt(1, subjectId);
+	        ResultSet subRs = checkSub.executeQuery();
+	        if (!subRs.next()) {
+	            System.out.println("Subject ID not found.");
+	            return false;
+	        }
+
+	        // 3. Check if assignment exists
+	        PreparedStatement checkAssign = conn.prepareStatement(checkAssignment);
+	        checkAssign.setInt(1, teacherId);
+	        checkAssign.setInt(2, subjectId);
+	        ResultSet assignRs = checkAssign.executeQuery();
+	        if (!assignRs.next()) {
+	            System.out.println("This subject is not assigned to the teacher.");
+	            return false;
+	        }
+
+	        // 4. Perform deletion
+	        PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
+	        deleteStmt.setInt(1, teacherId);
+	        deleteStmt.setInt(2, subjectId);
+	        int rowsDeleted = deleteStmt.executeUpdate();
+	        if (rowsDeleted > 0) {
+	            return true;
+	        } else {
+	            return false;
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
+
 
 }
