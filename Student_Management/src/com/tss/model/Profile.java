@@ -27,9 +27,6 @@ public class Profile {
     }
 
     public void setId(int id) {
-        if (id < 0) {
-            throw new IllegalArgumentException("Profile ID cannot be negative.");
-        }
         this.id = id;
     }
 
@@ -38,16 +35,7 @@ public class Profile {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-            throw new IllegalArgumentException("Phone number cannot be null or empty.");
-        }
-
-        String trimmed = phoneNumber.trim();
-        if (!trimmed.matches("\\d{10}")) {
-            throw new IllegalArgumentException("Phone number must be exactly 10 digits.");
-        }
-
-        this.phoneNumber = trimmed;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getEmail() {
@@ -55,12 +43,6 @@ public class Profile {
     }
 
     public void setEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be null or empty.");
-        }
-        if (!email.contains("@") || !email.contains(".")) {
-            throw new IllegalArgumentException("Invalid email format.");
-        }
         this.email = email.trim();
     }
 
@@ -69,9 +51,6 @@ public class Profile {
     }
 
     public void setAddress(String address) {
-        if (address == null || address.trim().isEmpty()) {
-            throw new IllegalArgumentException("Address cannot be null or empty.");
-        }
         this.address = address.trim();
     }
 
@@ -80,9 +59,6 @@ public class Profile {
     }
 
     public void setAge(int age) {
-        if (age < 1 || age > 120) {
-            throw new IllegalArgumentException("Age must be between 1 and 120.");
-        }
         this.age = age;
     }
 
@@ -91,9 +67,6 @@ public class Profile {
     }
 
     public void setUserType(String userType) {
-        if (userType == null || userType.trim().isEmpty()) {
-            throw new IllegalArgumentException("User type cannot be null or empty.");
-        }
         this.userType = userType.trim().toLowerCase();
     }
 
@@ -102,9 +75,6 @@ public class Profile {
     }
 
     public void setUserId(int userId) {
-        if (userId <= 0) {
-            throw new IllegalArgumentException("User ID must be greater than zero.");
-        }
         this.userId = userId;
     }
 

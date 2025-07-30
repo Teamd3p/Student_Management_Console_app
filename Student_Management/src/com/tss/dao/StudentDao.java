@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tss.database.DBConnection;
-import com.tss.model.Course;
 import com.tss.model.Student;
 
 public class StudentDao {
@@ -45,14 +44,13 @@ public class StudentDao {
         }
         return students;
     }
-
+    
     public boolean insertStudent(Student student) {
-        String sql = "INSERT INTO Students (student_name, is_active, admission) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Students (student_name, admission) VALUES (?, ?)";
         try {
             prepareStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             prepareStatement.setString(1, student.getStudentName());
-            prepareStatement.setBoolean(2, student.isActive());
-            prepareStatement.setTimestamp(3, Timestamp.valueOf(student.getAdmission()));
+            prepareStatement.setTimestamp(2, Timestamp.valueOf(student.getAdmission()));
 
             int rowsInserted = prepareStatement.executeUpdate();
 

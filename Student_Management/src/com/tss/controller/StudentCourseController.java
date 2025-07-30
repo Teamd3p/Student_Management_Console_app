@@ -7,38 +7,46 @@ import com.tss.model.StudentCourse;
 import com.tss.service.StudentCourseService;
 
 public class StudentCourseController {
-	
+
 	private StudentCourseService subjectCourseService;
 	private Scanner scanner = new Scanner(System.in);
 
-	public StudentCourseController()
-	{
+	public StudentCourseController() {
 		this.subjectCourseService = new StudentCourseService();
 	}
-	
-	public void AssignCourseToStudent(StudentController controller,CourseController courseController) {
-	    try {
-	    	controller.readAllRecords();
-	        System.out.print("Enter Student ID: ");
-	        int studentId = Integer.parseInt(scanner.nextLine().trim());
 
-	        courseController.readAllCourseRecords();
-	        System.out.print("Enter Course ID: ");
-	        int courseId = Integer.parseInt(scanner.nextLine().trim());
+	public void AssignCourseToStudent(StudentController studentController, CourseController courseController) {
+		try {
+			studentController.readAllRecords();
 
-	        StudentCourse studentCourse = new StudentCourse();
-	        studentCourse.setStudentId(studentId);
-	        studentCourse.setCourseId(courseId);
-	        studentCourse.setEnrolledAt(LocalDateTime.now());
+			System.out.print("Enter Student ID: ");
+			int studentId = Integer.parseInt(scanner.nextLine().trim());
 
-	        StudentCourseService courseService = new StudentCourseService();
-	        courseService.AssignCourseToStudent(studentCourse);
+			if (studentController.studentExistance(studentId)) {
+				courseController.radAllActiveCourse(); 
+				System.out.print("Enter Course ID: ");
+				int courseId = Integer.parseInt(scanner.nextLine().trim());
+				
+				if(courseController.courseExistance(courseId))
+				{
+				StudentCourse studentCourse = new StudentCourse();
+				studentCourse.setStudentId(studentId);
+				studentCourse.setCourseId(courseId);
+				studentCourse.setEnrolledAt(LocalDateTime.now());
 
-	    } catch (NumberFormatException e) {
-	        System.out.println("Invalid input. Please enter numeric values for IDs.");
-	    } catch (Exception e) {
-	        System.out.println("An error occurred while assigning course.");
-	        e.printStackTrace();
-	    }
+				StudentCourseService courseService = new StudentCourseService();
+				courseService.AssignCourseToStudent(studentCourse);
+				return;
+				}
+				System.out.println("Course With id "+courseId+" doesn't exists !!");
+				return;
+			}
+			System.out.println("Student With id "+studentId+" doesn't exists !!");
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid input. Please enter numeric values for IDs.");
+		} catch (Exception e) {
+			System.out.println("An error occurred while assigning course.");
+			e.printStackTrace();
+		}
 	}
 }
