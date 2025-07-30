@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
+import com.tss.exception.ValidationException;
 import com.tss.model.Profile;
 import com.tss.model.Teacher;
 import com.tss.service.ProfileService;
@@ -26,7 +27,6 @@ public class TeacherController {
 			return;
 		}
 
-		// Header
 		System.out.println(
 				"\n+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
 		System.out.println(
@@ -62,26 +62,86 @@ public class TeacherController {
 	}
 
 	public void addTeacher() {
-		System.out.print("Enter Teacher name: ");
-		String name = scanner.nextLine();
+	    try {
+	        System.out.print("Enter Teacher Name: ");
+	        String name = scanner.nextLine().trim();
 
-		boolean isActive = true;
+	        boolean isActive = true;
 
-		System.out.print("Enter Joining Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
-		String joiningDate = scanner.nextLine().trim();
+	        System.out.print("Enter Joining Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
+	        String dateInput = scanner.nextLine().trim();
+	        LocalDateTime admission = dateInput.isEmpty()
+	                ? LocalDateTime.now()
+	                : LocalDateTime.parse(dateInput.replace(" ", "T"));
 
-		LocalDateTime admission = joiningDate.isEmpty() ? LocalDateTime.now()
-				: LocalDateTime.parse(joiningDate.replace(" ", "T"));
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	        String formattedDate = admission.format(formatter);
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		String formattedDate = admission.format(formatter);
+	        Teacher teacher = new Teacher(0, name, isActive, formattedDate);
+	        boolean success = teacherService.addTeacher(teacher);
 
-		boolean success = teacherService.addTeacher(new Teacher(0, name, isActive, formattedDate));
-		if (success) {
-			System.out.println("Teacher added successfully!");
-		} else {
-			System.out.println("Failed to add Teacher.");
-		}
+	        if (success) {
+	            int teacherId = teacher.getTeacherId(); // Ensure this ID is being set after insert
+
+	            boolean profileSuccess = false;
+	            while (!profileSuccess) {
+	                try {
+	                    System.out.print("Enter Phone Number: ");
+	                    String phone = scanner.nextLine().trim();
+	                    if (!phone.matches("\\d{10}")) {
+	                        throw new ValidationException("Phone number must be exactly 10 digits.");
+	                    }
+
+	                    System.out.print("Enter Email: ");
+	                    String email = scanner.nextLine().trim();
+	                    if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+	                        throw new ValidationException("Invalid email format.");
+	                    }
+
+	                    System.out.print("Enter Address: ");
+	                    String address = scanner.nextLine().trim();
+	                    if (address.isEmpty()) {
+	                        throw new ValidationException("Address cannot be empty.");
+	                    }
+
+	                    System.out.print("Enter Age: ");
+	                    int age = Integer.parseInt(scanner.nextLine().trim());
+	                    if (age <= 0) {
+	                        throw new ValidationException("Age must be a positive integer.");
+	                    }
+
+	                    Profile profile = new Profile();
+	                    profile.setUserType("teacher");
+	                    profile.setUserId(teacherId);
+	                    profile.setPhoneNumber(phone);
+	                    profile.setEmail(email);
+	                    profile.setAddress(address);
+	                    profile.setAge(age);
+
+	                    profileSuccess = profileService.insertProfile(profile);
+
+	                    if (profileSuccess) {
+	                        System.out.println("Teacher and profile added successfully.");
+	                        
+	                    } else {
+	                        System.out.println("Teacher added, but failed to add profile.");
+	                    }
+	                    
+	                    displayAllTeachers();
+
+	                } catch (ValidationException ve) {
+	                    System.out.println("Validation Error: " + ve.getMessage());
+	                } catch (Exception e) {
+	                    System.out.println("Error: " + e.getMessage());
+	                }
+	            }
+	        } else {
+	            System.out.println("Failed to add teacher.");
+	        }
+
+	    } catch (Exception e) {
+	        System.out.println("Error: " + e.getMessage());
+	    }
 	}
 
 	public void getTeacherById() {
