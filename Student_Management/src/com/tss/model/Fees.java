@@ -27,8 +27,6 @@ public class Fees {
 		this.amountPaid = amountPaid;
 
 	}
-	
-	
 
 	public int getFeeId() {
 		return feeId;
@@ -57,4 +55,12 @@ public class Fees {
 	public String getStudentName() {
 		return studentName;
 	}
+
+	@Override
+	public String toString() {
+		return "Fees [feeId=" + feeId + ", courseId=" + courseId + ", studentId=" + studentId + ", amountPaid="
+				+ amountPaid + ", amountPending=" + amountPending + ", courseName=" + courseName + ", studentName="
+				+ studentName + "]";
+	}
+	
 }
