@@ -3,9 +3,9 @@ package com.tss.controller;
 import java.util.List;
 import java.util.Scanner;
 
+import com.tss.model.Course;
 import com.tss.model.Subject;
 import com.tss.service.SubjectCourseService;
-import com.tss.service.SubjectService;
 
 public class SubjectCourseController {
 
@@ -21,33 +21,47 @@ public class SubjectCourseController {
     }
 
     public void addSubjectsToCourse() {
-        System.out.println(">> Available Courses:");
-        courseController.readAllCourseRecords(); // Print all courses
-
+        List<Course> activeCourses = courseController.radAllActiveCourse();
+        
         System.out.print("Enter Course ID: ");
         int courseId = scanner.nextInt();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine(); 
+
+        boolean courseExists = false;
+        for (Course course : activeCourses) {
+            if (course.getCourseId() == courseId) {
+                courseExists = true;
+                break;
+            }
+        }
+
+        if (!courseExists) {
+            System.out.println("Invalid Course ID. Operation cancelled.");
+            return;
+        }
 
         subjectController.readAllSubjects();
+
         System.out.print("Enter number of subjects to add: ");
         int count = scanner.nextInt();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
 
         for (int i = 0; i < count; i++) {
             System.out.print("Enter Subject ID " + (i + 1) + ": ");
             int subjectId = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+            scanner.nextLine();
 
             boolean success = subjectCourseService.addSubjectToCourse(courseId, subjectId);
             if (success) {
-                System.out.println("Subject " + subjectId + " added to Course " + courseId);
+                System.out.println("✅ Subject " + subjectId + " added to Course " + courseId);
             } else {
-                System.out.println("Failed to add Subject " + subjectId);
+                System.out.println("❌ Failed to add Subject " + subjectId);
             }
         }
 
-        System.out.println("Finished adding subjects to course.");
+        System.out.println("✔ Finished adding subjects to course.");
     }
+
 
     public void viewSubjectsOfCourse() {
         System.out.println(">> Available Courses:");
