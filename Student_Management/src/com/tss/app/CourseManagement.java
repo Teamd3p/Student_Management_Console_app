@@ -51,11 +51,9 @@ public class CourseManagement implements MenuHandler {
                     break;
                 case 5:
                     System.out.println(">> Searching for a course...");
-                    // TODO: implement searchCourse()
                     break;
                 case 6:
                     System.out.println(">> Soft deleting a course...");
-                    // TODO: implement softDeleteCourse()
                     break;
                 case 7:
                     System.out.println(">> Returning to main menu...");

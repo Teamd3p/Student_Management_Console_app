@@ -5,6 +5,7 @@ import java.util.Scanner;
 import com.tss.controller.CourseController;
 import com.tss.controller.StudentController;
 import com.tss.controller.StudentCourseController;
+import com.tss.exception.ValidationException;
 
 public class StudentManagement implements MenuHandler {
 
@@ -43,7 +44,11 @@ public class StudentManagement implements MenuHandler {
 				controller.readAllRecords();
 				break;
 			case 2:
-				controller.insertStudent();
+				try {
+					controller.insertStudent();
+				} catch (ValidationException e) {
+					System.out.println(e.getMessage());
+				}
 				break;
 			case 3:
 				SCController.AssignCourseToStudent(controller,courseController);

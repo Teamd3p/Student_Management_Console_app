@@ -47,22 +47,28 @@ public class StudentDao {
 
     public boolean insertStudent(Student student) {
         String sql = "INSERT INTO Students (student_name, is_active, admission) VALUES (?, ?, ?)";
-
         try {
-            prepareStatement = connection.prepareStatement(sql);
+            prepareStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             prepareStatement.setString(1, student.getStudentName());
             prepareStatement.setBoolean(2, student.isActive());
             prepareStatement.setTimestamp(3, Timestamp.valueOf(student.getAdmission()));
 
             int rowsInserted = prepareStatement.executeUpdate();
-            return rowsInserted > 0;
 
+            if (rowsInserted > 0) {
+                ResultSet generatedKeys = prepareStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int generatedId = generatedKeys.getInt(1);
+                    student.setStudentId(generatedId);
+                }
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return false;
     }
+
     
     public Student readStudentById(int student_id) {
 		Student student = null;
@@ -96,19 +102,15 @@ public class StudentDao {
 			prepareStatement.setInt(1, student_id);
 			ResultSet result = prepareStatement.executeQuery();
 			
-			if(result.getBoolean("is_active"))
+			if(!result.getBoolean("is_active"))
 			{
-				if (result.next()) {
-				    student = new Student();
-				    student.setStudentId(result.getInt("student_id"));
-				    student.setStudentName(result.getString("student_name"));
-				    student.setActive(result.getBoolean("is_active"));
-				    student.setAdmission(result.getTimestamp("admission").toLocalDateTime());
-				}
+				System.out.println("Student With "+ student_id+ " Already Deleted !!");
 			}
+			
+			
 		}
 		catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 
 		return student;
