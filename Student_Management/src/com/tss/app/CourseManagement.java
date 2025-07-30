@@ -50,10 +50,10 @@ public class CourseManagement implements MenuHandler {
                 	subjectCourseController.viewSubjectsOfCourse();
                     break;
                 case 5:
-                    System.out.println(">> Searching for a course...");
+                	controller.searchCourse();
                     break;
                 case 6:
-                    System.out.println(">> Soft deleting a course...");
+                    controller.softDeleteCourse();
                     break;
                 case 7:
                     System.out.println(">> Returning to main menu...");

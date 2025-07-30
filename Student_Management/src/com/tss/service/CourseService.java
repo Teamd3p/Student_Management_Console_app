@@ -19,6 +19,20 @@ public class CourseService {
 	public boolean addCourse(Course course) {
 		return courseDao.insertCourse(course);
 	}
+
+	public Course searchCourse(int course_id) {
+		return courseDao.searchCourse(course_id);		
+	}
+
+	public Course softDeleteCourse(int course_id) {
+	    return courseDao.softDeleteCourse(course_id);		
+	}
+
+	public List<Course> readAllActiveCourses() {
+		return courseDao.readAllActiveCourses();
+
+	}
+
 	
 	
 }
