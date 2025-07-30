@@ -3,10 +3,10 @@ package com.tss.test;
 import java.util.Scanner;
 
 import com.tss.app.CourseManagement;
-import com.tss.app.FeesManagement;
 import com.tss.app.MenuHandler;
 import com.tss.app.StudentManagement;
 import com.tss.app.TeacherManagement;
+import com.tss.controller.FeesController;
 
 
 public class StudentManagementTest {
@@ -34,15 +34,17 @@ public class StudentManagementTest {
                 	option = new TeacherManagement();
                 	option.chooseMenu();
                     break;
+                
                 case 4:
-                    option = new FeesManagement();
-                    option.chooseMenu();
+                    FeesController fees = new FeesController();
+                    fees.menu();
                     break;
+                    
                 case 5:
-                    System.out.println(">> You selected Dashboard.");
+                    System.out.println(" You selected Dashboard.");
                     break;
                 case 6:
-                    System.out.println(">> Exiting... Goodbye!");
+                    System.out.println("Exiting... Goodbye!");
                     scanner.close();
                     System.exit(0);
                     break;

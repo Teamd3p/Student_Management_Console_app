@@ -10,9 +10,9 @@ public class DBConnectionTest {
 		Connection connection = DBConnection.connect();
 
 		if (connection != null) {
-			System.out.println("✅ Database connection successful!");
+			System.out.println("Database connection successful!");
 		} else {
-			System.out.println("❌ Failed to connect to the database.");
+			System.out.println("Failed to connect to the database.");
 		}
 	}
 }
