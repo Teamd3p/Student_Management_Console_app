@@ -188,6 +188,10 @@ public class StudentController {
 			System.out.printf("| %-15s : %-40s |\n", "Admission", student.getAdmission());
 			System.out.println(border);
 		} 
+		else {
+			System.out.println("Student with ID " + id + " not found Or Already Inactive.");
+		}
+		
 	}
 	
 }
