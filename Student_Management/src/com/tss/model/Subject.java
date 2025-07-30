@@ -9,6 +9,11 @@ public class Subject {
 	public Subject() {
 	}
 
+	public Subject(String subjectName, String subjectDescription) {
+        this.subjectName = subjectName;
+        this.subjectDescription = subjectDescription;
+    }
+	
 	public Subject(int subjectId, String subjectName, String subjectDescription) {
 	    this.subjectId = subjectId;
 	    this.subjectName = subjectName;
