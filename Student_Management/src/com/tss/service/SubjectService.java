@@ -19,4 +19,19 @@ public class SubjectService {
 		 return subjectDao.readAllSubjects();
 	 }
 	
+	 public Subject addSubject(Subject subject) {
+		    return subjectDao.addSubject(subject);
+		}
+	 
+	 public boolean updateSubject(Subject subject) {
+	        return subjectDao.updateSubject(subject);
+	    }
+	 
+	 public boolean deleteSubjectById(int subjectId) {
+	        return subjectDao.deleteSubjectById(subjectId);
+	    }
+	 
+	 public Subject getSubjectById(int subjectId) {
+		    return subjectDao.getSubjectById(subjectId);
+		}
 }

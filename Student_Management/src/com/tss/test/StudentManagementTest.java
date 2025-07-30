@@ -6,6 +6,7 @@ import com.tss.app.CourseManagement;
 import com.tss.app.FeesManagement;
 import com.tss.app.MenuHandler;
 import com.tss.app.StudentManagement;
+import com.tss.app.SubjectManagement;
 import com.tss.app.TeacherManagement;
 
 
@@ -39,9 +40,13 @@ public class StudentManagementTest {
                     option.chooseMenu();
                     break;
                 case 5:
+                	option = new SubjectManagement();
+                	option.chooseMenu();
+                	break;
+                case 6:
                     System.out.println(">> You selected Dashboard.");
                     break;
-                case 6:
+                case 7:
                     System.out.println(">> Exiting... Goodbye!");
                     scanner.close();
                     System.exit(0);
@@ -60,8 +65,9 @@ public class StudentManagementTest {
         System.out.println("| 2. Course Management          |");
         System.out.println("| 3. Teacher Management         |");
         System.out.println("| 4. Fees Management            |");
-        System.out.println("| 5. Dashboard                  |");
-        System.out.println("| 6. Exit                       |");
+        System.out.println("| 5. Subject Management         |");
+        System.out.println("| 6. Dashboard                  |");
+        System.out.println("| 7. Exit                       |");
         System.out.println("+-------------------------------+");
         System.out.print("Enter your choice: ");
     }
