@@ -32,73 +32,71 @@ public class CourseController {
 		System.out.println("+-------------------------------------------------------------+");
 	}
 
-public void addNewCourse() {
-    String name;
-    double fees;
+	public void addNewCourse() {
+		String name;
+		double fees;
 
-    while (true) {
-        System.out.print("Enter Course Name: ");
-        name = scanner.nextLine().trim();
+		while (true) {
+			System.out.print("Enter Course Name: ");
+			name = scanner.nextLine().trim();
 
-        if (!name.isEmpty() && name.matches(".*[a-zA-Z]+.*")) {
-            break;
-        } else {
-            System.out.println("❌ Invalid course name. It must contain at least one alphabet character.");
-        }
-    }
+			if (!name.isEmpty() && name.matches(".*[a-zA-Z]+.*")) {
+				break;
+			} else {
+				System.out.println("Invalid course name. It must contain at least one alphabet character.");
+			}
+		}
 
-    while (true) {
-        System.out.print("Enter Course Fees: ");
-        try {
-            fees = scanner.nextDouble();
-            scanner.nextLine(); 
+		while (true) {
+			System.out.print("Enter Course Fees: ");
+			try {
+				fees = scanner.nextDouble();
+				scanner.nextLine();
 
-            if (fees >= 0) {
-                break;
-            } else {
-                System.out.println("Course fees cannot be negative. Try again.");
-            }
-        } catch (InputMismatchException e) {
-            System.out.println("Please enter a valid numeric value for fees.");
-            scanner.nextLine(); 
-        }
-    }
+				if (fees >= 0) {
+					break;
+				} else {
+					System.out.println("Course fees cannot be negative. Try again.");
+				}
+			} catch (InputMismatchException e) {
+				System.out.println("Please enter a valid numeric value for fees.");
+				scanner.nextLine();
+			}
+		}
 
-    Course existingCourse = courseService.searchCourseByName(name);
+		Course existingCourse = courseService.searchCourseByName(name);
 
-    if (existingCourse != null) {
-        if (existingCourse.isActive()) {
-            System.out.println("Course already exists and is active.");
-            return;
-        } else {
-            existingCourse.setCourseFees(fees);
-            existingCourse.setActive(true);
+		if (existingCourse != null) {
+			if (existingCourse.isActive()) {
+				System.out.println("Course already exists and is active.");
+				return;
+			} else {
+				existingCourse.setCourseFees(fees);
+				existingCourse.setActive(true);
 
-            boolean updated = courseService.updateCourse(existingCourse);
-            if (updated) {
-                System.out.println("Course reactivated and updated successfully.");
-            } else {
-                System.out.println("Failed to reactivate the course.");
-            }
-            return;
-        }
-    }
+				boolean updated = courseService.updateCourse(existingCourse);
+				if (updated) {
+					System.out.println("Course reactivated and updated successfully.");
+				} else {
+					System.out.println("Failed to reactivate the course.");
+				}
+				return;
+			}
+		}
 
-    // Create and add a new course
-    Course newCourse = new Course();
-    newCourse.setCourseName(name);
-    newCourse.setCourseFees(fees);
-    newCourse.setActive(true); // Default true for new course
+		// Create and add a new course
+		Course newCourse = new Course();
+		newCourse.setCourseName(name);
+		newCourse.setCourseFees(fees);
+		newCourse.setActive(true); // Default true for new course
 
-    boolean success = courseService.addCourse(newCourse);
-    if (success) {
-        System.out.println("✅ Course added successfully.");
-    } else {
-        System.out.println("❌ Failed to add the course.");
-    }
-}
-
-
+		boolean success = courseService.addCourse(newCourse);
+		if (success) {
+			System.out.println("✅ Course added successfully.");
+		} else {
+			System.out.println("❌ Failed to add the course.");
+		}
+	}
 
 	public void searchCourse() {
 
