@@ -88,8 +88,8 @@ public class TeacherController {
 	                try {
 	                    System.out.print("Enter Phone Number: ");
 	                    String phone = scanner.nextLine().trim();
-	                    if (!phone.matches("\\d{10}")) {
-	                        throw new ValidationException("Phone number must be exactly 10 digits.");
+	                    if (!phone.matches("\\d{10}+")) {
+	                        throw new ValidationException("Phone number must be exactly 10 digits and Positive.");
 	                    }
 
 	                    System.out.print("Enter Email: ");

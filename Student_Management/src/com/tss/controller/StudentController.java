@@ -87,8 +87,8 @@ public class StudentController {
 					try {
 						System.out.print("Enter Phone Number (10 digits): ");
 						String phone = scanner.nextLine().trim();
-						if (!phone.matches("\\d{10}")) {
-							throw new ValidationException("Phone number must be exactly 10 digits.");
+						if (!phone.matches("\\d{10}+")) {
+							throw new ValidationException("Phone number must be exactly 10 digits and Positive.");
 						}
 						profile.setPhoneNumber(phone);
 						break;
@@ -132,7 +132,7 @@ public class StudentController {
 						if (!ageStr.matches("\\d+"))
 							throw new ValidationException("Age must be a positive integer.");
 						int age = Integer.parseInt(ageStr);
-						if (age > 1 && age < 80)
+						if (age < 1 && age > 80)
 							throw new ValidationException("Age Must Be Between 1 to 80");
 						profile.setAge(age);
 						break;

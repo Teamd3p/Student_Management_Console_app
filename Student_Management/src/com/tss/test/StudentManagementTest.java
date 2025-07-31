@@ -8,7 +8,7 @@ import com.tss.app.MenuHandler;
 import com.tss.app.StudentManagement;
 import com.tss.app.SubjectManagement;
 import com.tss.app.TeacherManagement;
-import com.tss.controller.FeesController;
+import com.tss.controller.DashboardController;
 
 
 public class StudentManagementTest {
@@ -46,7 +46,8 @@ public class StudentManagementTest {
                 	option.chooseMenu();
                 	break;
                 case 6:
-                    System.out.println(">> You selected Dashboard.");
+                    DashboardController dashboardController = new DashboardController();
+                    dashboardController.showDashboard();
                     break;
                 case 7:
                     System.out.println(">> Exiting... Goodbye!");
