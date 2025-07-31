@@ -59,7 +59,7 @@ public class FeesDao {
 				list.add(fee);
 			}
 		}
-		return list;  // ✅ Always return list, even if empty
+		return list; 
 	}
 
 
