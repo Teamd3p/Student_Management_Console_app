@@ -45,12 +45,11 @@ public class CourseDao {
     }
 
     public boolean insertCourse(Course course) {
-        String query = "INSERT INTO Courses (course_name, course_fees, is_active) VALUES (?, ?, ?)";
+        String query = "INSERT INTO Courses (course_name, course_fees) VALUES (?, ?)";
         try {
             prepareStatement = connection.prepareStatement(query);
             prepareStatement.setString(1, course.getCourseName());
             prepareStatement.setDouble(2, course.getCourseFees());
-            prepareStatement.setBoolean(3, course.isActive());
 
             int rows = prepareStatement.executeUpdate();
             return rows > 0;

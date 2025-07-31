@@ -1,5 +1,6 @@
 package com.tss.controller;
 
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -32,28 +33,49 @@ public class CourseController {
 	}
 
 	public void addNewCourse() {
-		System.out.print("Enter Course Name: ");
-		String name = scanner.nextLine();
+	    String name;
+	    double fees;
 
-		System.out.print("Enter Course Fees: ");
-		double fees = scanner.nextDouble();
+	    // Validate course name (must contain at least one alphabet letter)
+	    while (true) {
+	        System.out.print("Enter Course Name: ");
+	        name = scanner.nextLine().trim();
+	        if (!name.isEmpty() && name.matches(".*[a-zA-Z]+.*")) {
+	            break;
+	        } else {
+	            System.out.println("❌ Invalid course name. It must contain at least one alphabet character.");
+	        }
+	    }
 
-		System.out.print("Is the course active? (true/false): ");
-		boolean isActive = scanner.nextBoolean();
-		scanner.nextLine();
+	    while (true) {
+	        System.out.print("Enter Course Fees: ");
+	        try {
+	            fees = scanner.nextDouble();
+	            scanner.nextLine(); // consume newline
+	            if (fees >= 0) {
+	                break;
+	            } else {
+	                System.out.println("❌ Course fees cannot be negative. Try again.");
+	            }
+	        } catch (InputMismatchException e) {
+	            System.out.println("❌ Please enter a valid number.");
+	            scanner.nextLine(); // consume invalid input
+	        }
+	    }
 
-		Course course = new Course();
-		course.setCourseName(name);
-		course.setCourseFees(fees);
-		course.setActive(isActive);
 
-		boolean success = courseService.addCourse(course);
-		if (success) {
-			System.out.println("✅ Course added successfully.");
-		} else {
-			System.out.println("❌ Failed to add course.");
-		}
+	    Course course = new Course();
+	    course.setCourseName(name);
+	    course.setCourseFees(fees);
+
+	    boolean success = courseService.addCourse(course);
+	    if (success) {
+	        System.out.println("Course added successfully.");
+	    } else {
+	        System.out.println("Failed to add course.");
+	    }
 	}
+
 
 	public void searchCourse() {
 
