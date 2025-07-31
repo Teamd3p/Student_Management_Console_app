@@ -44,24 +44,38 @@ public class StudentCourseDao {
 		}
 	}
 
-	public void deleteCourseOfStudent(int student_id) {
+	public boolean checkStudentCourseAssignment(int student_id) {
 		String sql = "SELECT * FROM StudentCourse WHERE student_id = ?";
-		String sql1 = "DELETE FROM StudentCourse WHERE student_id = ?";
 
 		try {
 			prepareStatement = connection.prepareStatement(sql);
 			prepareStatement.setInt(1, student_id);
 			ResultSet result = prepareStatement.executeQuery();
 			if (result != null) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+
+	}
+
+	public void deleteCourseOfStudent(int student_id) {
+		String sql1 = "DELETE FROM StudentCourse WHERE student_id = ?";
+
+		try {
+
+			if (checkStudentCourseAssignment(student_id)) {
 				prepareStatement = connection.prepareStatement(sql1);
 				prepareStatement.setInt(1, student_id);
 				int updated = prepareStatement.executeUpdate();
 				if (updated > 0) {
 					System.out.println("Courses Of Students Is Deleted !!");
 				}
-			}
-			else {
-			System.out.println("No Course Assigned To Student !!");
+			} else {
+				System.out.println("No Course Assigned To Student !!");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

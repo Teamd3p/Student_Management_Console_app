@@ -29,6 +29,7 @@ public class StudentCourseController {
 				
 				if(courseController.courseExistance(courseId))
 				{
+					
 				StudentCourse studentCourse = new StudentCourse();
 				studentCourse.setStudentId(studentId);
 				studentCourse.setCourseId(courseId);
@@ -54,4 +55,5 @@ public class StudentCourseController {
 	{
 		studentCourseService.deleteStudentCourse(student_id);
 	}
+	
 }
