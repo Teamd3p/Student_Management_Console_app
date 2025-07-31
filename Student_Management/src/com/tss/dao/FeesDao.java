@@ -31,14 +31,11 @@ public class FeesDao {
 	}
 
 	public List<Fees> getFeesByStudent(int studentId) throws SQLException {
-		List<Fees> list = new ArrayList<>();  // ✅ Initialize as empty list
+		List<Fees> list = new ArrayList<>(); // ✅ Initialize as empty list
 
 		String sql = "SELECT f.fees_id, f.course_id, f.student_id, f.amount_paid, f.amount_pending, "
-				+ "c.course_name, s.student_name "
-				+ "FROM Fees f "
-				+ "JOIN Students s ON f.student_id = s.student_id "
-				+ "JOIN Courses c ON f.course_id = c.course_id "
-				+ "WHERE f.student_id = ?";
+				+ "c.course_name, s.student_name " + "FROM Fees f " + "JOIN Students s ON f.student_id = s.student_id "
+				+ "JOIN Courses c ON f.course_id = c.course_id " + "WHERE f.student_id = ?";
 
 		try (Connection connection = DBConnection.connect();
 				PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -47,21 +44,14 @@ public class FeesDao {
 			ResultSet result = stmt.executeQuery();
 
 			while (result.next()) {
-				Fees fee = new Fees(
-					result.getInt("fees_id"),
-					result.getInt("course_id"),
-					result.getInt("student_id"),
-					result.getDouble("amount_paid"),
-					result.getDouble("amount_pending"),
-					result.getString("course_name"),
-					result.getString("student_name")
-				);
+				Fees fee = new Fees(result.getInt("fees_id"), result.getInt("course_id"), result.getInt("student_id"),
+						result.getDouble("amount_paid"), result.getDouble("amount_pending"),
+						result.getString("course_name"), result.getString("student_name"));
 				list.add(fee);
 			}
 		}
-		return list; 
+		return list;
 	}
-
 
 	public static List<Fees> getCourseFeesSummary(int courseId) throws SQLException {
 		List<Fees> list = new ArrayList<>();
@@ -75,10 +65,9 @@ public class FeesDao {
 			ResultSet result = statament.executeQuery();
 
 			while (result.next()) {
-				Fees fee = new Fees(result.getInt("course_id"), result.getString("course_name"),result.getDouble("course_fees"));
+				Fees fee = new Fees(result.getInt("course_id"), result.getString("course_name"),
+						result.getDouble("course_fees"));
 
-				
-		
 				list.add(fee);
 			}
 		}
@@ -130,20 +119,38 @@ public class FeesDao {
 
 	public static void deleteStudent(int id) {
 		String sql = "DELETE FROM Fees WHERE student_id = ?";
-		
+
 		try (Connection connection = DBConnection.connect();
-				PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-			
+				PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
 			preparedStatement.setInt(1, id);
-			if(preparedStatement.executeUpdate()>0)
-			{
+			if (preparedStatement.executeUpdate() > 0) {
 				System.out.println("Deleted Successfully !!");
-			}
-			else
-			{
+			} else {
 				System.out.println("Not Found !!");
 			}
-			
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void insertNewRecord(Fees fee) {
+		String sql = "INSERT INTO Fees(course_id, student_id, amount_paid, amount_pending) VALUES(?,?,?,?)";
+
+		try (Connection connection = DBConnection.connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+			preparedStatement.setInt(1, fee.getCourseId());
+			preparedStatement.setInt(2, fee.getStudentId());
+			preparedStatement.setDouble(3, fee.getAmountPaid());
+			preparedStatement.setDouble(4, fee.getAmountPending());
+
+			int updated = preparedStatement.executeUpdate();
+
+			if (updated > 0) {
+				System.out.println("Inserted !!");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

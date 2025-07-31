@@ -39,5 +39,10 @@ public class FeeService {
 	public void deleteStudent(int id) {
 		FeesDao.deleteStudent(id);
 	}
+	
+	public void insertNewRecord(Fees fee)
+	{
+		FeesDao.insertNewRecord(fee);
+	}
 
 }

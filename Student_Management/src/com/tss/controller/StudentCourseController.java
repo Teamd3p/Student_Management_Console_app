@@ -5,16 +5,23 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.tss.model.Course;
+import com.tss.model.Fees;
 import com.tss.model.StudentCourse;
+import com.tss.service.CourseService;
+import com.tss.service.FeeService;
 import com.tss.service.StudentCourseService;
 
 public class StudentCourseController {
 
 	private StudentCourseService studentCourseService;
+	private FeeService feesservice;
+	private CourseService courseService;
 	private Scanner scanner = new Scanner(System.in);
 
 	public StudentCourseController() {
 		this.studentCourseService = new StudentCourseService();
+		this.feesservice = new FeeService();
+		this.courseService = new CourseService();
 	}
 
 	public void AssignCourseToStudent(StudentController studentController, CourseController courseController) {
@@ -34,9 +41,15 @@ public class StudentCourseController {
 					studentCourse.setStudentId(studentId);
 					studentCourse.setCourseId(courseId);
 					studentCourse.setEnrolledAt(LocalDateTime.now());
-
-					studentCourseService = new StudentCourseService();
+					
 					studentCourseService.AssignCourseToStudent(studentCourse);
+					
+					Course course = courseService.searchCourse(courseId);
+					
+					
+					Fees fee = new Fees(courseId,studentId,0.0,course.getCourseFees());
+					feesservice.insertNewRecord(fee);
+					
 					return;
 				}
 				System.out.println("Course With id " + courseId + " doesn't exists Or Not Active!!");
