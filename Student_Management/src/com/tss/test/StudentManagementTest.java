@@ -8,6 +8,8 @@ import com.tss.app.MenuHandler;
 import com.tss.app.StudentManagement;
 import com.tss.app.SubjectManagement;
 import com.tss.app.TeacherManagement;
+import com.tss.controller.DashboardController;
+
 
 public class StudentManagementTest {
 
@@ -20,42 +22,41 @@ public class StudentManagementTest {
 			printMenu();
 			choice = scanner.nextInt();
 			scanner.nextLine();
-
-			switch (choice) {
-			case 1:
-				option = new StudentManagement();
-				option.chooseMenu();
-				break;
-			case 2:
-				option = new CourseManagement();
-				option.chooseMenu();
-				break;
-			case 3:
-				option = new TeacherManagement();
-				option.chooseMenu();
-				break;
-
-			case 4:
-				option = new FeesManagement();
-				option.chooseMenu();
-				break;
-			case 5:
-				option = new SubjectManagement();
-				option.chooseMenu();
-				break;
-			case 6:
-				System.out.println(">> You selected Dashboard.");
-				break;
-			case 7:
-				System.out.println(">> Exiting... Goodbye!");
-				scanner.close();
-				System.exit(0);
-				break;
-			default:
-				System.out.println(">> Invalid choice. Please select between 1 and 6.");
+				switch (choice) {
+				case 1:
+					option = new StudentManagement();
+					option.chooseMenu();
+					break;
+				case 2:
+					option = new CourseManagement();
+					option.chooseMenu();
+					break;
+				case 3:
+					option = new TeacherManagement();
+					option.chooseMenu();
+					break;
+				case 4:
+					option = new FeesManagement();
+					option.chooseMenu();
+					break;
+				case 5:
+					option = new SubjectManagement();
+					option.chooseMenu();
+					break;
+				case 6:
+					DashboardController dashController = new DashboardController();
+					dashController.showDashboard();
+					break;
+				case 7:
+					System.out.println(">> Exiting... Goodbye!");
+					scanner.close();
+					System.exit(0);
+					break;
+				default:
+					System.out.println(">> Invalid choice. Please select between 1 and 6.");
+				}
 			}
 		}
-	}
 
 	public static void printMenu() {
 		System.out.println("+-------------------------------+");
