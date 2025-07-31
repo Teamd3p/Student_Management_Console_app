@@ -1,8 +1,10 @@
 package com.tss.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Scanner;
 
+import com.tss.model.Course;
 import com.tss.model.StudentCourse;
 import com.tss.service.StudentCourseService;
 
@@ -51,6 +53,30 @@ public class StudentCourseController {
 
 	public void deleteCourseFromStudent(int student_id) {
 		studentCourseService.deleteStudentCourse(student_id);
+	}
+
+	public void getAllCourses(int student_id) {
+		List<Course> courses = studentCourseService.getAllCourses(student_id);
+
+		if (courses.isEmpty() || courses == null) {
+			System.out.println("Student With ID " + student_id + " Not Enrolled in Any Course !!");
+			return;
+		}
+		String border = "+-------------+--------------------------+-----------+--------+";
+		String title = "|                 Student's Enrolled Courses                  |";
+
+		System.out.println("+-------------------------------------------------------------+");
+		System.out.println(title);
+		System.out.println(border);
+		System.out.printf("| %-11s | %-24s | %-9s | %-6s |\n", "Course ID", "Course Name", "Fees (₹)", "Active");
+		System.out.println(border);
+
+		for (Course course : courses) {
+			System.out.printf("| %-11d | %-24s | ₹%-8.2f | %-6s |\n", course.getCourseId(), course.getCourseName(),
+					course.getCourseFees(), course.isActive() ? "Yes" : "No");
+		}
+
+		System.out.println(border);
 	}
 
 }

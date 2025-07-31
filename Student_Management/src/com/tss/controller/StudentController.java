@@ -216,7 +216,14 @@ public class StudentController {
 
 	public boolean studentExistance(int student_id) {
 		Student student = studentService.readStudentById(student_id);
-		return student != null;
+		if(student != null)
+		{
+			if(student.isActive())
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void deleteStudentById() {
@@ -239,7 +246,7 @@ public class StudentController {
 				System.out.println("Cannot Deactivate Student Because Student Fees is Pending !!");
 				return;
 			}
-			
+
 			feecontroller.deleteStudent(id);
 			studentCourseController.deleteCourseFromStudent(id);
 			Student student = studentService.deleteStudentById(id);
@@ -261,6 +268,31 @@ public class StudentController {
 			}
 		} catch (ValidationException e) {
 			System.out.println("Error: " + e.getMessage());
+		}
+	}
+
+	public void showAllCoursesById() throws ValidationException {
+		try {
+			studentCourseController = new StudentCourseController();
+			
+			readAllRecords();
+			System.out.print("Enter Student ID : ");
+			String input = scanner.nextLine().trim();
+
+			if (!input.matches("\\d+"))
+				throw new ValidationException("Student ID must be a positive number.");
+
+			int id = Integer.parseInt(input);
+			if (id <= 0)
+				throw new ValidationException("Student ID must be greater than zero.");
+
+			if (!studentExistance(id)) {
+				System.out.println("Student with ID " + id + " not found Or Inactive.");
+				return;
+			}
+			studentCourseController.getAllCourses(id);
+		} catch (ValidationException e) {
+			throw e;
 		}
 	}
 }
