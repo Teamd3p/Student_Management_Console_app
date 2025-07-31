@@ -138,12 +138,11 @@ public class FeeController {
 	}
 
 	public Fees getFeeByStudentAndCourse(int id, int courseId) {
-		feeService.getFeeByStudentAndCourse(id, courseId);
-		return null;
+		return feeService.getFeeByStudentAndCourse(id, courseId);
 	}
 
-	public boolean processFeePayment(int paymentId, int courseId, double amountToPay, String paymentType) {
-		return feeService.processFeePayment(paymentId, courseId, amountToPay, paymentType);
+	public boolean processFeePayment(int studentId , int courseId, double amountToPay, String paymentType) {
+		return feeService.processFeePayment(studentId, courseId, amountToPay, paymentType);
 	}
 
 }

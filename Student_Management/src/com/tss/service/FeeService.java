@@ -52,8 +52,8 @@ public class FeeService {
 
 	}
 
-	public boolean processFeePayment(int paymentId, int courseId, double amountToPay, String paymentType) {
-		return FeesDao.processFeePayment(paymentId, courseId, amountToPay, paymentType);
+	public boolean processFeePayment(int studentId, int courseId, double amountToPay, String paymentType) {
+		return FeesDao.processFeePayment(studentId, courseId, amountToPay, paymentType);
 
 	}
 
