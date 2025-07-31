@@ -8,7 +8,11 @@ import com.tss.app.MenuHandler;
 import com.tss.app.StudentManagement;
 import com.tss.app.SubjectManagement;
 import com.tss.app.TeacherManagement;
+<<<<<<< HEAD
 import com.tss.controller.DashboardController;
+=======
+import com.tss.controller.FeesController;
+>>>>>>> b7806c4956a2fc8c400b396506311dd65a43122e
 
 
 public class StudentManagementTest {
@@ -36,10 +40,11 @@ public class StudentManagementTest {
                 	option = new TeacherManagement();
                 	option.chooseMenu();
                     break;
+                
                 case 4:
                     option = new FeesManagement();
-                    option.chooseMenu();
                     break;
+                    
                 case 5:
                 	option = new SubjectManagement();
                 	option.chooseMenu();

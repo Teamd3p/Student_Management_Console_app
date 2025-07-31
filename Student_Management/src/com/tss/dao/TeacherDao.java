@@ -13,18 +13,20 @@ import com.tss.model.Teacher;
 
 public class TeacherDao {
 
+	private Connection connection = null;
+	private Statement stmt = null;
+	private PreparedStatement prepareStatement = null;
 	public TeacherDao() {
-		this.conn = DBConnection.connect();
+		this.connection = DBConnection.connect();
 	}
 
-	private Connection conn = null;
-	private Statement stmt = null;
+	
 
 	public List<Teacher> getAllTeachers() {
 		List<Teacher> teachers = new ArrayList<>();
 
 		try {
-			stmt = conn.createStatement();
+			stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Teachers");
 
 			while (rs.next()) {
@@ -41,27 +43,41 @@ public class TeacherDao {
 	}
 
 	public boolean addTeacher(Teacher teacher) {
-		String sql = "INSERT INTO Teachers (teacher_name, is_active, joining_date) VALUES (?, ?, ?)";
-		try {
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, teacher.getTeacherName());
-			pstmt.setBoolean(2, teacher.isActive());
-			pstmt.setString(3, teacher.getJoiningDate());
-			int rowsInserted = pstmt.executeUpdate();
-			return rowsInserted > 0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	    String sql = "INSERT INTO Teachers (teacher_name, is_active, joining_date) VALUES (?, ?, ?)";
+
+	    try {
+	        prepareStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        prepareStatement.setString(1, teacher.getTeacherName());
+	        prepareStatement.setBoolean(2, teacher.isActive());
+	        prepareStatement.setString(3, teacher.getJoiningDate());
+
+	        int rowsInserted = prepareStatement.executeUpdate();
+
+	        if (rowsInserted > 0) {
+	            ResultSet generatedKeys = prepareStatement.getGeneratedKeys();
+	            if (generatedKeys.next()) {
+	                int generatedId = generatedKeys.getInt(1);
+	                teacher.setTeacherId(generatedId); 
+	            }
+	            return true;
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return false;
 	}
+
+
 
 	public Teacher getByIdTeacher(int id) {
 		String sql = "SELECT * FROM Teachers WHERE teacher_id = ?";
 
 		try {
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, id);
-			try (ResultSet rs = pstmt.executeQuery()) {
+			prepareStatement = connection.prepareStatement(sql);
+			prepareStatement.setInt(1, id);
+			try (ResultSet rs = prepareStatement.executeQuery()) {
 				if (rs.next()) {
 					return new Teacher(rs.getInt("teacher_id"), rs.getString("teacher_name"),
 							rs.getBoolean("is_active"), rs.getString("joining_date"));
@@ -82,9 +98,9 @@ public class TeacherDao {
 	    String updateSql = "UPDATE Teachers SET is_active = false WHERE teacher_id = ?";
 
 	    try {
-	        PreparedStatement checkStmt = conn.prepareStatement(checkSql);
-	        checkStmt.setInt(1, id);
-	        ResultSet rs = checkStmt.executeQuery();
+	        prepareStatement = connection.prepareStatement(checkSql);
+	        prepareStatement.setInt(1, id);
+	        ResultSet rs = prepareStatement.executeQuery();
 
 	        if (rs.next()) {
 	            boolean isActive = rs.getBoolean("is_active");
@@ -94,9 +110,9 @@ public class TeacherDao {
 	                return false;
 	            }
 
-	            PreparedStatement updateStmt = conn.prepareStatement(updateSql);
-	            updateStmt.setInt(1, id);
-	            int rowsUpdated = updateStmt.executeUpdate();
+	            prepareStatement = connection.prepareStatement(updateSql);
+	            prepareStatement.setInt(1, id);
+	            int rowsUpdated = prepareStatement.executeUpdate();
 	            return rowsUpdated > 0;
 	        } else {
 	            System.out.println("Teacher ID not found.");
@@ -117,7 +133,7 @@ public class TeacherDao {
 
 	    try {
 	        // 1. Check if teacher exists
-	        PreparedStatement checkTec = conn.prepareStatement(checkTeacher);
+	        PreparedStatement checkTec = connection.prepareStatement(checkTeacher);
 	        checkTec.setInt(1, teacherId);
 	        ResultSet tecRs = checkTec.executeQuery();
 	        if (!tecRs.next()) {
@@ -126,7 +142,7 @@ public class TeacherDao {
 	        }
 
 	        // 2. Check if subject exists
-	        PreparedStatement checkSub = conn.prepareStatement(checkSubject);
+	        PreparedStatement checkSub = connection.prepareStatement(checkSubject);
 	        checkSub.setInt(1, subjectId);
 	        ResultSet subRs = checkSub.executeQuery();
 	        if (!subRs.next()) {
@@ -135,7 +151,7 @@ public class TeacherDao {
 	        }
 
 	        // 3. Check if already assigned
-	        PreparedStatement checkAssign = conn.prepareStatement(checkAssignment);
+	        PreparedStatement checkAssign = connection.prepareStatement(checkAssignment);
 	        checkAssign.setInt(1, teacherId);
 	        checkAssign.setInt(2, subjectId);
 	        ResultSet assignRs = checkAssign.executeQuery();
@@ -145,7 +161,7 @@ public class TeacherDao {
 	        }
 
 	        // 4. Insert assignment
-	        PreparedStatement insertQuery = conn.prepareStatement(insertSql);
+	        PreparedStatement insertQuery = connection.prepareStatement(insertSql);
 	        insertQuery.setInt(1, teacherId);
 	        insertQuery.setInt(2, subjectId);
 	        int rowsInserted = insertQuery.executeUpdate();
@@ -165,7 +181,7 @@ public class TeacherDao {
 
 	    try {
 	        // 1. Check if teacher exists
-	        PreparedStatement checkTec = conn.prepareStatement(checkTeacher);
+	        PreparedStatement checkTec = connection.prepareStatement(checkTeacher);
 	        checkTec.setInt(1, teacherId);
 	        ResultSet tecRs = checkTec.executeQuery();
 	        if (!tecRs.next()) {
@@ -174,7 +190,7 @@ public class TeacherDao {
 	        }
 
 	        // 2. Check if subject exists
-	        PreparedStatement checkSub = conn.prepareStatement(checkSubject);
+	        PreparedStatement checkSub = connection.prepareStatement(checkSubject);
 	        checkSub.setInt(1, subjectId);
 	        ResultSet subRs = checkSub.executeQuery();
 	        if (!subRs.next()) {
@@ -183,7 +199,7 @@ public class TeacherDao {
 	        }
 
 	        // 3. Check if assignment exists
-	        PreparedStatement checkAssign = conn.prepareStatement(checkAssignment);
+	        PreparedStatement checkAssign = connection.prepareStatement(checkAssignment);
 	        checkAssign.setInt(1, teacherId);
 	        checkAssign.setInt(2, subjectId);
 	        ResultSet assignRs = checkAssign.executeQuery();
@@ -193,7 +209,7 @@ public class TeacherDao {
 	        }
 
 	        // 4. Perform deletion
-	        PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
+	        PreparedStatement deleteStmt = connection.prepareStatement(deleteSql);
 	        deleteStmt.setInt(1, teacherId);
 	        deleteStmt.setInt(2, subjectId);
 	        int rowsDeleted = deleteStmt.executeUpdate();

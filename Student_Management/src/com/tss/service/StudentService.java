@@ -35,6 +35,6 @@ public class StudentService {
     }
 
 	public Student deleteStudentById(int student_id) {
-		return studentDao.deleteStudentById(student_id);
+		return studentDao.deleteStudentByID(student_id);
 	}
 }

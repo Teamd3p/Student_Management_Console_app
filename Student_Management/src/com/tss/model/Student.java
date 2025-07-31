@@ -15,7 +15,7 @@ public class Student {
     }
 
     // Constructor without studentId
-    public Student(String studentName, Boolean isActive, LocalDateTime admission) {
+    public Student(String studentName, LocalDateTime admission) {
         this.setStudentName(studentName);
         this.setActive(isActive);
         this.setAdmission(admission);
@@ -28,9 +28,6 @@ public class Student {
 
     // Allow setting ID only internally (e.g., from DAO)
     public void setStudentId(int studentId) {
-        if (studentId < 0) {
-            throw new IllegalArgumentException("Student ID cannot be negative.");
-        }
         this.studentId = studentId;
     }
 
@@ -39,12 +36,6 @@ public class Student {
     }
 
     public void setStudentName(String studentName) {
-        if (studentName == null || studentName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Student name cannot be null or empty.");
-        }
-        if (studentName.length() > 100) {
-            throw new IllegalArgumentException("Student name cannot exceed 100 characters.");
-        }
         this.studentName = studentName.trim();
     }
 

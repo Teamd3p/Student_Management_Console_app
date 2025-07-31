@@ -44,14 +44,13 @@ public class StudentDao {
         }
         return students;
     }
-
+    
     public boolean insertStudent(Student student) {
-        String sql = "INSERT INTO Students (student_name, is_active, admission) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Students (student_name, admission) VALUES (?, ?)";
         try {
             prepareStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             prepareStatement.setString(1, student.getStudentName());
-            prepareStatement.setBoolean(2, student.isActive());
-            prepareStatement.setTimestamp(3, Timestamp.valueOf(student.getAdmission()));
+            prepareStatement.setTimestamp(2, Timestamp.valueOf(student.getAdmission()));
 
             int rowsInserted = prepareStatement.executeUpdate();
 
@@ -95,24 +94,35 @@ public class StudentDao {
 		return student;
 	}
 
-	public Student deleteStudentById(int student_id) {
-		Student student = null;
-		try {
-			prepareStatement = connection.prepareStatement("SELECT * FROM Students WHERE student_id = ?");
-			prepareStatement.setInt(1, student_id);
-			ResultSet result = prepareStatement.executeQuery();
-			
-			if(!result.getBoolean("is_active"))
-			{
-				System.out.println("Student With "+ student_id+ " Already Deleted !!");
-			}
-			
-			
-		}
-		catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
+    public Student deleteStudentByID(int student_id) {
+        Student student = null;
 
-		return student;
-	}
+        String updateSql = "UPDATE Students SET is_active = 0 WHERE student_id = ? AND is_active = 1";
+        String selectSql = "SELECT * FROM Students WHERE student_id = ?";
+
+        try {
+            prepareStatement = connection.prepareStatement(updateSql);
+            prepareStatement.setInt(1, student_id);
+            int rowsAffected = prepareStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                prepareStatement = connection.prepareStatement(selectSql);
+                prepareStatement.setInt(1, student_id);
+                ResultSet result = prepareStatement.executeQuery();
+
+                if (result.next()) {
+                    student = new Student();
+                    student.setStudentId(result.getInt("student_id"));
+    			    student.setStudentName(result.getString("student_name"));
+    			    student.setActive(result.getBoolean("is_active"));
+    			    student.setAdmission(result.getTimestamp("admission").toLocalDateTime());
+                }
+                result.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return student;
+    }
 }

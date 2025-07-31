@@ -2,6 +2,7 @@ package com.tss.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -21,6 +22,14 @@ public class StudentCourseDao {
         String sql = "INSERT INTO StudentCourse (student_id, course_id, enrolled_at) VALUES (?, ?, ?)";
         
         try {
+//        	PreparedStatement checkAssign = connection.prepareStatement(checkAssignment);
+//	        checkAssign.setInt(1, studentCourse.getCourseId());
+//	        checkAssign.setInt(2, studentCourse.getStudentId());
+//	        ResultSet assignRs = checkAssign.executeQuery();
+//	        if (assignRs.next()) {
+//	            System.out.println("Teacher already has this subject assigned.");
+//	            return false;
+//	        }
             prepareStatement = connection.prepareStatement(sql);
             prepareStatement.setInt(1, studentCourse.getStudentId());
             prepareStatement.setInt(2, studentCourse.getCourseId());
