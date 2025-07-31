@@ -1,6 +1,10 @@
 package com.tss.service;
 
+import java.util.List;
+
 import com.tss.dao.StudentCourseDao;
+import com.tss.model.Course;
+import com.tss.model.Fees;
 import com.tss.model.StudentCourse;
 
 public class StudentCourseService {
@@ -14,4 +18,9 @@ public class StudentCourseService {
     {
     	studentCourseDao.assignCourseToStudent(studentCourse);
     }
+
+	public List<Fees> getCourseByStudentId(int studentId) {
+		return studentCourseDao.getCourseByStudentId(studentId);
+		
+	}
 }

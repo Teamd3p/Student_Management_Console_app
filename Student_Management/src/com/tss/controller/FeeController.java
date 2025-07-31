@@ -137,4 +137,13 @@ public class FeeController {
 
 	}
 
+	public Fees getFeeByStudentAndCourse(int id, int courseId) {
+		feeService.getFeeByStudentAndCourse(id, courseId);
+		return null;
+	}
+
+	public boolean processFeePayment(int paymentId, int courseId, double amountToPay, String paymentType) {
+		return feeService.processFeePayment(paymentId, courseId, amountToPay, paymentType);
+	}
+
 }

@@ -1,18 +1,28 @@
 package com.tss.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+import com.tss.model.Fees;
 import com.tss.model.StudentCourse;
 import com.tss.service.StudentCourseService;
 
 public class StudentCourseController {
 
-	private StudentCourseService subjectCourseService;
-	private Scanner scanner = new Scanner(System.in);
+	private final StudentCourseService studentCourseService;
+	private final Scanner scanner;
+	private final StudentController studentController;
+	private final CourseController courseController;
+	private final FeeController feesController;
 
 	public StudentCourseController() {
-		this.subjectCourseService = new StudentCourseService();
+		this.studentCourseService = new StudentCourseService();
+		this.studentController = new StudentController();
+		this.courseController = new CourseController();
+		this.feesController = new FeeController();
+		this.scanner = new Scanner(System.in);
 	}
 
 	public void AssignCourseToStudent(StudentController studentController, CourseController courseController) {
@@ -23,25 +33,24 @@ public class StudentCourseController {
 			int studentId = Integer.parseInt(scanner.nextLine().trim());
 
 			if (studentController.studentExistance(studentId)) {
-				courseController.radAllActiveCourse(); 
+				courseController.radAllActiveCourse();
 				System.out.print("Enter Course ID: ");
 				int courseId = Integer.parseInt(scanner.nextLine().trim());
-				
-				if(courseController.courseExistance(courseId))
-				{
-				StudentCourse studentCourse = new StudentCourse();
-				studentCourse.setStudentId(studentId);
-				studentCourse.setCourseId(courseId);
-				studentCourse.setEnrolledAt(LocalDateTime.now());
 
-				StudentCourseService courseService = new StudentCourseService();
-				courseService.AssignCourseToStudent(studentCourse);
-				return;
+				if (courseController.courseExistance(courseId)) {
+					StudentCourse studentCourse = new StudentCourse();
+					studentCourse.setStudentId(studentId);
+					studentCourse.setCourseId(courseId);
+					studentCourse.setEnrolledAt(LocalDateTime.now());
+
+					StudentCourseService courseService = new StudentCourseService();
+					courseService.AssignCourseToStudent(studentCourse);
+					return;
 				}
-				System.out.println("Course With id "+courseId+" doesn't exists !!");
+				System.out.println("Course With id " + courseId + " doesn't exists !!");
 				return;
 			}
-			System.out.println("Student With id "+studentId+" doesn't exists !!");
+			System.out.println("Student With id " + studentId + " doesn't exists !!");
 		} catch (NumberFormatException e) {
 			System.out.println("Invalid input. Please enter numeric values for IDs.");
 		} catch (Exception e) {
@@ -49,4 +58,55 @@ public class StudentCourseController {
 			e.printStackTrace();
 		}
 	}
+
+//	public List<Fees> viewCourseByStudentId(int id) {
+//		if (studentController.studentExistance(id)) {
+//			List<Fees> courses = studentCourseService.getCourseByStudentId(id); 
+//
+//			if (courses == null || courses.isEmpty()) {
+//				System.out.println("No courses found for student ID: " + id);
+//				return null;
+//			}
+//
+//			System.out.println("\n+-------------------------------------------------------------+");
+//			System.out.println("|                    Enrolled Courses                        |");
+//			System.out.println("+-------------------------------------------------------------+");
+//			System.out.printf("| %-10s | %-25s | %-10s |\n", "Course ID", "Course Name", "Course Fee");
+//			System.out.println("+-------------------------------------------------------------+");
+//
+//			for (Fees course : courses) {
+//				System.out.printf("| %-10d | %-25s | ₹%-9.2f |\n", course.getCourseId(), course.getCourseName(),
+//						course.getAmountPaid(), course.getAmountPending());
+//			}
+//
+//			System.out.println("+-------------------------------------------------------------+");
+//		}
+//		System.out.print("Enter Course ID: ");
+//		int courseId = Integer.parseInt(scanner.nextLine().trim());
+//		if (courseController.courseExistance(courseId)) {
+//			Fees fee = feesController.getFeeByStudentAndCourse(id, courseId);
+//			if (fee != null) {
+//				System.out.println("\n------------------------------------");
+//				System.out.println("           Fee Details              ");
+//				System.out.println("------------------------------------");
+//				System.out.println("Course Id     : " + fee.getCourseId());
+//				System.out.println("Course Name     : " + fee.getCourseName());
+//				System.out.println("Amount Paid     : ₹" + fee.getAmountPaid());
+//				System.out.println("Amount Pending  : ₹" + fee.getAmountPending());
+//				System.out.println("------------------------------------\n");
+//			} else {
+//				System.out.println("No fee record found for the given student and course.");
+//			}
+//		}
+//		return fee;
+//
+//	}
+
+	public List<Fees> getEnrolledCoursesByStudentId(int studentId) {
+	    if (studentController.studentExistance(studentId)) {
+	        return studentCourseService.getCourseByStudentId(studentId);
+	    }
+	    return new ArrayList<>();
+	}
+
 }

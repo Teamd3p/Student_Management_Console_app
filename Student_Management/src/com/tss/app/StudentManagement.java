@@ -22,7 +22,8 @@ public class StudentManagement implements MenuHandler {
 		System.out.println("| 4. View All Courses          |");
 		System.out.println("| 5. Search A Student          |");
 		System.out.println("| 6. Delete A Student          |");
-		System.out.println("| 7. Go Back                   |");
+		System.out.println("| 7. Pay Student Fees          |");
+		System.out.println("| 8. Go Back                   |");
 		System.out.println("+------------------------------+");
 		System.out.print("Enter your choice: ");
 	}
@@ -37,7 +38,7 @@ public class StudentManagement implements MenuHandler {
 		while (true) {
 			showMenu();
 			choice = scanner.nextInt();
-			scanner.nextLine(); // consume newline
+			scanner.nextLine();
 
 			switch (choice) {
 			case 1:
@@ -63,6 +64,10 @@ public class StudentManagement implements MenuHandler {
 				controller.deleteStudentById();
 				break;
 			case 7:
+				controller.readAllRecords();
+				controller.payStudentFees();
+				break;
+			case 8:
 				System.out.println(">> Returning to main menu...");
 				return; 
 			default:
