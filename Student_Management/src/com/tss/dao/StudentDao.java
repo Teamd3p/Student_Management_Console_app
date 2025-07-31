@@ -125,4 +125,9 @@ public class StudentDao {
 
         return student;
     }
+
+	public Object payStudentFees(int id) {
+		
+		return null;
+	}
 }
