@@ -15,7 +15,14 @@ public class FeeController {
 
 	public void getTotalPaidFees() {
 		try {
-			System.out.println("Total Paid: ₹" + feeService.getTotalPaidFees());
+			double totalPaid = feeService.getTotalPaidFees();
+			String border = "+------------------------------------------------------+";
+			String title = "|            TOTAL FEES PAID BY STUDENTS               |";
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.printf("| %-25s : ₹%-20.2f    |\n", "Total Paid", totalPaid);
+			System.out.println(border);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -23,7 +30,14 @@ public class FeeController {
 
 	public void getTotalPendingFees() {
 		try {
-			System.out.println("Total Pending: ₹" + feeService.getTotalPendingFees());
+			double totalPending = feeService.getTotalPendingFees();
+			String border = "+----------------------------------------------------------+";
+			String title = "|         TOTAL FEES PENDING FROM STUDENTS                 |";
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.printf("| %-32s : ₹%-20.2f |\n", "Total Pending", totalPending);
+			System.out.println(border);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -36,13 +50,11 @@ public class FeeController {
 
 		try {
 			List<Fees> fee = feeService.getFeesByStudent(studentId);
-
 			if (fee == null || fee.isEmpty()) {
 				System.out.println("No courses assigned to student. No fees data available.");
 				return;
 			}
-
-			System.out.println(fee); // or loop and format nicely
+			System.out.println(fee);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -53,20 +65,19 @@ public class FeeController {
 			List<Fees> fees = feeService.getFeesByStudent(student_id);
 
 			if (fees == null || fees.isEmpty()) {
-				return false;  // ✅ No records = no pending fees
+				return false;
 			}
 
 			for (Fees fee : fees) {
 				if (fee.getAmountPending() > 0.0) {
-					return true;  // ✅ Fee is pending
+					return true;
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;  // ✅ No pending fees found
+		return false;
 	}
-
 
 	public void getCourseFees() {
 		System.out.print("Enter Course ID: ");
@@ -95,13 +106,11 @@ public class FeeController {
 				"Total Fee", "Paid", "Pending");
 		System.out.println(
 				"+------------------------------------------------------------------------------------------+");
-
 		for (Fees fee : feeList) {
 			double totalFee = fee.getAmountPaid() + fee.getAmountPending();
 			System.out.printf("| %-8d | %-12d | %-20s | %-10.2f | %-10.2f | %-10.2f |\n", fee.getFeeId(),
 					fee.getStudentId(), fee.getStudentName(), totalFee, fee.getAmountPaid(), fee.getAmountPending());
 		}
-
 		System.out.println(
 				"+------------------------------------------------------------------------------------------+");
 	}
