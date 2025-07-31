@@ -68,10 +68,30 @@ public class StudentController {
 				throw new ValidationException("Enter Proper Name");
 			}
 
-			System.out.print("Enter Admission Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
-			String dateInput = scanner.nextLine().trim();
-			LocalDateTime admission = dateInput.isEmpty() ? LocalDateTime.now()
-					: LocalDateTime.parse(dateInput.replace(" ", "T"));
+			LocalDateTime admission = null;
+
+			while (true) {
+				try {
+					System.out.print("Enter Admission Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
+					String dateInput = scanner.nextLine().trim();
+
+					if (dateInput.isEmpty()) {
+						admission = LocalDateTime.now();
+						break;
+					}
+
+					admission = LocalDateTime.parse(dateInput.replace(" ", "T"));
+
+					if (admission.isAfter(LocalDateTime.now())) {
+						throw new ValidationException("Admission date cannot be in the future.");
+					}
+
+					break;
+				}catch (ValidationException e) {
+					System.out.println("Error: " + e.getMessage());
+				}
+			}
+
 
 			Student student = new Student(name, admission);
 
