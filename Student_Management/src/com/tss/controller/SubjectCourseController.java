@@ -54,14 +54,14 @@ public class SubjectCourseController {
 			scanner.nextLine();
 
 			if (subjectCourseService.checkIfSubjectAlreadyExistsInCourse(subjectId, courseId)) {
-				System.out.println("❌ This subject is already assigned to the course.");
+				System.out.println("This subject is already assigned to the course.");
 			} else {
 				boolean success = subjectCourseService.addSubjectToCourse(courseId, subjectId);
 				if (success) {
-					System.out.println("✅ Subject " + subjectId + " added to Course " + courseId);
-					added++; // increment only on success
+					System.out.println("Subject " + subjectId + " added to Course " + courseId);
+					added++; 
 				} else {
-					System.out.println("❌ Failed to add Subject " + subjectId);
+					System.out.println("Failed to add Subject " + subjectId);
 				}
 			}
 		}
@@ -71,13 +71,13 @@ public class SubjectCourseController {
 
 	public void viewSubjectsOfCourse() {
 		System.out.println(">> Available Courses:");
-		courseController.readAllCourseRecords(); // show all courses
+		courseController.readAllCourseRecords(); 
 
 		System.out.print("Enter Course ID to view its subjects: ");
 		int courseId = scanner.nextInt();
-		scanner.nextLine(); // consume newline
+		scanner.nextLine(); 
 
-		List<Subject> subjects = subjectCourseService.viewSubjectsOfCourse(courseId); // call service
+		List<Subject> subjects = subjectCourseService.viewSubjectsOfCourse(courseId); 
 
 		if (subjects.isEmpty()) {
 			System.out.println("No subjects found for this course.");
