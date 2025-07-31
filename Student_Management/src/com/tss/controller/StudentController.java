@@ -7,7 +7,6 @@ import java.util.Scanner;
 import com.tss.exception.ValidationException;
 import com.tss.model.Profile;
 import com.tss.model.Student;
-import com.tss.model.StudentCourse;
 import com.tss.service.ProfileService;
 import com.tss.service.StudentService;
 
@@ -225,7 +224,7 @@ public class StudentController {
 			System.out.println("Cannot Deactive Student Because Student Fees is Pending !!");
 			return;
 		}
-		
+
 		studentCourseController.deleteCourseFromStudent(id);
 		Student student = studentService.deleteStudentById(id);
 
