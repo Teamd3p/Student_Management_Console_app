@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tss.database.DBConnection;
+import com.tss.model.Course;
 import com.tss.model.Fees;
 import com.tss.model.StudentCourse;
 
@@ -85,5 +86,52 @@ public class StudentCourseDao {
 
         return fees;
     }
+
+	public List<Course> getAllCourses(int id) {
+		List<Course> courses = new ArrayList<>();
+	    String sql = "SELECT c.course_id, c.course_name, c.course_fees, c.is_active "
+	               + "FROM Courses c "
+	               + "JOIN StudentCourse sc ON c.course_id = sc.course_id "
+	               + "WHERE sc.student_id = ?";
+
+	    try {
+	        if (checkStudentCourseAssignment(id)) {
+	            prepareStatement = connection.prepareStatement(sql);
+	            prepareStatement.setInt(1, id);
+
+	            ResultSet result = prepareStatement.executeQuery();
+	            while (result.next()) {
+	                Course course = new Course();
+	                course.setCourseId(result.getInt("course_id"));
+	                course.setCourseName(result.getString("course_name"));
+	                course.setCourseFees(result.getDouble("course_fees"));
+	                course.setActive(result.getBoolean("is_active"));
+
+	                courses.add(course);
+	            }
+	            result.close();
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Error fetching courses: " + e.getMessage());
+	    }
+
+	    return courses;	}
+
+	private boolean checkStudentCourseAssignment(int id) {
+		String sql = "SELECT * FROM StudentCourse WHERE student_id = ?";
+
+		try {
+			prepareStatement = connection.prepareStatement(sql);
+			prepareStatement.setInt(1, id);
+			ResultSet result = prepareStatement.executeQuery();
+			if (result != null) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
 
 }

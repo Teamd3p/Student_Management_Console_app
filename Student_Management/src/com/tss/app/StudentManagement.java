@@ -23,7 +23,8 @@ public class StudentManagement implements MenuHandler {
 		System.out.println("| 5. Search A Student          |");
 		System.out.println("| 6. Delete A Student          |");
 		System.out.println("| 7. Pay Student Fees          |");
-		System.out.println("| 8. Go Back                   |");
+		System.out.println("| 8. View All Course Of Student|");
+		System.out.println("| 9. Go Back                   |");
 		System.out.println("+------------------------------+");
 		System.out.print("Enter your choice: ");
 	}
@@ -52,7 +53,7 @@ public class StudentManagement implements MenuHandler {
 				}
 				break;
 			case 3:
-				SCController.AssignCourseToStudent(controller,courseController);
+				SCController.AssignCourseToStudent(controller, courseController);
 				break;
 			case 4:
 				courseController.readAllCourseRecords();
@@ -68,8 +69,15 @@ public class StudentManagement implements MenuHandler {
 				controller.payStudentFees();
 				break;
 			case 8:
+				try {
+					controller.showAllCoursesById();
+				} catch (ValidationException e) {
+					System.out.println(e.getMessage());
+				}
+				return;
+			case 9:
 				System.out.println(">> Returning to main menu...");
-				return; 
+				return;
 			default:
 				System.out.println(">> Invalid choice. Please select from 1 to 7.");
 			}

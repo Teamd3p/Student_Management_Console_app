@@ -393,6 +393,31 @@ public class StudentController {
 	    }
 	}
 
+	public void showAllCoursesById() throws ValidationException{
+		try {
+			studentCourseController = new StudentCourseController();
+			
+			readAllRecords();
+			System.out.print("Enter Student ID : ");
+			String input = scanner.nextLine().trim();
+
+			if (!input.matches("\\d+"))
+				throw new ValidationException("Student ID must be a positive number.");
+
+			int id = Integer.parseInt(input);
+			if (id <= 0)
+				throw new ValidationException("Student ID must be greater than zero.");
+
+			if (!studentExistance(id)) {
+				System.out.println("Student with ID " + id + " not found Or Inactive.");
+				return;
+			}
+			studentCourseController.getAllCourses(id);
+		} catch (ValidationException e) {
+			throw e;
+		}
+	}
+
 	
 	
 

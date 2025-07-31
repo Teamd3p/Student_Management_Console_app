@@ -32,6 +32,14 @@ public class Fees {
 
 	}
 
+	public Fees(int courseId2, int studentId2, double amountPaid, double courseFees) {
+		this.courseId = courseId2;
+		this.studentId = studentId2;
+		this.amountPaid = amountPaid;
+		this.amountPending = courseFees;
+		
+	}
+	
 	public int getFeeId() {
 		return feeId;
 	}

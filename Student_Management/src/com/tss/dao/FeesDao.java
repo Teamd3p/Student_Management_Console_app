@@ -230,4 +230,43 @@ public class FeesDao {
 	}
 
 
+	public static void deleteStudent(int id) {
+		String sql = "DELETE FROM Fees WHERE student_id = ?";
+
+		try (Connection connection = DBConnection.connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+			preparedStatement.setInt(1, id);
+			if (preparedStatement.executeUpdate() > 0) {
+				System.out.println("Deleted Successfully !!");
+			} else {
+				System.out.println("Not Found !!");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void insertNewRecord(Fees fee) {
+		String sql = "INSERT INTO Fees(course_id, student_id, amount_paid, amount_pending) VALUES(?,?,?,?)";
+
+		try (Connection connection = DBConnection.connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+			preparedStatement.setInt(1, fee.getCourseId());
+			preparedStatement.setInt(2, fee.getStudentId());
+			preparedStatement.setDouble(3, fee.getAmountPaid());
+			preparedStatement.setDouble(4, fee.getAmountPending());
+
+			int updated = preparedStatement.executeUpdate();
+
+			if (updated > 0) {
+				System.out.println("Inserted !!");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

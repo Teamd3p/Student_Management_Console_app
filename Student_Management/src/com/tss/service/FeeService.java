@@ -36,6 +36,16 @@ public class FeeService {
 	public List<Fees> getCourseFeesSummary(int courseId) throws SQLException {
 		return FeesDao.getCourseFeesSummary(courseId);
 	}
+	
+	public void deleteStudent(int id) {
+		FeesDao.deleteStudent(id);
+	}
+	
+	public void insertNewRecord(Fees fee)
+	{
+		FeesDao.insertNewRecord(fee);
+	}
+
 
 	public Fees getFeeByStudentAndCourse(int id, int courseId) {
 		return FeesDao.getFeeByStudentAndCourse(id, courseId);

@@ -23,4 +23,8 @@ public class StudentCourseService {
 		return studentCourseDao.getCourseByStudentId(studentId);
 		
 	}
+
+	public List<Course> getAllCourses(int id) {
+		return studentCourseDao.getAllCourses(id);
+	}
 }
