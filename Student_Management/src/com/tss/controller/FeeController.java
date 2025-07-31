@@ -35,13 +35,6 @@ public class FeeController {
 		scanner.nextLine();
 
 		try {
-<<<<<<< HEAD
-			fee = feeService.getFeesByStudent(studentId);
-			if (fee == null) {
-				System.out.println("No Course");
-			} else {
-				System.out.println(fee);
-=======
 			List<Fees> fee = feeService.getFeesByStudent(studentId);
 
 			if (fee == null || fee.isEmpty()) {
@@ -67,7 +60,6 @@ public class FeeController {
 				if (fee.getAmountPending() > 0.0) {
 					return true;  // ✅ Fee is pending
 				}
->>>>>>> 0d5075740ac7df5b5ee7987624c80f7c381a0c89
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

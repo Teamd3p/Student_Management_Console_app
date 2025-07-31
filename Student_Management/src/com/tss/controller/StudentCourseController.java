@@ -23,26 +23,24 @@ public class StudentCourseController {
 			int studentId = Integer.parseInt(scanner.nextLine().trim());
 
 			if (studentController.studentExistance(studentId)) {
-				courseController.radAllActiveCourse(); 
+				courseController.radAllActiveCourse();
 				System.out.print("Enter Course ID: ");
 				int courseId = Integer.parseInt(scanner.nextLine().trim());
-				
-				if(courseController.courseExistance(courseId))
-				{
-					
-				StudentCourse studentCourse = new StudentCourse();
-				studentCourse.setStudentId(studentId);
-				studentCourse.setCourseId(courseId);
-				studentCourse.setEnrolledAt(LocalDateTime.now());
 
-				studentCourseService = new StudentCourseService();
-				studentCourseService.AssignCourseToStudent(studentCourse);
-				return;
+				if (courseController.courseExistance(courseId)) {
+					StudentCourse studentCourse = new StudentCourse();
+					studentCourse.setStudentId(studentId);
+					studentCourse.setCourseId(courseId);
+					studentCourse.setEnrolledAt(LocalDateTime.now());
+
+					studentCourseService = new StudentCourseService();
+					studentCourseService.AssignCourseToStudent(studentCourse);
+					return;
 				}
-				System.out.println("Course With id "+courseId+" doesn't exists !!");
+				System.out.println("Course With id " + courseId + " doesn't exists Or Not Active!!");
 				return;
 			}
-			System.out.println("Student With id "+studentId+" doesn't exists !!");
+			System.out.println("Student With id " + studentId + " doesn't exists Or Not Active!!");
 		} catch (NumberFormatException e) {
 			System.out.println("Invalid input. Please enter numeric values for IDs.");
 		} catch (Exception e) {
@@ -50,10 +48,9 @@ public class StudentCourseController {
 			e.printStackTrace();
 		}
 	}
-	
-	public void deleteCourseFromStudent(int student_id)
-	{
+
+	public void deleteCourseFromStudent(int student_id) {
 		studentCourseService.deleteStudentCourse(student_id);
 	}
-	
+
 }

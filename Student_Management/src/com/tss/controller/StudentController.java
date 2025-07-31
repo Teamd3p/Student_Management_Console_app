@@ -216,7 +216,14 @@ public class StudentController {
 
 	public boolean studentExistance(int student_id) {
 		Student student = studentService.readStudentById(student_id);
-		return student != null;
+		if(student != null)
+		{
+			if(student.isActive())
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void deleteStudentById() {
