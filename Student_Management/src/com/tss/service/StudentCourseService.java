@@ -14,4 +14,9 @@ public class StudentCourseService {
     {
     	studentCourseDao.assignCourseToStudent(studentCourse);
     }
+    
+    public void deleteStudentCourse(int student_id)
+    {
+    	studentCourseDao.deleteCourseOfStudent(student_id);
+    }
 }

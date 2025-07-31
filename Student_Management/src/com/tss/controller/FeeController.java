@@ -5,67 +5,78 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.tss.model.Fees;
+import com.tss.model.Teacher;
 import com.tss.service.FeeService;
 
-public class FeesController {
+public class FeeController {
 
-	private FeeService feeService;
+	private FeeService feeService = new FeeService();
 	private Scanner scanner = new Scanner(System.in);
 
-	public FeesController() {
-		this.feeService = new FeeService();
+	public void getTotalPaidFees() {
+		try {
+			System.out.println("Total Paid: ₹" + feeService.getTotalPaidFees());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void menu() {
-		int choice;
-		do {
-			System.out.println("\n4 Fees Management");
-			System.out.println("1. View Total Paid Fees");
-			System.out.println("2. View Total Pending Fees");
-			System.out.println("3. View Fees By Student");
-			System.out.println("4. View Fees By Course");
-			System.out.println("5. Update Fees Of A Course");
-			System.out.println("6. Total Earning");
-			System.out.println("7. Exit");
-			System.out.print("Enter your choice: ");
-			choice = scanner.nextInt();
-
-			try {
-				switch (choice) {
-				case 1:
-					System.out.println("Total Paid: ₹" + feeService.getTotalPaidFees());
-					break;
-				case 2:
-					System.out.println("Total Pending: ₹" + feeService.getTotalPendingFees());
-					break;
-				case 3:
-					List<Fees> feeList = feeService.getFeesByStudent(getStudentId());
-					printFeeForStudent(feeList);
-					break;
-				case 4:
-
-					printFeeCourses();
-					break;
-				case 5:
-					System.out.print("Enter Course ID: ");
-					int id = scanner.nextInt();
-					System.out.print("Enter New Paid Amount: ");
-					double paid = scanner.nextDouble();
-					System.out.println(feeService.updateCourseFees(id, paid) ? "Updated." : "Failed.");
-					break;
-				case 6:
-					System.out.println("Total Earning: ₹" + feeService.getTotalEarning());
-					break;
-				}
-			} catch (Exception e) {
-				System.out.println("Error: " + e.getMessage());
-			}
-		} while (choice != 7);
+	public void getTotalPendingFees() {
+		try {
+			System.out.println("Total Pending: ₹" + feeService.getTotalPendingFees());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private int getStudentId() {
+	public void getStudentsFees() {
 		System.out.print("Enter Student ID: ");
-		return scanner.nextInt();
+		int studentId = scanner.nextInt();
+		List<Fees> fee;
+		try {
+			fee = feeService.getFeesByStudent(studentId);
+			if (fee == null) {
+				System.out.println("No Course");
+			} else {
+				System.out.println(fee);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public boolean checkPendingFees(int student_id)
+	{
+		List<Fees> fees;
+		try {
+			fees = feeService.getFeesByStudent(student_id);
+			if(fees == null)
+				return false;
+			for(Fees fee : fees)
+			{
+				if(fee.getAmountPending()==0.0)
+					return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	public void getCourseFees() {
+		System.out.print("Enter Course ID: ");
+		int courseId = scanner.nextInt();
+		try {
+			List<Fees> fee = feeService.getFeesByCourse(courseId);
+			if (fee != null) {
+				System.out.println(fee);
+			} else {
+				System.out.println("Course not found.");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public void printFeeForStudent(List<Fees> feeList) {
@@ -116,6 +127,29 @@ public class FeesController {
 
 		} catch (SQLException e) {
 			System.out.println("Error fetching course fee summary: " + e.getMessage());
+		}
+
+	}
+
+	public void updateCourseFee() {
+		System.out.print("Enter Course ID: ");
+		int id = scanner.nextInt();
+		System.out.print("Enter New Paid Amount: ");
+		double paid = scanner.nextDouble();
+		try {
+			System.out.println(feeService.updateCourseFees(id, paid) ? "Updated." : "Failed.");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void getTotalEarning() {
+		try {
+			System.out.println("Total Earning: ₹" + feeService.getTotalEarning());
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
 	}

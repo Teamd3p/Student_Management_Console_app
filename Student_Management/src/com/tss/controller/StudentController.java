@@ -7,6 +7,7 @@ import java.util.Scanner;
 import com.tss.exception.ValidationException;
 import com.tss.model.Profile;
 import com.tss.model.Student;
+import com.tss.model.StudentCourse;
 import com.tss.service.ProfileService;
 import com.tss.service.StudentService;
 
@@ -14,6 +15,8 @@ public class StudentController {
 
 	private StudentService studentService;
 	private ProfileService profileService;
+	private FeeController feecontroller;
+	private StudentCourseController studentCourseController;
 	private Scanner scanner = new Scanner(System.in);
 
 	public StudentController() {
@@ -87,11 +90,10 @@ public class StudentController {
 					}
 
 					break;
-				}catch (ValidationException e) {
+				} catch (ValidationException e) {
 					System.out.println("Error: " + e.getMessage());
 				}
 			}
-
 
 			Student student = new Student(name, admission);
 
@@ -202,11 +204,10 @@ public class StudentController {
 			System.out.println("Student with ID " + id + " not found.");
 		}
 	}
-	
-	public boolean studentExistance(int student_id)
-	{
+
+	public boolean studentExistance(int student_id) {
 		Student student = studentService.readStudentById(student_id);
-		if(student != null)
+		if (student != null)
 			return true;
 		return false;
 	}
@@ -217,6 +218,15 @@ public class StudentController {
 		int id = scanner.nextInt();
 		scanner.nextLine();
 
+		feecontroller = new FeeController();
+		studentCourseController = new StudentCourseController();
+
+		if (feecontroller.checkPendingFees(id)) {
+			System.out.println("Cannot Deactive Student Because Student Fees is Pending !!");
+			return;
+		}
+		
+		studentCourseController.deleteCourseFromStudent(id);
 		Student student = studentService.deleteStudentById(id);
 
 		if (student != null) {

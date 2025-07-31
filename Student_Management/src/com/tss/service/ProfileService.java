@@ -21,4 +21,12 @@ public class ProfileService {
 
 		return profileDao.insertStudent(profile);
 	}
+	
+    public boolean checkDuplicatePhone(String phone) {
+        return profileDao.checkDuplicatePhone(phone);
+    }
+
+    public boolean checkDuplicateEmail(String email) {
+        return profileDao.checkDuplicateEmail(email);
+    }
 }
