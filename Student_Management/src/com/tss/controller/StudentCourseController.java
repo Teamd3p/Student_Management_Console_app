@@ -8,11 +8,11 @@ import com.tss.service.StudentCourseService;
 
 public class StudentCourseController {
 
-	private StudentCourseService subjectCourseService;
+	private StudentCourseService studentCourseService;
 	private Scanner scanner = new Scanner(System.in);
 
 	public StudentCourseController() {
-		this.subjectCourseService = new StudentCourseService();
+		this.studentCourseService = new StudentCourseService();
 	}
 
 	public void AssignCourseToStudent(StudentController studentController, CourseController courseController) {
@@ -34,8 +34,8 @@ public class StudentCourseController {
 				studentCourse.setCourseId(courseId);
 				studentCourse.setEnrolledAt(LocalDateTime.now());
 
-				StudentCourseService courseService = new StudentCourseService();
-				courseService.AssignCourseToStudent(studentCourse);
+				studentCourseService = new StudentCourseService();
+				studentCourseService.AssignCourseToStudent(studentCourse);
 				return;
 				}
 				System.out.println("Course With id "+courseId+" doesn't exists !!");
@@ -48,5 +48,10 @@ public class StudentCourseController {
 			System.out.println("An error occurred while assigning course.");
 			e.printStackTrace();
 		}
+	}
+	
+	public void deleteCourseFromStudent(int student_id)
+	{
+		studentCourseService.deleteStudentCourse(student_id);
 	}
 }

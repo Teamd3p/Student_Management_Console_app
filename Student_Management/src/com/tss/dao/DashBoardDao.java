@@ -22,7 +22,7 @@ public class DashBoardDao {
 	        List<Dashboard> list = new ArrayList<>();
 	        String query = """
 	                SELECT
-	                    ROW_NUMBER() OVER (ORDER BY rand()) AS `Sr No`,
+	                    ROW_NUMBER() OVER (ORDER BY RAND()) AS `Sr No`,
 	                    s.student_id,
 	                    s.student_name,
 	                    c.course_name,

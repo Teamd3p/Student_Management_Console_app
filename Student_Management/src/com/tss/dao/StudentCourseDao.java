@@ -2,6 +2,7 @@ package com.tss.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -10,56 +11,60 @@ import com.tss.database.DBConnection;
 import com.tss.model.StudentCourse;
 
 public class StudentCourseDao {
-    private Connection connection = null;
-    private PreparedStatement prepareStatement = null;
+	private Connection connection = null;
+	private PreparedStatement prepareStatement = null;
 
-    public StudentCourseDao() {
-        this.connection = DBConnection.connect();
-    }
+	public StudentCourseDao() {
+		this.connection = DBConnection.connect();
+	}
 
-    public void assignCourseToStudent(StudentCourse studentCourse) {
-        String sql = "INSERT INTO StudentCourse (student_id, course_id, enrolled_at) VALUES (?, ?, ?)";
-        
-        try {
-            prepareStatement = connection.prepareStatement(sql);
-            prepareStatement.setInt(1, studentCourse.getStudentId());
-            prepareStatement.setInt(2, studentCourse.getCourseId());
-            
-            LocalDateTime enrolledAt = studentCourse.getEnrolledAt() != null
-                ? studentCourse.getEnrolledAt()
-                : LocalDateTime.now();
-                
-            prepareStatement.setTimestamp(3, Timestamp.valueOf(enrolledAt));
+	public void assignCourseToStudent(StudentCourse studentCourse) {
+		String sql = "INSERT INTO StudentCourse (student_id, course_id, enrolled_at) VALUES (?, ?, ?)";
 
-            int rowsAffected = prepareStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Course assigned to student successfully.");
-            } else {
-                System.out.println("Failed to assign course.");
-            }
+		try {
+			prepareStatement = connection.prepareStatement(sql);
+			prepareStatement.setInt(1, studentCourse.getStudentId());
+			prepareStatement.setInt(2, studentCourse.getCourseId());
 
-        } catch (SQLException e) {
-            System.out.println("Error while assigning course:");
-            e.printStackTrace();
-        }
-    }
-    
-    public void deleteCourseOfStudent(int student_id)
-    {
-    	String sql = "DELETE FROM StudentCourse WHERE student_id = ?";
-    	
-    	try {
+			LocalDateTime enrolledAt = studentCourse.getEnrolledAt() != null ? studentCourse.getEnrolledAt()
+					: LocalDateTime.now();
+
+			prepareStatement.setTimestamp(3, Timestamp.valueOf(enrolledAt));
+
+			int rowsAffected = prepareStatement.executeUpdate();
+			if (rowsAffected > 0) {
+				System.out.println("Course assigned to student successfully.");
+			} else {
+				System.out.println("Failed to assign course.");
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Error while assigning course:");
+			e.printStackTrace();
+		}
+	}
+
+	public void deleteCourseOfStudent(int student_id) {
+		String sql = "SELECT * FROM StudentCourse WHERE student_id = ?";
+		String sql1 = "DELETE FROM StudentCourse WHERE student_id = ?";
+
+		try {
 			prepareStatement = connection.prepareStatement(sql);
 			prepareStatement.setInt(1, student_id);
-			int updated = prepareStatement.executeUpdate();
-			if(updated > 0)
-			{
-				System.out.println("Courses Of Students Is Deleted !!");
-				return;
+			ResultSet result = prepareStatement.executeQuery();
+			if (result != null) {
+				prepareStatement = connection.prepareStatement(sql1);
+				prepareStatement.setInt(1, student_id);
+				int updated = prepareStatement.executeUpdate();
+				if (updated > 0) {
+					System.out.println("Courses Of Students Is Deleted !!");
+				}
 			}
+			else {
 			System.out.println("No Course Assigned To Student !!");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-    }
+	}
 }

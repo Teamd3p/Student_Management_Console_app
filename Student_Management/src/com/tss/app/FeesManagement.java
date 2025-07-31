@@ -2,11 +2,17 @@ package com.tss.app;
 
 import java.util.Scanner;
 
+import com.tss.controller.CourseController;
+import com.tss.controller.FeeController;
+import com.tss.controller.StudentController;
+
 public class FeesManagement implements MenuHandler {
 
     private Scanner scanner = new Scanner(System.in);
+    FeeController feeController = new FeeController();
+    StudentController studentController = new StudentController();
+    CourseController courseController = new CourseController();
 
-    @Override
     public void showMenu() {
         System.out.println("\n+-------------------------------+");
         System.out.println("|        FEES MANAGEMENT        |");
@@ -22,39 +28,39 @@ public class FeesManagement implements MenuHandler {
         System.out.print("Enter your choice: ");
     }
 
-    @Override
     public void chooseMenu() {
         int choice;
 
         while (true) {
             showMenu();
             choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
-
+            scanner.nextLine();
             switch (choice) {
                 case 1:
                     System.out.println(">> Viewing total paid fees...");
-                    // TODO: implement viewTotalPaidFees()
+                    feeController.getTotalPaidFees();
                     break;
                 case 2:
                     System.out.println(">> Viewing total pending fees...");
-                    // TODO: implement viewTotalPendingFees()
+                    feeController.getTotalPendingFees();
                     break;
                 case 3:
                     System.out.println(">> Viewing fees by student...");
-                    // TODO: implement viewFeesByStudent()
+                    studentController.readAllRecords();
+                    feeController.getStudentsFees();
                     break;
                 case 4:
                     System.out.println(">> Viewing fees by course...");
-                    // TODO: implement viewFeesByCourse()
+                    courseController.readAllCourseRecords();
+                    feeController.getCourseFees();
                     break;
                 case 5:
                     System.out.println(">> Updating fees of a course...");
-                    // TODO: implement updateCourseFees()
+                    feeController.updateCourseFee();
                     break;
                 case 6:
                     System.out.println(">> Calculating total earning...");
-                    // TODO: implement calculateTotalEarning()
+                    feeController.getTotalEarning();
                     break;
                 case 7:
                     System.out.println(">> Returning to main menu...");
