@@ -36,4 +36,8 @@ public class FeeService {
         return FeesDao.getCourseFeesSummary(courseId);  
     }
 
+	public void deleteStudent(int id) {
+		FeesDao.deleteStudent(id);
+	}
+
 }

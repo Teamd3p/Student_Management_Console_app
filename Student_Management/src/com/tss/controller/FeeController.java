@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.tss.model.Fees;
-import com.tss.model.Teacher;
 import com.tss.service.FeeService;
 
 public class FeeController {
 
 	private FeeService feeService = new FeeService();
+	private StudentController studentController = new StudentController();
 	private Scanner scanner = new Scanner(System.in);
 
 	public void getTotalPaidFees() {
@@ -32,37 +32,50 @@ public class FeeController {
 	public void getStudentsFees() {
 		System.out.print("Enter Student ID: ");
 		int studentId = scanner.nextInt();
-		List<Fees> fee;
+		scanner.nextLine();
+
 		try {
+<<<<<<< HEAD
 			fee = feeService.getFeesByStudent(studentId);
 			if (fee == null) {
 				System.out.println("No Course");
 			} else {
 				System.out.println(fee);
+=======
+			List<Fees> fee = feeService.getFeesByStudent(studentId);
+
+			if (fee == null || fee.isEmpty()) {
+				System.out.println("No courses assigned to student. No fees data available.");
+				return;
 			}
+
+			System.out.println(fee); // or loop and format nicely
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 	}
 
-	public boolean checkPendingFees(int student_id)
-	{
-		List<Fees> fees;
+	public boolean checkPendingFees(int student_id) {
 		try {
-			fees = feeService.getFeesByStudent(student_id);
-			if(fees == null)
-				return false;
-			for(Fees fee : fees)
-			{
-				if(fee.getAmountPending()==0.0)
-					return false;
+			List<Fees> fees = feeService.getFeesByStudent(student_id);
+
+			if (fees == null || fees.isEmpty()) {
+				return false;  // ✅ No records = no pending fees
+			}
+
+			for (Fees fee : fees) {
+				if (fee.getAmountPending() > 0.0) {
+					return true;  // ✅ Fee is pending
+				}
+>>>>>>> 0d5075740ac7df5b5ee7987624c80f7c381a0c89
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return true;
+		return false;  // ✅ No pending fees found
 	}
+
+
 	public void getCourseFees() {
 		System.out.print("Enter Course ID: ");
 		int courseId = scanner.nextInt();
@@ -152,6 +165,10 @@ public class FeeController {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void deleteStudent(int id) {
+		feeService.deleteStudent(id);
 	}
 
 }
