@@ -49,19 +49,32 @@ public class ProfileDao {
 
 	public boolean insertStudent(Profile profile) {
 	    String sql = "INSERT INTO Profiles (phone_number, email, address, age, user_type, user_id) VALUES (?, ?, ?, ?, ?, ?)";
+
 	    try {
 	        prepareStatement = connection.prepareStatement(sql);
 	        prepareStatement.setString(1, profile.getPhoneNumber());
 	        prepareStatement.setString(2, profile.getEmail());
 	        prepareStatement.setString(3, profile.getAddress());
 	        prepareStatement.setInt(4, profile.getAge());
-	        prepareStatement.setString(5, profile.getUserType()); // using getter
+	        prepareStatement.setString(5, profile.getUserType());
 	        prepareStatement.setInt(6, profile.getUserId());
 
 	        int rowsInserted = prepareStatement.executeUpdate();
 	        return rowsInserted > 0;
+
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+	        String message = e.getMessage().toLowerCase();
+
+	        if (message.contains("duplicate") || message.contains("unique")) {
+	            System.out.println("Error: Duplicate entry detected (email or phone might already exist).");
+	        } else if (message.contains("foreign key")) {
+	            System.out.println("Error: Invalid user reference. User may not exist.");
+	        } else if (message.contains("null")) {
+	            System.out.println("Error: One of the required fields was empty or invalid.");
+	        } else {
+	            System.out.println("Database Error: " + e.getMessage());
+	        }
+
 	        return false;
 	    }
 	}
