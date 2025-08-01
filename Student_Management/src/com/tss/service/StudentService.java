@@ -38,8 +38,8 @@ public class StudentService {
 		return studentDao.deleteStudentByID(student_id);
 	}
 
-	public Object payStudentFees(int id) {
-		return studentDao.payStudentFees(id);
-		
-	}
+//	public Object payStudentFees(int id) {
+//		return studentDao.payStudentFees(id);
+//		
+//	}
 }

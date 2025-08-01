@@ -67,8 +67,8 @@ public class StudentManagement implements MenuHandler {
 				break;
 			case 7:
 
-				controller.readAllRecords();
-				controller.payStudentFees();
+//				controller.readAllRecords();
+//				controller.payStudentFees();
 				break;
 			case 8:
 				try {

@@ -58,4 +58,18 @@ public class SubjectCourseDao {
         return subjects;
     }
 
+    
+    public boolean checkIfSubjectAlreadyExistsInCourse(int subjectId, int courseId) {
+        String sql = "SELECT 1 FROM CourseSubjects WHERE subject_id = ? AND course_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, subjectId);
+            ps.setInt(2, courseId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next(); // true if record exists
+        } catch (SQLException e) {
+            System.err.println("Error checking subject-course relation: " + e.getMessage());
+        }
+        return false;
+    }
+
 }

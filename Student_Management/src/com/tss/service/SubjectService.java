@@ -34,4 +34,8 @@ public class SubjectService {
 	 public Subject getSubjectById(int subjectId) {
 		    return subjectDao.getSubjectById(subjectId);
 		}
+
+	 public List<Subject> readSubjectsAssignedToTeachers(int teacherId) {
+		 return subjectDao.readSubjectsAssignedToTeachers(teacherId);
+	 }
 }

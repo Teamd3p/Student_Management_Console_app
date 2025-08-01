@@ -65,7 +65,7 @@ public class StudentCourseController {
 				System.out.println("Course With id " + courseId + " doesn't exists Or Not Active!!");
 				return;
 			}
-			System.out.println("Student With id " + studentId + " doesn't exists !!");
+			System.out.println("Student With id " + studentId + " doesn't exists Or Not Active!!");
 		} catch (NumberFormatException e) {
 			System.out.println("Invalid input. Please enter numeric values for IDs.");
 		} catch (Exception e) {

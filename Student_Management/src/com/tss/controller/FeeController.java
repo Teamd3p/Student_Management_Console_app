@@ -185,8 +185,8 @@ public class FeeController {
 		return null;
 	}
 
-	public boolean processFeePayment(int paymentId, int courseId, double amountToPay, String paymentType) {
-		return feeService.processFeePayment(paymentId, courseId, amountToPay, paymentType);
-	}
+//	public boolean processFeePayment(int paymentId, int courseId, double amountToPay, String paymentType) {
+//		return feeService.processFeePayment(paymentId, courseId, amountToPay, paymentType);
+//	}
 
 }

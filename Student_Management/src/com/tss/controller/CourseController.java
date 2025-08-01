@@ -1,5 +1,6 @@
 package com.tss.controller;
 
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -32,26 +33,68 @@ public class CourseController {
 	}
 
 	public void addNewCourse() {
-		System.out.print("Enter Course Name: ");
-		String name = scanner.nextLine();
+		String name;
+		double fees;
 
-		System.out.print("Enter Course Fees: ");
-		double fees = scanner.nextDouble();
+		while (true) {
+			System.out.print("Enter Course Name: ");
+			name = scanner.nextLine().trim();
 
-		System.out.print("Is the course active? (true/false): ");
-		boolean isActive = scanner.nextBoolean();
-		scanner.nextLine();
+			if (!name.isEmpty() && name.matches(".*[a-zA-Z]+.*")) {
+				break;
+			} else {
+				System.out.println("Invalid course name. It must contain at least one alphabet character.");
+			}
+		}
 
-		Course course = new Course();
-		course.setCourseName(name);
-		course.setCourseFees(fees);
-		course.setActive(isActive);
+		while (true) {
+			System.out.print("Enter Course Fees: ");
+			try {
+				fees = scanner.nextDouble();
+				scanner.nextLine();
 
-		boolean success = courseService.addCourse(course);
+				if (fees >= 0) {
+					break;
+				} else {
+					System.out.println("Course fees cannot be negative. Try again.");
+				}
+			} catch (InputMismatchException e) {
+				System.out.println("Please enter a valid numeric value for fees.");
+				scanner.nextLine();
+			}
+		}
+
+		Course existingCourse = courseService.searchCourseByName(name);
+
+		if (existingCourse != null) {
+			if (existingCourse.isActive()) {
+				System.out.println("Course already exists and is active.");
+				return;
+			} else {
+				existingCourse.setCourseFees(fees);
+				existingCourse.setActive(true);
+
+				boolean updated = courseService.updateCourse(existingCourse);
+				if (updated) {
+					System.out.println("Course reactivated and updated successfully.");
+				} else {
+					System.out.println("Failed to reactivate the course.");
+				}
+				return;
+			}
+		}
+
+		// Create and add a new course
+		Course newCourse = new Course();
+		newCourse.setCourseName(name);
+		newCourse.setCourseFees(fees);
+		newCourse.setActive(true); // Default true for new course
+
+		boolean success = courseService.addCourse(newCourse);
 		if (success) {
 			System.out.println("✅ Course added successfully.");
 		} else {
-			System.out.println("❌ Failed to add course.");
+			System.out.println("❌ Failed to add the course.");
 		}
 	}
 
