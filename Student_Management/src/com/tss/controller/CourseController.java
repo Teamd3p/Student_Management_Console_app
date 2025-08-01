@@ -123,7 +123,7 @@ public class CourseController {
 
 	public boolean courseExistance(int course_id) {
 		Course course = courseService.searchCourse(course_id);
-		if (course != null)
+		if (course !=null)
 		{
 		if(course.isActive())
 			return true;

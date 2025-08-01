@@ -29,4 +29,9 @@ public class ProfileService {
     public boolean checkDuplicateEmail(String email) {
         return profileDao.checkDuplicateEmail(email);
     }
+
+	public List<Profile> readAllActiveProfiles(String user_type) {
+		return profileDao.readAllActiveProfiles(user_type);
+
+	}
 }

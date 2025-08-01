@@ -101,4 +101,9 @@ public class ProfileDao {
 		return false;
 	}
 
+	public List<Profile> readAllActiveProfiles(String user_type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

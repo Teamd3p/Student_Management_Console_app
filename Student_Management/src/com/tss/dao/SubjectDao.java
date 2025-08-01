@@ -126,6 +126,34 @@ public class SubjectDao {
 
         return subject;
     }
+
+    public List<Subject> readSubjectsAssignedToTeachers(int teacherId) {
+        List<Subject> subjectList = new ArrayList<>();
+        String query = "SELECT * FROM Subjects " +
+                       "INNER JOIN TeacherSubjects ON Subjects.subject_id = TeacherSubjects.subject_id " +
+                       "WHERE TeacherSubjects.teacher_id = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, teacherId); 
+
+            ResultSet result = preparedStatement.executeQuery();
+
+            while (result.next()) {
+                Subject subject = new Subject();
+                subject.setSubjectId(result.getInt("subject_id"));
+                subject.setSubjectName(result.getString("subject_name"));
+                subject.setSubjectDescription(result.getString("subject_description"));
+                subjectList.add(subject);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return subjectList;
+    }
+
     
     
     

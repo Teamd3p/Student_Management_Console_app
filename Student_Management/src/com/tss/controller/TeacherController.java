@@ -6,8 +6,10 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
+import com.tss.dto.TeacherWithProfileDTO;
 import com.tss.exception.ValidationException;
 import com.tss.model.Profile;
+import com.tss.model.Subject;
 import com.tss.model.Teacher;
 import com.tss.service.ProfileService;
 import com.tss.service.TeacherService;
@@ -66,7 +68,6 @@ public class TeacherController {
     try {
         System.out.println(">> Adding a new teacher...");
 
-        // 1. NAME VALIDATION
         String name;
         while (true) {
             System.out.print("Enter Teacher Name: ");
@@ -78,7 +79,6 @@ public class TeacherController {
             }
         }
 
-        // 2. JOINING DATE VALIDATION
         LocalDateTime joiningDate;
         while (true) {
             try {
@@ -114,7 +114,6 @@ public class TeacherController {
         profile.setUserType("teacher");
         profile.setUserId(teacherId);
 
-        // 3. PHONE VALIDATION + DUPLICATE CHECK
         while (true) {
             try {
                 System.out.print("Enter Phone Number: ");
@@ -135,7 +134,6 @@ public class TeacherController {
             }
         }
 
-        // 4. EMAIL VALIDATION + DUPLICATE CHECK
         while (true) {
             try {
                 System.out.print("Enter Email: ");
@@ -156,7 +154,6 @@ public class TeacherController {
             }
         }
 
-        // 5. ADDRESS VALIDATION
         while (true) {
             try {
                 System.out.print("Enter Address: ");
@@ -173,7 +170,6 @@ public class TeacherController {
             }
         }
 
-        // 6. AGE VALIDATION
         while (true) {
             try {
                 System.out.print("Enter Age: ");
@@ -195,7 +191,6 @@ public class TeacherController {
             }
         }
 
-        // 7. SAVE PROFILE
         boolean profileSuccess = profileService.insertProfile(profile);
         if (profileSuccess) {
             System.out.println("✅ Teacher and profile added successfully.");
@@ -221,9 +216,8 @@ public class TeacherController {
 		}
 	}
 
-	public boolean deleteTeacher() {
-		System.out.print("Enter Teacher ID to Delete: ");
-		int deleteId = scanner.nextInt();
+	public boolean deleteTeacher(int deleteId) {
+
 		boolean updated = teacherService.deleteTeacher(deleteId);
 		if (updated) {
 			System.out.println("Teacher delete successfully!");
@@ -233,10 +227,7 @@ public class TeacherController {
 		return updated;
 	}
 
-	public boolean assignSubject() {
-		System.out.print("Enter Teacher ID: ");
-		int teacherId = scanner.nextInt();
-
+	public boolean assignSubject(int teacherId) {
 		System.out.println("Subjects Tables");
 		subjectController.readAllSubjects();
 
@@ -252,22 +243,124 @@ public class TeacherController {
 
 	}
 
-	public boolean removeSubject() {
-		System.out.print("Enter Teacher ID: ");
-		int teacherId = scanner.nextInt();
+	public boolean removeSubject(int teacherId) {
+    System.out.println("Subjects Table");
+    List<Subject> subjectList = subjectController.readSubjectsAssignedToTeachers(teacherId);
 
-		System.out.println("Subjects Tables");
-		subjectController.readAllSubjects();
+    if (subjectList.isEmpty()) {
+        System.out.println("No subjects assigned to this teacher.");
+        return false;
+    }
 
-		System.out.print("Enter Subject ID: ");
-		int subjectId = scanner.nextInt();
-		boolean removed = teacherService.removeSubject(teacherId, subjectId);
-		if (removed) {
-			System.out.println("Subject removed From Teacher successfully!");
-		} else {
-			System.out.println("Remove Operation failed.");
-		}
-		return removed;
+    boolean validInput = false;
+    int subjectId = -1;
 
+    while (!validInput) {
+        System.out.print("Enter Subject ID to remove (or 0 to exit): ");
+        subjectId = scanner.nextInt();
+
+        if (subjectId == 0) {
+            System.out.println("Operation cancelled.");
+            return false;
+        }
+
+        // Check manually without using a lambda
+        boolean found = false;
+        for (Subject subject : subjectList) {
+            if (subject.getSubjectId() == subjectId) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            validInput = true;
+        } else {
+            System.out.println("Invalid Subject ID. Please try again.");
+        }
+    }
+
+    boolean removed = teacherService.removeSubject(teacherId, subjectId);
+    if (removed) {
+        System.out.println("Subject removed from teacher successfully!");
+    } else {
+        System.out.println("Remove operation failed.");
+    }
+
+    return removed;
+}
+
+
+	
+	public int displayAllActiveTeachers() {
+	    List<TeacherWithProfileDTO> teachers = teacherService.getAllActiveTeachers();
+
+	    if (teachers.isEmpty()) {
+	        System.out.println("No Teacher Found.");
+	        return -1;
+	    }
+
+	    System.out.println(
+	            "\n+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+	    System.out.println(
+	            "|                                                         TEACHER RECORDS                                                                             |");
+	    System.out.println(
+	            "+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+	    System.out.printf("| %-10s | %-20s | %-6s | %-15s | %-25s | %-20s | %-5s | %-25s |\n",
+	            "Teacher ID", "Name", "Active", "Phone", "Email", "Address", "Age", "Joining Date");
+	    System.out.println(
+	            "+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+
+	    for (TeacherWithProfileDTO dto : teachers) {
+	        Teacher teacher = dto.getTeacher();
+	        Profile profile = dto.getProfile();
+
+	        String phone = profile != null ? profile.getPhoneNumber() : "N/A";
+	        String email = profile != null ? profile.getEmail() : "N/A";
+	        String address = profile != null ? profile.getAddress() : "N/A";
+	        int age = profile != null ? profile.getAge() : 0;
+
+	        System.out.printf("| %-10d | %-20s | %-6s | %-15s | %-25s | %-20s | %-5d | %-25s |\n",
+	                teacher.getTeacherId(),
+	                teacher.getTeacherName(),
+	                teacher.isActive() ? "Yes" : "No",
+	                phone, email, address, age,
+	                teacher.getJoiningDate());
+	    }
+
+	    System.out.println(
+	            "+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+
+	    Scanner scanner = new Scanner(System.in);
+	    TeacherWithProfileDTO selectedTeacher = null;
+
+	    while (selectedTeacher == null) {
+	        System.out.print("\nEnter Teacher ID from the above list (or 0 to cancel): ");
+	        int selectedId = scanner.nextInt();
+
+	        if (selectedId == 0) {
+	            System.out.println("Teacher selection cancelled.");
+	            return -1;
+	        }
+
+	        for (TeacherWithProfileDTO dto : teachers) {
+	            if (dto.getTeacher().getTeacherId() == selectedId) {
+	                selectedTeacher = dto;
+	                break;
+	            }
+	        }
+
+	        if (selectedTeacher == null) {
+	            System.out.println("Invalid Teacher ID or Teacher is inactive. Please try again.");
+	        }
+	    }
+
+	    System.out.println("\nYou selected:");
+	    System.out.println(selectedTeacher.getTeacher().toString());
+	    System.out.println(selectedTeacher.getProfile().toString());
+
+	    return selectedTeacher.getTeacher().getTeacherId();
 	}
+
+
 }
