@@ -45,11 +45,12 @@ public class CourseDao {
     }
 
     public boolean insertCourse(Course course) {
-        String query = "INSERT INTO Courses (course_name, course_fees) VALUES (?, ?)";
+        String query = "INSERT INTO Courses (course_name, course_fees, is_active) VALUES (?, ?, ?)";
         try {
             prepareStatement = connection.prepareStatement(query);
             prepareStatement.setString(1, course.getCourseName());
             prepareStatement.setDouble(2, course.getCourseFees());
+            prepareStatement.setBoolean(3, course.isActive());
 
             int rows = prepareStatement.executeUpdate();
             return rows > 0;
@@ -143,38 +144,4 @@ public class CourseDao {
 
         return courses;
     }
-    
-    public Course searchCourseByName(String name) {
-        String sql = "SELECT * FROM Courses WHERE course_name = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, name);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                Course course = new Course();
-                course.setCourseId(rs.getInt("course_id"));
-                course.setCourseName(rs.getString("course_name"));
-                course.setCourseFees(rs.getDouble("course_fees"));
-                course.setActive(rs.getBoolean("is_active"));
-                return course;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public boolean updateCourse(Course course) {
-        String sql = "UPDATE Courses SET course_fees = ?, is_active = ? WHERE course_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setDouble(1, course.getCourseFees());
-            ps.setBoolean(2, course.isActive());
-            ps.setInt(3, course.getCourseId());
-            int rows = ps.executeUpdate();
-            return rows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
 }

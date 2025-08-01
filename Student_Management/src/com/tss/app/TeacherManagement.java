@@ -47,36 +47,24 @@ public class TeacherManagement implements MenuHandler {
 			case 3:
 				System.out.println(">> Assigning subjects to teacher...");
 				System.out.println("Teachers Tables");
-
-				int teacherId = teacherController.displayAllActiveTeachers();
-
-				if (teacherId != -1) {
-					teacherController.assignSubject(teacherId);
-				} else {
-					System.out.println("Teacher is not available");
-				}
+				teacherController.displayAllTeachers();
+				teacherController.assignSubject();
+				
 				break;
-
 			case 4:
 				System.out.println(">> Removing a subject from teacher...");
 				System.out.println("Teachers Tables");
-				int teacherId1 = teacherController.displayAllActiveTeachers();
-
-				if (teacherId1 != -1) {
-					teacherController.removeSubject(teacherId1);
-				} else {
-					System.out.println("Teacher is not available");
-				}
+				teacherController.displayAllTeachers();
+				teacherController.removeSubject();
 				break;
-				
 			case 5:
 				System.out.println(">> Searching for a teacher...");
 				teacherController.getTeacherById();
 				break;
 			case 6:
 				System.out.println(">> Soft deleting a teacher...");
-				int teacherId11 = teacherController.displayAllActiveTeachers();
-				teacherController.deleteTeacher(teacherId11);
+				teacherController.deleteTeacher();
+				teacherController.displayAllTeachers();
 				break;
 			case 7:
 				System.out.println(">> Returning to main menu...");
