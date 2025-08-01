@@ -266,8 +266,5 @@ public class FeesDao {
 			e.printStackTrace();
 		}
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 53634cfc15739c05d340928f1a2c3c3f7fea0722
 }

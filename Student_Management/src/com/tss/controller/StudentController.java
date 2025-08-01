@@ -1,7 +1,6 @@
 package com.tss.controller;
 
 import java.time.LocalDateTime;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,20 +15,15 @@ public class StudentController {
 
 	private StudentService studentService;
 	private ProfileService profileService;
-<<<<<<< HEAD
-	private FeeController feecontroller;
-	private StudentCourseController studentCourseController;
-=======
 	private StudentCourseController studentCourseController;
 	private FeeController feesController;
 	private StudentController studentController;
->>>>>>> 53634cfc15739c05d340928f1a2c3c3f7fea0722
 	private Scanner scanner = new Scanner(System.in);
 
 	public StudentController() {
 	    this.studentService = new StudentService();
 	    this.profileService = new ProfileService();
-	    this.studentController = studentController;
+	    this.studentController =new  StudentController();
 	    this.feesController = new FeeController(); 
 	    }
 
@@ -248,15 +242,15 @@ public class StudentController {
 			if (id <= 0)
 				throw new ValidationException("Student ID must be greater than zero.");
 
-			feecontroller = new FeeController();
+			
 			studentCourseController = new StudentCourseController();
 
-			if (feecontroller.checkPendingFees(id)) {
+			if (feesController.checkPendingFees(id)) {
 				System.out.println("Cannot Deactivate Student Because Student Fees is Pending !!");
 				return;
 			}
 
-			feecontroller.deleteStudent(id);
+			feesController.deleteStudent(id);
 			studentCourseController.deleteCourseFromStudent(id);
 			Student student = studentService.deleteStudentById(id);
 
@@ -280,68 +274,6 @@ public class StudentController {
 		}
 	}
 
-<<<<<<< HEAD
-	public void showAllCoursesById() throws ValidationException {
-=======
-//	public void payStudentFees() {
-//		// showed student records
-//	    System.out.print("Enter Student ID to search: ");
-//	    int id = scanner.nextInt();
-//	    scanner.nextLine();
-//	    studentCourseController  = new StudentCourseController();
-//	    studentCourseController.viewCourseByStudentId(id);
-//
-//	    System.out.print("Enter Course ID to pay fee: ");
-//	    int courseId = Integer.parseInt(scanner.nextLine().trim());
-//
-//	    // Loop for selecting payment method
-//	    while (true) {
-//	        System.out.println("\nSelect Payment Method:");
-//	        System.out.println("1. Cash");
-//	        System.out.println("2. UPI");
-//	        System.out.println("3. Card");
-//	        System.out.println("4. Exit");
-//	        System.out.print("Enter your choice: ");
-//
-//	        int choice = Integer.parseInt(scanner.nextLine().trim());
-//
-//	        String paymentType = null;
-//	        
-//	        double amountToPay = 0.0;
-//
-//	        switch (choice) {
-//	            case 1:
-//	                paymentType = "cash";
-//	                break;
-//	            case 2:
-//	                paymentType = "upi";
-//	                break;
-//	            case 3:
-//	                paymentType = "card";
-//	                break;
-//	            case 4:
-//	                System.out.println("Exiting payment menu...");
-//	                return;
-//	            default:
-//	                System.out.println("Invalid choice! Please try again.");
-//	                continue;
-//	        }
-//
-//	        // Prompt for amount only after valid payment type is selected
-//	        System.out.print("Enter amount to pay: ₹");
-//	        try {
-//	            amountToPay = Double.parseDouble(scanner.nextLine().trim());
-//	        } catch (NumberFormatException e) {
-//	            System.out.println("Invalid amount entered. Try again.");
-//	            continue; // loop again
-//	        }
-//
-//	        // Call controller/service to process payment
-//	        feesController.processFeePayment(id, courseId, amountToPay, paymentType);
-//
-//	        break;
-//	    }
-//	}
 	public void payStudentFees() {
 	    System.out.print("Enter Student ID: ");
 	    int studentId = Integer.parseInt(scanner.nextLine().trim());
@@ -454,7 +386,7 @@ public class StudentController {
 	}
 
 	public void showAllCoursesById() throws ValidationException{
->>>>>>> 53634cfc15739c05d340928f1a2c3c3f7fea0722
+
 		try {
 			studentCourseController = new StudentCourseController();
 			
@@ -478,11 +410,5 @@ public class StudentController {
 			throw e;
 		}
 	}
-<<<<<<< HEAD
-=======
 
-	
-	
-
->>>>>>> 53634cfc15739c05d340928f1a2c3c3f7fea0722
 }

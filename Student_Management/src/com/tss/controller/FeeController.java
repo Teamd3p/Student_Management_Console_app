@@ -177,10 +177,9 @@ public class FeeController {
 
 	}
 
-<<<<<<< HEAD
 	public void deleteStudent(int id) {
 		feeService.deleteStudent(id);
-=======
+	}
 	public Fees getFeeByStudentAndCourse(int id, int courseId) {
 		feeService.getFeeByStudentAndCourse(id, courseId);
 		return null;
@@ -188,7 +187,6 @@ public class FeeController {
 
 	public boolean processFeePayment(int paymentId, int courseId, double amountToPay, String paymentType) {
 		return feeService.processFeePayment(paymentId, courseId, amountToPay, paymentType);
->>>>>>> 53634cfc15739c05d340928f1a2c3c3f7fea0722
 	}
 
 }
