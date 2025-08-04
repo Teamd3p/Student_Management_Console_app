@@ -10,7 +10,6 @@ import com.tss.service.FeeService;
 public class FeeController {
 
 	private FeeService feeService = new FeeService();
-	private StudentController studentController = new StudentController();
 	private Scanner scanner = new Scanner(System.in);
 
 	public void getTotalPaidFees() {
@@ -153,7 +152,6 @@ public class FeeController {
 		try {
 			System.out.println(feeService.updateCourseFees(id, paid) ? "Updated." : "Failed.");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -161,7 +159,17 @@ public class FeeController {
 
 	public void getTotalEarning() {
 		try {
-			System.out.println("Total Earning: ₹" + feeService.getTotalEarning());
+			double totalEarning = feeService.getTotalEarning();
+
+			String border = "+-----------------------------------------------------------+";
+			String title = "|               Total Earning of Institute                  |";
+
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.printf("| %-25s : ₹%-20.2f         |\n", "Total Earning", totalEarning);
+			System.out.println(border);
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -170,6 +178,14 @@ public class FeeController {
 
 	public void deleteStudent(int id) {
 		feeService.deleteStudent(id);
+	}
+	public Fees getFeeByStudentAndCourse(int id, int courseId) {
+		feeService.getFeeByStudentAndCourse(id, courseId);
+		return null;
+	}
+
+	public boolean processFeePayment(int paymentId, int courseId, double amountToPay, String paymentType) {
+		return feeService.processFeePayment(paymentId, courseId, amountToPay, paymentType);
 	}
 
 }

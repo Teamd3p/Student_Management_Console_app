@@ -105,7 +105,7 @@ public class TeacherController {
         boolean teacherSuccess = teacherService.addTeacher(teacher);
 
         if (!teacherSuccess) {
-            System.out.println("❌ Failed to add teacher.");
+            System.out.println("Failed to add teacher.");
             return;
         }
 
@@ -193,9 +193,9 @@ public class TeacherController {
 
         boolean profileSuccess = profileService.insertProfile(profile);
         if (profileSuccess) {
-            System.out.println("✅ Teacher and profile added successfully.");
+            System.out.println("Teacher and profile added successfully.");
         } else {
-            System.out.println("⚠ Teacher added, but failed to add profile.");
+            System.out.println("Teacher added, but failed to add profile.");
         }
 
         displayAllTeachers();
