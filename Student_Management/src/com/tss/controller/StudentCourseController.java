@@ -21,8 +21,6 @@ public class StudentCourseController {
 	private final FeeController feesController;
 	private final FeeService feesservice;
 	private final CourseService courseService;
-	
-	
 
 	public StudentCourseController() {
 		this.studentCourseService = new StudentCourseService();
@@ -51,15 +49,20 @@ public class StudentCourseController {
 					studentCourse.setStudentId(studentId);
 					studentCourse.setCourseId(courseId);
 					studentCourse.setEnrolledAt(LocalDateTime.now());
-					
+
 					studentCourseService.AssignCourseToStudent(studentCourse);
-					
+
 					Course course = courseService.searchCourse(courseId);
-					
-					
-					Fees fee = new Fees(courseId,studentId,0.0,course.getCourseFees());
+
+					Fees fee = new Fees(courseId, studentId, 0.0, course.getCourseFees());
 					feesservice.insertNewRecord(fee);
-					
+
+					System.out.println("You Want To Pay Fees Now(Yes/No): ");
+					String choice = scanner.nextLine();
+
+					if (choice.equalsIgnoreCase("yes")) {
+						studentController.payStudentFees(studentId);
+					}
 					return;
 				}
 				System.out.println("Course With id " + courseId + " doesn't exists Or Not Active!!");
@@ -118,10 +121,10 @@ public class StudentCourseController {
 //	}
 
 	public List<Fees> getEnrolledCoursesByStudentId(int studentId) {
-	    if (studentController.studentExistance(studentId)) {
-	        return studentCourseService.getCourseByStudentId(studentId);
-	    }
-	    return new ArrayList<>();
+		if (studentController.studentExistance(studentId)) {
+			return studentCourseService.getCourseByStudentId(studentId);
+		}
+		return new ArrayList<>();
 	}
 
 	public void getAllCourses(int id) {
@@ -145,7 +148,7 @@ public class StudentCourseController {
 					course.getCourseFees(), course.isActive() ? "Yes" : "No");
 		}
 
-		System.out.println(border);		
+		System.out.println(border);
 	}
 
 }

@@ -66,7 +66,10 @@ public class StudentManagement implements MenuHandler {
 				break;
 			case 7:
 				controller.readAllRecords();
-				controller.payStudentFees();
+				System.out.print("Enter Student ID: ");
+				int studentId = Integer.parseInt(scanner.nextLine().trim());
+
+				controller.payStudentFees(studentId);
 				break;
 			case 8:
 				try {
@@ -74,7 +77,7 @@ public class StudentManagement implements MenuHandler {
 				} catch (ValidationException e) {
 					System.out.println(e.getMessage());
 				}
-				return;
+				break;
 			case 9:
 				System.out.println(">> Returning to main menu...");
 				return;

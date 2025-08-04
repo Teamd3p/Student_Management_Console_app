@@ -222,11 +222,8 @@ public class StudentController {
 
 	}
 
-	public void payStudentFees() {
-		System.out.print("Enter Student ID: ");
-		int studentId = Integer.parseInt(scanner.nextLine().trim());
-
-		// Initialize studentCourseController only once
+	public void payStudentFees(int studentId) {
+		
 		if (studentCourseController == null) {
 			studentCourseController = new StudentCourseController();
 		}
