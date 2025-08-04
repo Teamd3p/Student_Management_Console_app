@@ -160,8 +160,8 @@ public class StudentController {
 
 				boolean profileSuccess = profileService.insertProfile(profile);
 
-				// --- Notification Preference ---
-				String preference = "None"; // Default to None
+				// Notification Preference
+				String preference = "None";
 
 				while (true) {
 					try {
@@ -328,7 +328,7 @@ public class StudentController {
 		System.out.println("---------------------------------------------------------");
 
 		// Step 4: Choose payment method
-		 String paymentType = null;
+		String paymentType = null;
 		while (true) {
 			System.out.println("\nChoose Payment Method:");
 			System.out.println("1. Cash");
@@ -342,16 +342,63 @@ public class StudentController {
 			switch (choice) {
 			case 1:
 				paymentType = "Cash";
+				System.out.println("Cash payment selected. Please ensure you have the exact amount.");
 				break;
+
 			case 2:
 				paymentType = "UPI";
+				while (true) {
+					System.out.print("Enter UPI ID (e.g., username@bank): ");
+					String upiId = scanner.nextLine().trim();
+					if (upiId.matches("^[\\w.-]+@[a-zA-Z]+$")) {
+						System.out.println("UPI ID validated successfully.");
+						break;
+					} else {
+						System.out.println("Invalid UPI ID. Try again.");
+					}
+				}
 				break;
+
 			case 3:
 				paymentType = "Card";
+				// Validate Card Number (16 digits)
+				while (true) {
+					System.out.print("Enter 16-digit Card Number: ");
+					String cardNumber = scanner.nextLine().trim();
+					if (cardNumber.matches("\\d{16}")) {
+						break;
+					} else {
+						System.out.println("Invalid Card Number. It must be exactly 16 digits.");
+					}
+				}
+
+				// Validate CVV (3 digits)
+				while (true) {
+					System.out.print("Enter 3-digit CVV: ");
+					String cvv = scanner.nextLine().trim();
+					if (cvv.matches("\\d{3}")) {
+						break;
+					} else {
+						System.out.println("Invalid CVV. It must be exactly 3 digits.");
+					}
+				}
+
+				// Validate Expiry Date (MM/YY)
+				while (true) {
+					System.out.print("Enter Expiry Date (MM/YY): ");
+					String expiry = scanner.nextLine().trim();
+					if (expiry.matches("^(0[1-9]|1[0-2])/[0-9]{2}$")) {
+						break;
+					} else {
+						System.out.println("Invalid Expiry Date. Format should be MM/YY.");
+					}
+				}
 				break;
+
 			case 4:
 				System.out.println("Payment canceled.");
 				return;
+
 			default:
 				System.out.println("Invalid choice. Please try again.");
 				continue;
@@ -429,131 +476,135 @@ public class StudentController {
 	}
 
 	private void sendReceipt(String method, int studentId, double amountToPay, String courseName, String paymentType) {
-	    System.out.println("\n====================================================");
-	    System.out.println("                   PAYMENT RECEIPT                  ");
-	    System.out.println("====================================================");
-	    System.out.printf("Receipt No.    : %05d\n", (int)(Math.random() * 100000)); 
-	    System.out.printf("Date & Time    : %s\n", java.time.LocalDateTime.now());
-	    System.out.printf("Student ID     : %d\n", studentId);
-	    System.out.printf("Course Name    : %s\n", courseName);
-	    System.out.printf("Amount Paid    : ₹%.2f\n", amountToPay);
-	    System.out.printf("Payment Method : %s\n", paymentType);
-	    System.out.println("----------------------------------------------------");
-	    System.out.println("          Thank you for your payment!               ");
-	    System.out.println("      An official receipt has been sent via         ");
-	    System.out.println("              " + method.toUpperCase() + " NOTIFICATION             ");
-	    System.out.println("====================================================\n");
+		System.out.println("\n====================================================");
+		System.out.println("                   PAYMENT RECEIPT                  ");
+		System.out.println("====================================================");
+		System.out.printf("Receipt No.    : %05d\n", (int) (Math.random() * 100000));
+		System.out.printf("Date & Time    : %s\n", java.time.LocalDateTime.now());
+		System.out.printf("Student ID     : %d\n", studentId);
+		System.out.printf("Course Name    : %s\n", courseName);
+		System.out.printf("Amount Paid    : ₹%.2f\n", amountToPay);
+		System.out.printf("Payment Method : %s\n", paymentType);
+		System.out.println("----------------------------------------------------");
+		System.out.println("          Thank you for your payment!               ");
+		System.out.println("      An official receipt has been sent via         ");
+		System.out.println("              " + method.toUpperCase() + " NOTIFICATION             ");
+		System.out.println("====================================================\n");
 	}
-	
+
 	public boolean manageNotification() {
-	    System.out.print("Enter Student ID: ");
-	    int studentId = Integer.parseInt(scanner.nextLine().trim());
+		System.out.print("Enter Student ID: ");
+		int studentId = Integer.parseInt(scanner.nextLine().trim());
 
-	    // Step 1: Get current preference
-	    String currentPreference = notificationService.getNotificationPreference(studentId);
-	    if (currentPreference == null) {
-	        System.out.println("No notification preference found for this student.");
-	        return false;
-	    }
+		// Step 1: Get current preference
+		String currentPreference = notificationService.getNotificationPreference(studentId);
+		if (currentPreference == null) {
+			System.out.println("No notification preference found for this student.");
+			return false;
+		}
 
-	    System.out.println("\n>>> Current Notification Preference: " + currentPreference);
+		System.out.println("\n>>> Current Notification Preference: " + currentPreference);
 
-	    // Step 2: Ask to Update or Remove
-	    System.out.println("\nWhat do you want to do?");
-	    System.out.println("1. Update Notification");
-	    System.out.println("2. Remove Notification");
-	    System.out.println("3. Cancel");
-	    System.out.print("Enter your choice: ");
+		// Step 2: Ask to Update or Remove
+		System.out.println("\nWhat do you want to do?");
+		System.out.println("1. Update Notification");
+		System.out.println("2. Remove Notification");
+		System.out.println("3. Cancel");
+		System.out.print("Enter your choice: ");
 
-	    int actionChoice;
-	    try {
-	        actionChoice = Integer.parseInt(scanner.nextLine().trim());
-	    } catch (NumberFormatException e) {
-	        System.out.println("Invalid input.");
-	        return false;
-	    }
+		int actionChoice;
+		try {
+			actionChoice = Integer.parseInt(scanner.nextLine().trim());
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid input.");
+			return false;
+		}
 
-	    // Step 3: Based on action, handle separately
-	    String newPreference = currentPreference;
+		// Step 3: Based on action, handle separately
+		String newPreference = currentPreference;
 
-	    if (actionChoice == 1) {
-	        // ----- Update Flow -----
-	        System.out.println("\nChoose new Notification Preference:");
-	        System.out.println("1. SMS");
-	        System.out.println("2. Email");
-	        System.out.println("3. Both");
-	        System.out.println("4. Cancel");
-	        System.out.print("Enter your choice: ");
+		if (actionChoice == 1) {
+			// ----- Update Flow -----
+			System.out.println("\nChoose new Notification Preference:");
+			System.out.println("1. SMS");
+			System.out.println("2. Email");
+			System.out.println("3. Both");
+			System.out.println("4. Cancel");
+			System.out.print("Enter your choice: ");
 
-	        int updateChoice;
-	        try {
-	            updateChoice = Integer.parseInt(scanner.nextLine().trim());
-	            switch (updateChoice) {
-	                case 1: newPreference = "SMS"; break;
-	                case 2: newPreference = "Email"; break;
-	                case 3: newPreference = "Both"; break;
-	                case 4:
-	                    System.out.println("Update canceled.");
-	                    return false;
-	                default:
-	                    System.out.println("Invalid choice.");
-	                    return false;
-	            }
-	        } catch (NumberFormatException e) {
-	            System.out.println("Invalid input.");
-	            return false;
-	        }
+			int updateChoice;
+			try {
+				updateChoice = Integer.parseInt(scanner.nextLine().trim());
+				switch (updateChoice) {
+				case 1:
+					newPreference = "SMS";
+					break;
+				case 2:
+					newPreference = "Email";
+					break;
+				case 3:
+					newPreference = "Both";
+					break;
+				case 4:
+					System.out.println("Update canceled.");
+					return false;
+				default:
+					System.out.println("Invalid choice.");
+					return false;
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input.");
+				return false;
+			}
 
-	    } else if (actionChoice == 2) {
-	        // ----- Remove Flow -----
-	        System.out.println("\nWhich notification do you want to remove?");
-	        System.out.println("1. SMS");
-	        System.out.println("2. Email");
-	        System.out.println("3. Both");
-	        System.out.println("4. Cancel");
-	        System.out.print("Enter your choice: ");
+		} else if (actionChoice == 2) {
+			// ----- Remove Flow -----
+			System.out.println("\nWhich notification do you want to remove?");
+			System.out.println("1. SMS");
+			System.out.println("2. Email");
+			System.out.println("3. Both");
+			System.out.println("4. Cancel");
+			System.out.print("Enter your choice: ");
 
-	        int removeChoice;
-	        try {
-	            removeChoice = Integer.parseInt(scanner.nextLine().trim());
-	            switch (removeChoice) {
-	                case 1: 
-	                    newPreference = currentPreference.equals("Both") ? "Email" : "None";
-	                    break;
-	                case 2: 
-	                    newPreference = currentPreference.equals("Both") ? "SMS" : "None";
-	                    break;
-	                case 3: 
-	                    newPreference = "None";
-	                    break;
-	                case 4:
-	                    System.out.println("Remove canceled.");
-	                    return false;
-	                default:
-	                    System.out.println("Invalid choice.");
-	                    return false;
-	            }
-	        } catch (NumberFormatException e) {
-	            System.out.println("Invalid input.");
-	            return false;
-	        }
+			int removeChoice;
+			try {
+				removeChoice = Integer.parseInt(scanner.nextLine().trim());
+				switch (removeChoice) {
+				case 1:
+					newPreference = currentPreference.equals("Both") ? "Email" : "None";
+					break;
+				case 2:
+					newPreference = currentPreference.equals("Both") ? "SMS" : "None";
+					break;
+				case 3:
+					newPreference = "None";
+					break;
+				case 4:
+					System.out.println("Remove canceled.");
+					return false;
+				default:
+					System.out.println("Invalid choice.");
+					return false;
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input.");
+				return false;
+			}
 
-	    } else {
-	        System.out.println("Canceled.");
-	        return false;
-	    }
+		} else {
+			System.out.println("Canceled.");
+			return false;
+		}
 
-	    // Step 4: Update database
-	    boolean updated = notificationService.updateNotificationPreference(studentId, newPreference);
-	    if (updated) {
-	        System.out.println("Notification preference changed to: " + newPreference);
-	    } else {
-	        System.out.println("Failed to update notification preference.");
-	    }
+		// Step 4: Update database
+		boolean updated = notificationService.updateNotificationPreference(studentId, newPreference);
+		if (updated) {
+			System.out.println("Notification preference changed to: " + newPreference);
+		} else {
+			System.out.println("Failed to update notification preference.");
+		}
 
-	    return updated;
+		return updated;
 	}
-
-
 
 }
