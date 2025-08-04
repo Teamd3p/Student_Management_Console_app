@@ -8,6 +8,7 @@ import com.tss.exception.ValidationException;
 import com.tss.model.Fees;
 import com.tss.model.Profile;
 import com.tss.model.Student;
+import com.tss.service.NotificationService;
 import com.tss.service.ProfileService;
 import com.tss.service.StudentService;
 
@@ -18,6 +19,7 @@ public class StudentController {
 	private StudentCourseController studentCourseController;
 	private FeeController feesController;
 	private StudentController studentController;
+	private NotificationService notificationService;
 	private Scanner scanner = new Scanner(System.in);
 
 	public StudentController() {
@@ -25,6 +27,7 @@ public class StudentController {
 		this.profileService = new ProfileService();
 		this.studentController = studentController;
 		this.feesController = new FeeController();
+		this.notificationService = new NotificationService();
 	}
 
 	public void readAllRecords() {
@@ -68,12 +71,14 @@ public class StudentController {
 
 	public void insertStudent() throws ValidationException {
 		try {
+			// --- Student Name ---
 			System.out.print("\nEnter Full Student Name: ");
 			String name = scanner.nextLine();
 			if (!name.contains(" ") || !name.matches("[a-zA-Z ]+")) {
 				throw new ValidationException("Enter Proper Name");
 			}
 
+			// --- Admission Date ---
 			System.out.print("Enter Admission Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
 			String dateInput = scanner.nextLine().trim();
 			LocalDateTime admission = dateInput.isEmpty() ? LocalDateTime.now()
@@ -84,11 +89,14 @@ public class StudentController {
 			boolean success = studentService.insertStudent(student);
 
 			if (success) {
-				Profile profile = new Profile();
 				int studentId = student.getStudentId();
+
+				// --- Profile ---
+				Profile profile = new Profile();
 				profile.setUserType("student");
 				profile.setUserId(studentId);
 
+				// Phone
 				while (true) {
 					try {
 						System.out.print("Enter Phone Number (10 digits): ");
@@ -103,6 +111,7 @@ public class StudentController {
 					}
 				}
 
+				// Email
 				while (true) {
 					try {
 						System.out.print("Enter Email: ");
@@ -117,6 +126,7 @@ public class StudentController {
 					}
 				}
 
+				// Address
 				while (true) {
 					try {
 						System.out.print("Enter Address: ");
@@ -131,6 +141,7 @@ public class StudentController {
 					}
 				}
 
+				// Age
 				while (true) {
 					try {
 						System.out.print("Enter Age: ");
@@ -138,19 +149,64 @@ public class StudentController {
 						if (!ageStr.matches("\\d+"))
 							throw new ValidationException("Age must be a positive integer.");
 						int age = Integer.parseInt(ageStr);
-						if (age > 1 && age < 80)
-							throw new ValidationException("Age Must Be Between 1 to 80");
+						if (age < 1 || age > 80)
+							throw new ValidationException("Age must be between 1 to 80");
 						profile.setAge(age);
 						break;
 					} catch (ValidationException e) {
 						System.out.println("Error: " + e.getMessage());
 					}
 				}
+
 				boolean profileSuccess = profileService.insertProfile(profile);
-				if (profileSuccess) {
-					System.out.println("Student and profile added successfully.");
-				} else {
+
+				// --- Notification Preference ---
+				String preference = "None"; // Default to None
+
+				while (true) {
+					try {
+						System.out.println("\nChoose Notification Preference:");
+						System.out.println("1. SMS");
+						System.out.println("2. Email");
+						System.out.println("3. Both");
+						System.out.println("4. None");
+						System.out.print("Enter your choice: ");
+
+						int choice = Integer.parseInt(scanner.nextLine().trim());
+						switch (choice) {
+						case 1:
+							preference = "SMS";
+							break;
+						case 2:
+							preference = "Email";
+							break;
+						case 3:
+							preference = "Both";
+							break;
+						case 4:
+							preference = "None";
+							break;
+						default:
+							throw new ValidationException("Invalid choice. Please enter 1-4.");
+						}
+						break;
+					} catch (ValidationException | NumberFormatException e) {
+						System.out.println("Error: " + e.getMessage());
+					}
+				}
+
+				// Insert into Notification table
+				boolean notificationSuccess = notificationService.insertNotificationPreference(studentId, preference);
+
+				// Display result
+				if (profileSuccess && notificationSuccess) {
+					System.out.println("Student, profile, and notification preference added successfully.");
+				} else if (!profileSuccess && !notificationSuccess) {
+					System.out.println("Student added, but failed to add profile and notification preference.");
+				} else if (!profileSuccess) {
 					System.out.println("Student added, but failed to add profile.");
+				} else {
+					System.out.println("Student added, but failed to add notification preference.");
 				}
 
 				readAllRecords();
@@ -222,8 +278,11 @@ public class StudentController {
 
 	}
 
-	public void payStudentFees(int studentId) {
-		
+	public void payStudentFees() {
+		System.out.print("Enter Student ID: ");
+		int studentId = Integer.parseInt(scanner.nextLine().trim());
+
+		// Initialize studentCourseController only once
 		if (studentCourseController == null) {
 			studentCourseController = new StudentCourseController();
 		}
@@ -236,6 +295,20 @@ public class StudentController {
 			return;
 		}
 
+		boolean isPending = false;
+		for (Fees fee : enrolledCourses) {
+			if(fee.getAmountPending()!=0)
+			{
+				isPending = true;
+				break;
+			}
+		}
+		
+		if(!isPending)
+		{
+			return;
+		}
+		
 		System.out.println("\n+--------------------------------------------------------------+");
 		System.out.println("|                  Enrolled Courses                            |");
 		System.out.println("+--------------------------------------------------------------+");
@@ -269,7 +342,7 @@ public class StudentController {
 		System.out.println("---------------------------------------------------------");
 
 		// Step 4: Choose payment method
-		String paymentType = null;
+		 String paymentType = null;
 		while (true) {
 			System.out.println("\nChoose Payment Method:");
 			System.out.println("1. Cash");
@@ -300,7 +373,6 @@ public class StudentController {
 			break;
 		}
 
-		// Step 5: Enter amount
 		System.out.print("Enter amount to pay: ₹");
 		double amountToPay = 0.0;
 
@@ -323,7 +395,23 @@ public class StudentController {
 		boolean success = feesController.processFeePayment(studentId, courseId, amountToPay, paymentType);
 
 		if (success) {
-			System.out.println("Payment successful!");
+			System.out.println("Payment successful via " + paymentType + ". Amount Paid: ₹" + amountToPay);
+
+			// --- Fetch Notification Preference ---
+			String preference = notificationService.getNotificationPreference(studentId);
+
+			// --- Send Notifications Based on Preference ---
+			if ("Both".equalsIgnoreCase(preference)) {
+				sendReceipt("SMS", studentId, amountToPay, selectedFee.getCourseName(), paymentType);
+				sendReceipt("Email", studentId, amountToPay, selectedFee.getCourseName(), paymentType);
+			} else if ("SMS".equalsIgnoreCase(preference)) {
+				sendReceipt("SMS", studentId, amountToPay, selectedFee.getCourseName(), paymentType);
+			} else if ("Email".equalsIgnoreCase(preference)) {
+				sendReceipt("Email", studentId, amountToPay, selectedFee.getCourseName(), paymentType);
+			} else {
+				System.out.println("No notifications set for this student.");
+			}
+
 		} else {
 			System.out.println("Payment failed.");
 		}
@@ -353,5 +441,133 @@ public class StudentController {
 			throw e;
 		}
 	}
+
+	private void sendReceipt(String method, int studentId, double amountToPay, String courseName, String paymentType) {
+	    System.out.println("\n====================================================");
+	    System.out.println("                   PAYMENT RECEIPT                  ");
+	    System.out.println("====================================================");
+	    System.out.printf("Receipt No.    : %05d\n", (int)(Math.random() * 100000)); 
+	    System.out.printf("Date & Time    : %s\n", java.time.LocalDateTime.now());
+	    System.out.printf("Student ID     : %d\n", studentId);
+	    System.out.printf("Course Name    : %s\n", courseName);
+	    System.out.printf("Amount Paid    : ₹%.2f\n", amountToPay);
+	    System.out.printf("Payment Method : %s\n", paymentType);
+	    System.out.println("----------------------------------------------------");
+	    System.out.println("          Thank you for your payment!               ");
+	    System.out.println("      An official receipt has been sent via         ");
+	    System.out.println("              " + method.toUpperCase() + " NOTIFICATION             ");
+	    System.out.println("====================================================\n");
+	}
+	
+	public boolean manageNotification() {
+	    System.out.print("Enter Student ID: ");
+	    int studentId = Integer.parseInt(scanner.nextLine().trim());
+
+	    // Step 1: Get current preference
+	    String currentPreference = notificationService.getNotificationPreference(studentId);
+	    if (currentPreference == null) {
+	        System.out.println("No notification preference found for this student.");
+	        return false;
+	    }
+
+	    System.out.println("\n>>> Current Notification Preference: " + currentPreference);
+
+	    // Step 2: Ask to Update or Remove
+	    System.out.println("\nWhat do you want to do?");
+	    System.out.println("1. Update Notification");
+	    System.out.println("2. Remove Notification");
+	    System.out.println("3. Cancel");
+	    System.out.print("Enter your choice: ");
+
+	    int actionChoice;
+	    try {
+	        actionChoice = Integer.parseInt(scanner.nextLine().trim());
+	    } catch (NumberFormatException e) {
+	        System.out.println("Invalid input.");
+	        return false;
+	    }
+
+	    // Step 3: Based on action, handle separately
+	    String newPreference = currentPreference;
+
+	    if (actionChoice == 1) {
+	        // ----- Update Flow -----
+	        System.out.println("\nChoose new Notification Preference:");
+	        System.out.println("1. SMS");
+	        System.out.println("2. Email");
+	        System.out.println("3. Both");
+	        System.out.println("4. Cancel");
+	        System.out.print("Enter your choice: ");
+
+	        int updateChoice;
+	        try {
+	            updateChoice = Integer.parseInt(scanner.nextLine().trim());
+	            switch (updateChoice) {
+	                case 1: newPreference = "SMS"; break;
+	                case 2: newPreference = "Email"; break;
+	                case 3: newPreference = "Both"; break;
+	                case 4:
+	                    System.out.println("Update canceled.");
+	                    return false;
+	                default:
+	                    System.out.println("Invalid choice.");
+	                    return false;
+	            }
+	        } catch (NumberFormatException e) {
+	            System.out.println("Invalid input.");
+	            return false;
+	        }
+
+	    } else if (actionChoice == 2) {
+	        // ----- Remove Flow -----
+	        System.out.println("\nWhich notification do you want to remove?");
+	        System.out.println("1. SMS");
+	        System.out.println("2. Email");
+	        System.out.println("3. Both");
+	        System.out.println("4. Cancel");
+	        System.out.print("Enter your choice: ");
+
+	        int removeChoice;
+	        try {
+	            removeChoice = Integer.parseInt(scanner.nextLine().trim());
+	            switch (removeChoice) {
+	                case 1: 
+	                    newPreference = currentPreference.equals("Both") ? "Email" : "None";
+	                    break;
+	                case 2: 
+	                    newPreference = currentPreference.equals("Both") ? "SMS" : "None";
+	                    break;
+	                case 3: 
+	                    newPreference = "None";
+	                    break;
+	                case 4:
+	                    System.out.println("Remove canceled.");
+	                    return false;
+	                default:
+	                    System.out.println("Invalid choice.");
+	                    return false;
+	            }
+	        } catch (NumberFormatException e) {
+	            System.out.println("Invalid input.");
+	            return false;
+	        }
+
+	    } else {
+	        System.out.println("Canceled.");
+	        return false;
+	    }
+
+	    // Step 4: Update database
+	    boolean updated = notificationService.updateNotificationPreference(studentId, newPreference);
+	    if (updated) {
+	        System.out.println("Notification preference changed to: " + newPreference);
+	    } else {
+	        System.out.println("Failed to update notification preference.");
+	    }
+
+	    return updated;
+	}
+
+
 
 }

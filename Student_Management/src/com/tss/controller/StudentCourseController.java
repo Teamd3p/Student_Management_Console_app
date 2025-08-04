@@ -61,7 +61,7 @@ public class StudentCourseController {
 					String choice = scanner.nextLine();
 
 					if (choice.equalsIgnoreCase("yes")) {
-						studentController.payStudentFees(studentId);
+						studentController.payStudentFees();
 					}
 					return;
 				}

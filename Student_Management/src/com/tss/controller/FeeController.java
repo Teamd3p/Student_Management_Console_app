@@ -121,7 +121,6 @@ public class FeeController {
 		try {
 			System.out.println(feeService.updateCourseFees(id, paid) ? "Updated." : "Failed.");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
