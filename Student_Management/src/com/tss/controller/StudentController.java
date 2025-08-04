@@ -295,6 +295,20 @@ public class StudentController {
 			return;
 		}
 
+		boolean isPending = false;
+		for (Fees fee : enrolledCourses) {
+			if(fee.getAmountPending()!=0)
+			{
+				isPending = true;
+				break;
+			}
+		}
+		
+		if(!isPending)
+		{
+			return;
+		}
+		
 		System.out.println("\n+--------------------------------------------------------------+");
 		System.out.println("|                  Enrolled Courses                            |");
 		System.out.println("+--------------------------------------------------------------+");
