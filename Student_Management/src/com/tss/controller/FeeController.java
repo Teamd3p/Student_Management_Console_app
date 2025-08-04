@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.tss.model.Fees;
-import com.tss.model.Teacher;
 import com.tss.service.FeeService;
 
 public class FeeController {
@@ -122,7 +121,6 @@ public class FeeController {
 		try {
 			System.out.println(feeService.updateCourseFees(id, paid) ? "Updated." : "Failed.");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
