@@ -38,14 +38,11 @@ public class CourseController {
 		System.out.print("Enter Course Fees: ");
 		double fees = scanner.nextDouble();
 
-		System.out.print("Is the course active? (true/false): ");
-		boolean isActive = scanner.nextBoolean();
 		scanner.nextLine();
 
 		Course course = new Course();
 		course.setCourseName(name);
 		course.setCourseFees(fees);
-		course.setActive(isActive);
 
 		boolean success = courseService.addCourse(course);
 		if (success) {
