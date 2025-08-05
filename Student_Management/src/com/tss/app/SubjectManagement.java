@@ -3,6 +3,7 @@ package com.tss.app;
 import java.util.Scanner;
 
 import com.tss.controller.SubjectController;
+import com.tss.util.InputUtil;
 
 public class SubjectManagement implements MenuHandler {
 	
@@ -20,24 +21,18 @@ public class SubjectManagement implements MenuHandler {
         System.out.println("| 4. Delete A Subject          |");
         System.out.println("| 5. Go Back                   |");
         System.out.println("+------------------------------+");
-        System.out.print("Enter your choice: ");
 	}
 
 	@Override
 	public void chooseMenu() {
 		
-		  int choice;
+		  int choice = -1;
 
 	        while (true) {
 	            showMenu();
 
-	            try {
-	                choice = Integer.parseInt(scanner.nextLine());
-	            } catch (NumberFormatException e) {
-	                System.out.println("❌ Invalid input. Please enter a number.");
-	                continue;
-	            }
-	            
+				choice = InputUtil.readInt("Enter your choice: ");
+
 	            switch (choice) {
                 case 1:
                     subjectController.readAllSubjects();
@@ -49,10 +44,10 @@ public class SubjectManagement implements MenuHandler {
                     subjectController.updateSubject();
                     break;
                 case 4:
-                    System.out.println("🔙 Returning to main menu...");
+                    System.out.println("Returning to main menu...");
                     return;
                 default:
-                    System.out.println("❌ Invalid choice. Please select from the menu.");
+                    System.out.println("Invalid choice. Please select from the menu.");
             }
         }
     }

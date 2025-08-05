@@ -11,6 +11,7 @@ import com.tss.app.TeacherManagement;
 
 import com.tss.controller.DashboardController;
 import com.tss.controller.FeeController;
+import com.tss.util.InputUtil;
 import com.tss.controller.DashboardController;
 
 
@@ -19,13 +20,13 @@ public class StudentManagementTest {
 
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
-		int choice;
+		int choice = -1;
 		MenuHandler option;
 
 		while (true) {
 			printMenu();
-			choice = scanner.nextInt();
-			scanner.nextLine();
+			choice = InputUtil.readInt("Enter your choice: ");
+
 				switch (choice) {
 				case 1:
 					option = new StudentManagement();

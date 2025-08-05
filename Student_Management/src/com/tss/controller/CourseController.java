@@ -32,23 +32,50 @@ public class CourseController {
 	}
 
 	public void addNewCourse() {
-		System.out.print("Enter Course Name: ");
-		String name = scanner.nextLine();
+		String name;
+		double fees = -1;
 
-		System.out.print("Enter Course Fees: ");
-		double fees = scanner.nextDouble();
+		// Validate course name (non-empty + contains alphabet)
+		while (true) {
+			System.out.print("Enter Course Name: ");
+			name = scanner.nextLine().trim();
 
-		scanner.nextLine();
+			if (name.isEmpty()) {
+				System.out.println(">> Course name cannot be empty. Please try again.");
+			} else if (!name.matches(".*[a-zA-Z].*")) {
+				System.out.println(">> Course name must contain at least one alphabet character.");
+			} else {
+				break;
+			}
+		}
 
+		// Validate course fees
+		while (true) {
+			System.out.print("Enter Course Fees: ");
+			String input = scanner.nextLine().trim();
+
+			try {
+				fees = Double.parseDouble(input);
+				if (fees < 0) {
+					System.out.println(">> Course fees cannot be negative. Please enter a positive amount.");
+				} else {
+					break;
+				}
+			} catch (NumberFormatException e) {
+				System.out.println(">> Invalid input. Please enter a valid number for fees.");
+			}
+		}
+
+		// Create and save course
 		Course course = new Course();
 		course.setCourseName(name);
 		course.setCourseFees(fees);
 
 		boolean success = courseService.addCourse(course);
 		if (success) {
-			System.out.println("✅ Course added successfully.");
+			System.out.println(">> Course added successfully.");
 		} else {
-			System.out.println("❌ Failed to add course.");
+			System.out.println(">> Failed to add course.");
 		}
 	}
 

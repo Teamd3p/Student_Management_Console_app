@@ -14,9 +14,9 @@ public class StudentCourseService {
         this.studentCourseDao = new StudentCourseDao();
     }
     
-    public void AssignCourseToStudent(StudentCourse studentCourse)
+    public boolean AssignCourseToStudent(StudentCourse studentCourse)
     {
-    	studentCourseDao.assignCourseToStudent(studentCourse);
+    	return studentCourseDao.assignCourseToStudent(studentCourse);
     }
 
 	public List<Fees> getCourseByStudentId(int studentId) {

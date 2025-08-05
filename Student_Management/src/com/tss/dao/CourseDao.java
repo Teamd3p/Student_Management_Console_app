@@ -45,19 +45,30 @@ public class CourseDao {
     }
 
     public boolean insertCourse(Course course) {
+        String sql = "SELECT * FROM Courses WHERE LOWER(course_name) = ?";
         String query = "INSERT INTO Courses (course_name, course_fees) VALUES (?, ?)";
-        try {
-            prepareStatement = connection.prepareStatement(query);
-            prepareStatement.setString(1, course.getCourseName());
-            prepareStatement.setDouble(2, course.getCourseFees());
 
-            int rows = prepareStatement.executeUpdate();
-            return rows > 0;
+        try {
+            prepareStatement = connection.prepareStatement(sql);
+            prepareStatement.setString(1, course.getCourseName().toLowerCase());
+            ResultSet result = prepareStatement.executeQuery();
+
+            if (!result.next()) {
+                prepareStatement = connection.prepareStatement(query);
+                prepareStatement.setString(1, course.getCourseName());
+                prepareStatement.setDouble(2, course.getCourseFees());
+                int rows = prepareStatement.executeUpdate();
+                return rows > 0;
+            } else {
+                System.out.println(">> Course already exists.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return false;
     }
+
 
     public Course searchCourse(int course_id) {
         Course course = null;

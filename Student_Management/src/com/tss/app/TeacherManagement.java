@@ -3,6 +3,7 @@ package com.tss.app;
 import java.util.Scanner;
 
 import com.tss.controller.TeacherController;
+import com.tss.util.InputUtil;
 
 public class TeacherManagement implements MenuHandler {
 	TeacherController teacherController = new TeacherController();
@@ -27,12 +28,12 @@ public class TeacherManagement implements MenuHandler {
 
 	@Override
 	public void chooseMenu() {
-		int choice;
+		int choice = -1;
 
 		while (true) {
 			showMenu();
-			choice = scanner.nextInt();
-			scanner.nextLine();
+			choice = InputUtil.readInt("Enter your choice: ");
+
 
 			switch (choice) {
 			case 1:

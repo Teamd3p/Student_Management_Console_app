@@ -22,18 +22,19 @@ public class StudentCourseDao {
         this.connection = DBConnection.connect();
     }
 
-    public void assignCourseToStudent(StudentCourse studentCourse) {
+    public boolean assignCourseToStudent(StudentCourse studentCourse) {
         String sql = "INSERT INTO StudentCourse (student_id, course_id, enrolled_at) VALUES (?, ?, ?)";
+        String checkAssign = "SELECT * FROM StudentCourse WHERE student_id = ? AND course_id = ?";
         
         try {
-//        	PreparedStatement checkAssign = connection.prepareStatement(checkAssignment);
-//	        checkAssign.setInt(1, studentCourse.getCourseId());
-//	        checkAssign.setInt(2, studentCourse.getStudentId());
-//	        ResultSet assignRs = checkAssign.executeQuery();
-//	        if (assignRs.next()) {
-//	            System.out.println("Teacher already has this subject assigned.");
-//	            return false;
-//	        }
+        	prepareStatement = connection.prepareStatement(checkAssign);
+	        prepareStatement.setInt(1, studentCourse.getStudentId());
+	        prepareStatement.setInt(2, studentCourse.getCourseId());
+	        ResultSet Result = prepareStatement.executeQuery();
+	        if (Result.next()) {
+	            System.out.println("Student already has this course assigned.");
+	            return false;
+	        }
             prepareStatement = connection.prepareStatement(sql);
             prepareStatement.setInt(1, studentCourse.getStudentId());
             prepareStatement.setInt(2, studentCourse.getCourseId());
@@ -47,6 +48,7 @@ public class StudentCourseDao {
             int rowsAffected = prepareStatement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Course assigned to student successfully.");
+                return true;
             } else {
                 System.out.println("Failed to assign course.");
             }
@@ -55,6 +57,7 @@ public class StudentCourseDao {
             System.out.println("Error while assigning course:");
             e.printStackTrace();
         }
+        return false;
     }
 
     public List<Fees> getCourseByStudentId(int studentId) {
