@@ -71,6 +71,7 @@ public class SubjectDao {
     }
 
     public boolean updateSubject(Subject subject) {
+    	
         String query = "UPDATE Subjects SET subject_name = ?, subject_description = ? WHERE subject_id = ?";
 
         try {
@@ -81,23 +82,6 @@ public class SubjectDao {
 
             int rowsUpdated = preparedStatement.executeUpdate();
             return rowsUpdated > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-    
-    public boolean deleteSubjectById(int subjectId) {
-        String query = "DELETE FROM Subjects WHERE subject_id = ?";
-
-        try {
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, subjectId);
-
-            int rowsDeleted = preparedStatement.executeUpdate();
-            return rowsDeleted > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -126,7 +110,6 @@ public class SubjectDao {
 
         return subject;
     }
-    
     
     
 }

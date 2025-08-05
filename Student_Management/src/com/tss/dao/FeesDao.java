@@ -82,7 +82,7 @@ public class FeesDao {
 
 		String sql = "SELECT f.fees_id, f.course_id, f.student_id, f.amount_paid, f.amount_pending, "
 				+ "c.course_name, s.student_name " + "FROM Fees f " + "JOIN Students s ON f.student_id = s.student_id "
-				+ "JOIN Courses c ON f.course_id = c.course_id " + "WHERE f.course_id = ?";
+				+ "JOIN Courses c ON f.course_id = c.course_id " + "WHERE f.course_id = ? AND c.is_active = 1";
 
 		try (Connection connection = DBConnection.connect();
 				PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -111,6 +111,11 @@ public class FeesDao {
 	}
 
 	public double getTotalEarning() throws SQLException {
-		return getTotalPaidFees();
+		String sql = "SELECT SUM(amount_paid + amount_pending) FROM Fees";
+		try (Connection connection = DBConnection.connect();
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql)) {
+			return result.next() ? result.getDouble(1) : 0;
+		}
 	}
 }
