@@ -39,7 +39,6 @@ public class Fees {
 		this.amountPending = courseFees;
 		
 	}
-
 	
 	public int getFeeId() {
 		return feeId;

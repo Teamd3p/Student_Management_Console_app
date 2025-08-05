@@ -33,14 +33,6 @@ public class CourseService {
 
 	}
 
-	public Course searchCourseByName(String name) {
-	    return courseDao.searchCourseByName(name);
-	}
-
-	public boolean updateCourse(Course course) {
-	    return courseDao.updateCourse(course);
-	}
-
 	
 	
 }

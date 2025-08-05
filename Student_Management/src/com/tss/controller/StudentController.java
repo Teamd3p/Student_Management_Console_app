@@ -8,6 +8,7 @@ import com.tss.exception.ValidationException;
 import com.tss.model.Fees;
 import com.tss.model.Profile;
 import com.tss.model.Student;
+import com.tss.service.NotificationService;
 import com.tss.service.ProfileService;
 import com.tss.service.StudentService;
 
@@ -17,18 +18,23 @@ public class StudentController {
 	private ProfileService profileService;
 	private StudentCourseController studentCourseController;
 	private FeeController feesController;
+	private StudentController studentController;
+	private NotificationService notificationService;
 	private Scanner scanner = new Scanner(System.in);
 
 	public StudentController() {
-	    this.studentService = new StudentService();
-	    this.profileService = new ProfileService();
-	    this.feesController = new FeeController(); 
-	    }
+		this.studentService = new StudentService();
+		this.profileService = new ProfileService();
+		this.studentController = studentController;
+		this.feesController = new FeeController();
+		this.notificationService = new NotificationService();
+	}
 
 	public void readAllRecords() {
 		List<Student> students = studentService.readAllStudent();
 		List<Profile> profiles = profileService.readAllProfiles("student");
 
+		// Header
 		System.out.println(
 				"\n+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
 		System.out.println(
@@ -65,52 +71,38 @@ public class StudentController {
 
 	public void insertStudent() throws ValidationException {
 		try {
+			// --- Student Name ---
 			System.out.print("\nEnter Full Student Name: ");
 			String name = scanner.nextLine();
 			if (!name.contains(" ") || !name.matches("[a-zA-Z ]+")) {
 				throw new ValidationException("Enter Proper Name");
 			}
 
-			LocalDateTime admission = null;
-
-			while (true) {
-				try {
-					System.out.print("Enter Admission Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
-					String dateInput = scanner.nextLine().trim();
-
-					if (dateInput.isEmpty()) {
-						admission = LocalDateTime.now();
-						break;
-					}
-
-					admission = LocalDateTime.parse(dateInput.replace(" ", "T"));
-
-					if (admission.isAfter(LocalDateTime.now())) {
-						throw new ValidationException("Admission date cannot be in the future.");
-					}
-
-					break;
-				} catch (ValidationException e) {
-					System.out.println("Error: " + e.getMessage());
-				}
-			}
+			// --- Admission Date ---
+			System.out.print("Enter Admission Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
+			String dateInput = scanner.nextLine().trim();
+			LocalDateTime admission = dateInput.isEmpty() ? LocalDateTime.now()
+					: LocalDateTime.parse(dateInput.replace(" ", "T"));
 
 			Student student = new Student(name, admission);
 
 			boolean success = studentService.insertStudent(student);
 
 			if (success) {
-				Profile profile = new Profile();
 				int studentId = student.getStudentId();
+
+				// --- Profile ---
+				Profile profile = new Profile();
 				profile.setUserType("student");
 				profile.setUserId(studentId);
 
+				// Phone
 				while (true) {
 					try {
 						System.out.print("Enter Phone Number (10 digits): ");
 						String phone = scanner.nextLine().trim();
 						if (!phone.matches("\\d{10}")) {
-							throw new ValidationException("Phone number must be exactly 10 digits and positive.");
+							throw new ValidationException("Phone number must be exactly 10 digits.");
 						}
 						profile.setPhoneNumber(phone);
 						break;
@@ -119,6 +111,7 @@ public class StudentController {
 					}
 				}
 
+				// Email
 				while (true) {
 					try {
 						System.out.print("Enter Email: ");
@@ -133,6 +126,7 @@ public class StudentController {
 					}
 				}
 
+				// Address
 				while (true) {
 					try {
 						System.out.print("Enter Address: ");
@@ -147,6 +141,7 @@ public class StudentController {
 					}
 				}
 
+				// Age
 				while (true) {
 					try {
 						System.out.print("Enter Age: ");
@@ -155,18 +150,63 @@ public class StudentController {
 							throw new ValidationException("Age must be a positive integer.");
 						int age = Integer.parseInt(ageStr);
 						if (age < 1 || age > 80)
-							throw new ValidationException("Age Must Be Between 1 to 80");
+							throw new ValidationException("Age must be between 1 to 80");
 						profile.setAge(age);
 						break;
 					} catch (ValidationException e) {
 						System.out.println("Error: " + e.getMessage());
 					}
 				}
+
 				boolean profileSuccess = profileService.insertProfile(profile);
-				if (profileSuccess) {
-					System.out.println("Student and profile added successfully.");
-				} else {
+
+				// --- Notification Preference ---
+				String preference = "None"; // Default to None
+
+				while (true) {
+					try {
+						System.out.println("\nChoose Notification Preference:");
+						System.out.println("1. SMS");
+						System.out.println("2. Email");
+						System.out.println("3. Both");
+						System.out.println("4. None");
+						System.out.print("Enter your choice: ");
+
+						int choice = Integer.parseInt(scanner.nextLine().trim());
+						switch (choice) {
+						case 1:
+							preference = "SMS";
+							break;
+						case 2:
+							preference = "Email";
+							break;
+						case 3:
+							preference = "Both";
+							break;
+						case 4:
+							preference = "None";
+							break;
+						default:
+							throw new ValidationException("Invalid choice. Please enter 1-4.");
+						}
+						break;
+					} catch (ValidationException | NumberFormatException e) {
+						System.out.println("Error: " + e.getMessage());
+					}
+				}
+
+				// Insert into Notification table
+				boolean notificationSuccess = notificationService.insertNotificationPreference(studentId, preference);
+
+				// Display result
+				if (profileSuccess && notificationSuccess) {
+					System.out.println("Student, profile, and notification preference added successfully.");
+				} else if (!profileSuccess && !notificationSuccess) {
+					System.out.println("Student added, but failed to add profile and notification preference.");
+				} else if (!profileSuccess) {
 					System.out.println("Student added, but failed to add profile.");
+				} else {
+					System.out.println("Student added, but failed to add notification preference.");
 				}
 
 				readAllRecords();
@@ -182,212 +222,205 @@ public class StudentController {
 	}
 
 	public void searchStudentById() {
-		try {
-			System.out.print("Enter Student ID to search: ");
-			String input = scanner.nextLine().trim();
+		System.out.print("Enter Student ID to search: ");
+		int id = scanner.nextInt();
+		scanner.nextLine();
 
-			if (!input.matches("\\d+"))
-				throw new ValidationException("Student ID must be a positive number.");
+		Student student = studentService.readStudentById(id);
 
-			int id = Integer.parseInt(input);
-			if (id <= 0)
-				throw new ValidationException("Student ID must be greater than zero.");
+		if (student != null) {
+			String border = "+------------------------------------------------------------+";
+			String title = "|                    STUDENT DETAIL                          |";
 
-			Student student = studentService.readStudentById(id);
-
-			if (student != null) {
-				String border = "+------------------------------------------------------------+";
-				String title = "|                    STUDENT DETAIL                          |";
-
-				System.out.println(border);
-				System.out.println(title);
-				System.out.println(border);
-				System.out.printf("| %-15s : %-40s |\n", "Student ID", student.getStudentId());
-				System.out.printf("| %-15s : %-40s |\n", "Name", student.getStudentName());
-				System.out.printf("| %-15s : %-40s |\n", "Active", student.isActive() ? "Yes" : "No");
-				System.out.printf("| %-15s : %-40s |\n", "Admission", student.getAdmission());
-				System.out.println(border);
-			} else {
-				System.out.println("Student with ID " + id + " not found.");
-			}
-		} catch (ValidationException e) {
-			System.out.println("Error: " + e.getMessage());
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.printf("| %-15s : %-40s |\n", "Student ID", student.getStudentId());
+			System.out.printf("| %-15s : %-40s |\n", "Name", student.getStudentName());
+			System.out.printf("| %-15s : %-40s |\n", "Active", student.isActive() ? "Yes" : "No");
+			System.out.printf("| %-15s : %-40s |\n", "Admission", student.getAdmission());
+			System.out.println(border);
+		} else {
+			System.out.println("Student with ID " + id + " not found.");
 		}
 	}
 
 	public boolean studentExistance(int student_id) {
 		Student student = studentService.readStudentById(student_id);
-		if(student != null)
-		{
-			if(student.isActive())
-			{
-				return true;
-			}
-		}
+		if (student != null)
+			return true;
 		return false;
 	}
 
 	public void deleteStudentById() {
 		readAllRecords();
-		try {
-			System.out.print("Enter Student ID to Delete: ");
-			String input = scanner.nextLine().trim();
+		System.out.print("Enter Student ID to Delete: ");
+		int id = scanner.nextInt();
+		scanner.nextLine();
 
-			if (!input.matches("\\d+"))
-				throw new ValidationException("Student ID must be a positive number.");
+		Student student = studentService.deleteStudentById(id);
 
-			int id = Integer.parseInt(input);
-			if (id <= 0)
-				throw new ValidationException("Student ID must be greater than zero.");
+		if (student != null) {
+			String border = "+------------------------------------------------------------+";
+			String title = "|                    DELETED STUDENT DETAIL                   |";
 
-			
-			studentCourseController = new StudentCourseController();
-
-			if (feesController.checkPendingFees(id)) {
-				System.out.println("Cannot Deactivate Student Because Student Fees is Pending !!");
-				return;
-			}
-
-			feesController.deleteStudent(id);
-			studentCourseController.deleteCourseFromStudent(id);
-			Student student = studentService.deleteStudentById(id);
-
-			if (student != null) {
-				String border = "+------------------------------------------------------------+";
-				String title = "|                    DELETED STUDENT DETAIL                   |";
-
-				System.out.println(border);
-				System.out.println(title);
-				System.out.println(border);
-				System.out.printf("| %-15s : %-40s |\n", "Student ID", student.getStudentId());
-				System.out.printf("| %-15s : %-40s |\n", "Name", student.getStudentName());
-				System.out.printf("| %-15s : %-40s |\n", "Active", student.isActive() ? "Yes" : "No");
-				System.out.printf("| %-15s : %-40s |\n", "Admission", student.getAdmission());
-				System.out.println(border);
-			} else {
-				System.out.println("Student with ID " + id + " not found Or Already Inactive.");
-			}
-		} catch (ValidationException e) {
-			System.out.println("Error: " + e.getMessage());
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.printf("| %-15s : %-40s |\n", "Student ID", student.getStudentId());
+			System.out.printf("| %-15s : %-40s |\n", "Name", student.getStudentName());
+			System.out.printf("| %-15s : %-40s |\n", "Active", student.isActive() ? "Yes" : "No");
+			System.out.printf("| %-15s : %-40s |\n", "Admission", student.getAdmission());
+			System.out.println(border);
+		} else {
+			System.out.println("Student with ID " + id + " not found Or Already Inactive.");
 		}
+
 	}
 
 	public void payStudentFees() {
-	    System.out.print("Enter Student ID: ");
-	    int studentId = Integer.parseInt(scanner.nextLine().trim());
+		System.out.print("Enter Student ID: ");
+		int studentId = Integer.parseInt(scanner.nextLine().trim());
 
-	    // Initialize studentCourseController only once
-	    if (studentCourseController == null) {
-	        studentCourseController = new StudentCourseController();
-	    }
+		// Initialize studentCourseController only once
+		if (studentCourseController == null) {
+			studentCourseController = new StudentCourseController();
+		}
 
-	    // Step 1: Display enrolled courses
-	    List<Fees> enrolledCourses = studentCourseController.getEnrolledCoursesByStudentId(studentId);
+		// Step 1: Display enrolled courses
+		List<Fees> enrolledCourses = studentCourseController.getEnrolledCoursesByStudentId(studentId);
 
-	    if (enrolledCourses == null || enrolledCourses.isEmpty()) {
-	        System.out.println("No courses found for the student.");
-	        return;
-	    }
+		if (enrolledCourses == null || enrolledCourses.isEmpty()) {
+			System.out.println("No courses found for the student.");
+			return;
+		}
 
-	    System.out.println("\n+--------------------------------------------------------------+");
-	    System.out.println("|                  Enrolled Courses                            |");
-	    System.out.println("+--------------------------------------------------------------+");
-	    System.out.printf("| %-10s | %-25s | %-10s | %-10s |\n", "Course ID", "Course Name", "Paid (₹)", "Pending (₹)");
-	    System.out.println("+--------------------------------------------------------------+");
+		boolean isPending = false;
+		for (Fees fee : enrolledCourses) {
+			if(fee.getAmountPending()!=0)
+			{
+				isPending = true;
+				break;
+			}
+		}
+		
+		if(!isPending)
+		{
+			return;
+		}
+		
+		System.out.println("\n+--------------------------------------------------------------+");
+		System.out.println("|                  Enrolled Courses                            |");
+		System.out.println("+--------------------------------------------------------------+");
+		System.out.printf("| %-10s | %-25s | %-10s | %-10s |\n", "Course ID", "Course Name", "Paid (₹)", "Pending (₹)");
+		System.out.println("+--------------------------------------------------------------+");
 
-	    for (Fees fee : enrolledCourses) {
-	        System.out.printf("| %-10d | %-25s | %-10.2f | %-11.2f |\n",
-	            fee.getCourseId(), fee.getCourseName(),
-	            fee.getAmountPaid(), fee.getAmountPending());
-	    }
-	    System.out.println("+--------------------------------------------------------------+\n");
+		for (Fees fee : enrolledCourses) {
+			System.out.printf("| %-10d | %-25s | %-10.2f | %-11.2f |\n", fee.getCourseId(), fee.getCourseName(),
+					fee.getAmountPaid(), fee.getAmountPending());
+		}
+		System.out.println("+--------------------------------------------------------------+\n");
 
-	    // Step 2: Ask course ID to pay
-	    System.out.print("Enter Course ID to pay fee for: ");
-	    int courseId = Integer.parseInt(scanner.nextLine().trim());
+		// Step 2: Ask course ID to pay
+		System.out.print("Enter Course ID to pay fee for: ");
+		int courseId = Integer.parseInt(scanner.nextLine().trim());
 
-	    // Step 3: Fetch fee detail for selected course
-	    Fees selectedFee = feesController.getFeeByStudentAndCourse(studentId, courseId);
+		// Step 3: Fetch fee detail for selected course
+		Fees selectedFee = feesController.getFeeByStudentAndCourse(studentId, courseId);
 
-	    if (selectedFee == null) {
-	        System.out.println("No fee record found for the selected course.");
-	        return;
-	    }
+		if (selectedFee == null) {
+			System.out.println("No fee record found for the selected course.");
+			return;
+		}
 
-	    System.out.println("\n---------------------- Fee Details ----------------------");
-	    System.out.println("Course ID       : " + selectedFee.getCourseId());
-	    System.out.println("Course Name     : " + selectedFee.getCourseName());
-	    System.out.println("Amount Paid     : ₹" + selectedFee.getAmountPaid());
-	    System.out.println("Amount Pending  : ₹" + selectedFee.getAmountPending());
-	    System.out.println("Payment Status  : " + selectedFee.getPaymentType());
-	    System.out.println("---------------------------------------------------------");
+		System.out.println("\n---------------------- Fee Details ----------------------");
+		System.out.println("Course ID       : " + selectedFee.getCourseId());
+		System.out.println("Course Name     : " + selectedFee.getCourseName());
+		System.out.println("Amount Paid     : ₹" + selectedFee.getAmountPaid());
+		System.out.println("Amount Pending  : ₹" + selectedFee.getAmountPending());
+		System.out.println("Payment Status  : " + selectedFee.getPaymentType());
+		System.out.println("---------------------------------------------------------");
 
-	    // Step 4: Choose payment method
-	    String paymentType = null;
-	    while (true) {
-	        System.out.println("\nChoose Payment Method:");
-	        System.out.println("1. Cash");
-	        System.out.println("2. UPI");
-	        System.out.println("3. Card");
-	        System.out.println("4. Exit");
-	        System.out.print("Enter your choice: ");
+		// Step 4: Choose payment method
+		 String paymentType = null;
+		while (true) {
+			System.out.println("\nChoose Payment Method:");
+			System.out.println("1. Cash");
+			System.out.println("2. UPI");
+			System.out.println("3. Card");
+			System.out.println("4. Exit");
+			System.out.print("Enter your choice: ");
 
-	        int choice = Integer.parseInt(scanner.nextLine().trim());
+			int choice = Integer.parseInt(scanner.nextLine().trim());
 
-	        switch (choice) {
-	            case 1:
-	                paymentType = "Cash";
-	                break;
-	            case 2:
-	                paymentType = "UPI";
-	                break;
-	            case 3:
-	                paymentType = "Card";
-	                break;
-	            case 4:
-	                System.out.println("Payment canceled.");
-	                return;
-	            default:
-	                System.out.println("Invalid choice. Please try again.");
-	                continue;
-	        }
-	        break;
-	    }
+			switch (choice) {
+			case 1:
+				paymentType = "Cash";
+				break;
+			case 2:
+				paymentType = "UPI";
+				break;
+			case 3:
+				paymentType = "Card";
+				break;
+			case 4:
+				System.out.println("Payment canceled.");
+				return;
+			default:
+				System.out.println("Invalid choice. Please try again.");
+				continue;
+			}
+			break;
+		}
 
-	    // Step 5: Enter amount
-	    System.out.print("Enter amount to pay: ₹");
-	    double amountToPay = 0.0;
-
-	    try {
-	        amountToPay = Double.parseDouble(scanner.nextLine().trim());
-	    } catch (NumberFormatException e) {
-	        System.out.println("Invalid amount entered.");
-	        return;
-	    }
-
-	    // Step 6: Validate and process
-	    if (amountToPay <= 0) {
-	        System.out.println("Entered amount cannot be zero or negative.");
-	        return;
-	    } else if (amountToPay > selectedFee.getAmountPending()) {
-	        System.out.println("Your entered amount is more than required pending amount.");
-	        return;
-	    }
-
-	    boolean success = feesController.processFeePayment(studentId, courseId, amountToPay, paymentType);
-
-	    if (success) {
-	        System.out.println("Payment successful!");
-	    } else {
-	        System.out.println("Payment failed.");
-	    }
-	}
-
-	public void showAllCoursesById() throws ValidationException{
+		System.out.print("Enter amount to pay: ₹");
+		double amountToPay = 0.0;
 
 		try {
+			amountToPay = Double.parseDouble(scanner.nextLine().trim());
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid amount entered.");
+			return;
+		}
+
+		// Step 6: Validate and process
+		if (amountToPay <= 0) {
+			System.out.println("Entered amount cannot be zero or negative.");
+			return;
+		} else if (amountToPay > selectedFee.getAmountPending()) {
+			System.out.println("Your entered amount is more than required pending amount.");
+			return;
+		}
+
+		boolean success = feesController.processFeePayment(studentId, courseId, amountToPay, paymentType);
+
+		if (success) {
+			System.out.println("Payment successful via " + paymentType + ". Amount Paid: ₹" + amountToPay);
+
+			// --- Fetch Notification Preference ---
+			String preference = notificationService.getNotificationPreference(studentId);
+
+			// --- Send Notifications Based on Preference ---
+			if ("Both".equalsIgnoreCase(preference)) {
+				sendReceipt("SMS", studentId, amountToPay, selectedFee.getCourseName(), paymentType);
+				sendReceipt("Email", studentId, amountToPay, selectedFee.getCourseName(), paymentType);
+			} else if ("SMS".equalsIgnoreCase(preference)) {
+				sendReceipt("SMS", studentId, amountToPay, selectedFee.getCourseName(), paymentType);
+			} else if ("Email".equalsIgnoreCase(preference)) {
+				sendReceipt("Email", studentId, amountToPay, selectedFee.getCourseName(), paymentType);
+			} else {
+				System.out.println("No notifications set for this student.");
+			}
+
+		} else {
+			System.out.println("Payment failed.");
+		}
+	}
+
+	public void showAllCoursesById() throws ValidationException {
+		try {
 			studentCourseController = new StudentCourseController();
-			
+
 			readAllRecords();
 			System.out.print("Enter Student ID : ");
 			String input = scanner.nextLine().trim();
@@ -408,5 +441,133 @@ public class StudentController {
 			throw e;
 		}
 	}
+
+	private void sendReceipt(String method, int studentId, double amountToPay, String courseName, String paymentType) {
+	    System.out.println("\n====================================================");
+	    System.out.println("                   PAYMENT RECEIPT                  ");
+	    System.out.println("====================================================");
+	    System.out.printf("Receipt No.    : %05d\n", (int)(Math.random() * 100000)); 
+	    System.out.printf("Date & Time    : %s\n", java.time.LocalDateTime.now());
+	    System.out.printf("Student ID     : %d\n", studentId);
+	    System.out.printf("Course Name    : %s\n", courseName);
+	    System.out.printf("Amount Paid    : ₹%.2f\n", amountToPay);
+	    System.out.printf("Payment Method : %s\n", paymentType);
+	    System.out.println("----------------------------------------------------");
+	    System.out.println("          Thank you for your payment!               ");
+	    System.out.println("      An official receipt has been sent via         ");
+	    System.out.println("              " + method.toUpperCase() + " NOTIFICATION             ");
+	    System.out.println("====================================================\n");
+	}
+	
+	public boolean manageNotification() {
+	    System.out.print("Enter Student ID: ");
+	    int studentId = Integer.parseInt(scanner.nextLine().trim());
+
+	    // Step 1: Get current preference
+	    String currentPreference = notificationService.getNotificationPreference(studentId);
+	    if (currentPreference == null) {
+	        System.out.println("No notification preference found for this student.");
+	        return false;
+	    }
+
+	    System.out.println("\n>>> Current Notification Preference: " + currentPreference);
+
+	    // Step 2: Ask to Update or Remove
+	    System.out.println("\nWhat do you want to do?");
+	    System.out.println("1. Update Notification");
+	    System.out.println("2. Remove Notification");
+	    System.out.println("3. Cancel");
+	    System.out.print("Enter your choice: ");
+
+	    int actionChoice;
+	    try {
+	        actionChoice = Integer.parseInt(scanner.nextLine().trim());
+	    } catch (NumberFormatException e) {
+	        System.out.println("Invalid input.");
+	        return false;
+	    }
+
+	    // Step 3: Based on action, handle separately
+	    String newPreference = currentPreference;
+
+	    if (actionChoice == 1) {
+	        // ----- Update Flow -----
+	        System.out.println("\nChoose new Notification Preference:");
+	        System.out.println("1. SMS");
+	        System.out.println("2. Email");
+	        System.out.println("3. Both");
+	        System.out.println("4. Cancel");
+	        System.out.print("Enter your choice: ");
+
+	        int updateChoice;
+	        try {
+	            updateChoice = Integer.parseInt(scanner.nextLine().trim());
+	            switch (updateChoice) {
+	                case 1: newPreference = "SMS"; break;
+	                case 2: newPreference = "Email"; break;
+	                case 3: newPreference = "Both"; break;
+	                case 4:
+	                    System.out.println("Update canceled.");
+	                    return false;
+	                default:
+	                    System.out.println("Invalid choice.");
+	                    return false;
+	            }
+	        } catch (NumberFormatException e) {
+	            System.out.println("Invalid input.");
+	            return false;
+	        }
+
+	    } else if (actionChoice == 2) {
+	        // ----- Remove Flow -----
+	        System.out.println("\nWhich notification do you want to remove?");
+	        System.out.println("1. SMS");
+	        System.out.println("2. Email");
+	        System.out.println("3. Both");
+	        System.out.println("4. Cancel");
+	        System.out.print("Enter your choice: ");
+
+	        int removeChoice;
+	        try {
+	            removeChoice = Integer.parseInt(scanner.nextLine().trim());
+	            switch (removeChoice) {
+	                case 1: 
+	                    newPreference = currentPreference.equals("Both") ? "Email" : "None";
+	                    break;
+	                case 2: 
+	                    newPreference = currentPreference.equals("Both") ? "SMS" : "None";
+	                    break;
+	                case 3: 
+	                    newPreference = "None";
+	                    break;
+	                case 4:
+	                    System.out.println("Remove canceled.");
+	                    return false;
+	                default:
+	                    System.out.println("Invalid choice.");
+	                    return false;
+	            }
+	        } catch (NumberFormatException e) {
+	            System.out.println("Invalid input.");
+	            return false;
+	        }
+
+	    } else {
+	        System.out.println("Canceled.");
+	        return false;
+	    }
+
+	    // Step 4: Update database
+	    boolean updated = notificationService.updateNotificationPreference(studentId, newPreference);
+	    if (updated) {
+	        System.out.println("Notification preference changed to: " + newPreference);
+	    } else {
+	        System.out.println("Failed to update notification preference.");
+	    }
+
+	    return updated;
+	}
+
+
 
 }

@@ -14,14 +14,7 @@ public class FeeController {
 
 	public void getTotalPaidFees() {
 		try {
-			double totalPaid = feeService.getTotalPaidFees();
-			String border = "+------------------------------------------------------+";
-			String title = "|            TOTAL FEES PAID BY STUDENTS               |";
-			System.out.println(border);
-			System.out.println(title);
-			System.out.println(border);
-			System.out.printf("| %-25s : ₹%-20.2f    |\n", "Total Paid", totalPaid);
-			System.out.println(border);
+			System.out.println("Total Paid: ₹" + feeService.getTotalPaidFees());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -29,14 +22,7 @@ public class FeeController {
 
 	public void getTotalPendingFees() {
 		try {
-			double totalPending = feeService.getTotalPendingFees();
-			String border = "+----------------------------------------------------------+";
-			String title = "|         TOTAL FEES PENDING FROM STUDENTS                 |";
-			System.out.println(border);
-			System.out.println(title);
-			System.out.println(border);
-			System.out.printf("| %-32s : ₹%-20.2f |\n", "Total Pending", totalPending);
-			System.out.println(border);
+			System.out.println("Total Pending: ₹" + feeService.getTotalPendingFees());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -45,37 +31,18 @@ public class FeeController {
 	public void getStudentsFees() {
 		System.out.print("Enter Student ID: ");
 		int studentId = scanner.nextInt();
-		scanner.nextLine();
-
+		List<Fees> fee;
 		try {
-			List<Fees> fee = feeService.getFeesByStudent(studentId);
-			if (fee == null || fee.isEmpty()) {
-				System.out.println("No courses assigned to student. No fees data available.");
-				return;
-			}
-			System.out.println(fee);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public boolean checkPendingFees(int student_id) {
-		try {
-			List<Fees> fees = feeService.getFeesByStudent(student_id);
-
-			if (fees == null || fees.isEmpty()) {
-				return false;
-			}
-
-			for (Fees fee : fees) {
-				if (fee.getAmountPending() > 0.0) {
-					return true;
-				}
+			fee = feeService.getFeesByStudent(studentId);
+			if (fee != null) {
+				System.out.println(fee);
+			} else {
+				System.out.println("Student not found.");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;
+
 	}
 
 	public void getCourseFees() {
@@ -105,11 +72,13 @@ public class FeeController {
 				"Total Fee", "Paid", "Pending");
 		System.out.println(
 				"+------------------------------------------------------------------------------------------+");
+
 		for (Fees fee : feeList) {
 			double totalFee = fee.getAmountPaid() + fee.getAmountPending();
 			System.out.printf("| %-8d | %-12d | %-20s | %-10.2f | %-10.2f | %-10.2f |\n", fee.getFeeId(),
 					fee.getStudentId(), fee.getStudentName(), totalFee, fee.getAmountPaid(), fee.getAmountPending());
 		}
+
 		System.out.println(
 				"+------------------------------------------------------------------------------------------+");
 	}
@@ -159,33 +128,19 @@ public class FeeController {
 
 	public void getTotalEarning() {
 		try {
-			double totalEarning = feeService.getTotalEarning();
-
-			String border = "+-----------------------------------------------------------+";
-			String title = "|               Total Earning of Institute                  |";
-
-			System.out.println(border);
-			System.out.println(title);
-			System.out.println(border);
-			System.out.printf("| %-25s : ₹%-20.2f         |\n", "Total Earning", totalEarning);
-			System.out.println(border);
-
+			System.out.println("Total Earning: ₹" + feeService.getTotalEarning());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	public void deleteStudent(int id) {
-		feeService.deleteStudent(id);
-	}
 	public Fees getFeeByStudentAndCourse(int id, int courseId) {
-		feeService.getFeeByStudentAndCourse(id, courseId);
-		return null;
+		return feeService.getFeeByStudentAndCourse(id, courseId);
 	}
 
-	public boolean processFeePayment(int paymentId, int courseId, double amountToPay, String paymentType) {
-		return feeService.processFeePayment(paymentId, courseId, amountToPay, paymentType);
+	public boolean processFeePayment(int studentId , int courseId, double amountToPay, String paymentType) {
+		return feeService.processFeePayment(studentId, courseId, amountToPay, paymentType);
 	}
 
 }

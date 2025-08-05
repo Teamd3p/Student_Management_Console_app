@@ -21,17 +21,4 @@ public class ProfileService {
 
 		return profileDao.insertStudent(profile);
 	}
-	
-    public boolean checkDuplicatePhone(String phone) {
-        return profileDao.checkDuplicatePhone(phone);
-    }
-
-    public boolean checkDuplicateEmail(String email) {
-        return profileDao.checkDuplicateEmail(email);
-    }
-
-	public List<Profile> readAllActiveProfiles(String user_type) {
-		return profileDao.readAllActiveProfiles(user_type);
-
-	}
 }

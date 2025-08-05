@@ -21,8 +21,6 @@ public class StudentCourseController {
 	private final FeeController feesController;
 	private final FeeService feesservice;
 	private final CourseService courseService;
-	
-	
 
 	public StudentCourseController() {
 		this.studentCourseService = new StudentCourseService();
@@ -51,21 +49,26 @@ public class StudentCourseController {
 					studentCourse.setStudentId(studentId);
 					studentCourse.setCourseId(courseId);
 					studentCourse.setEnrolledAt(LocalDateTime.now());
-					
+
 					studentCourseService.AssignCourseToStudent(studentCourse);
-					
+
 					Course course = courseService.searchCourse(courseId);
-					
-					
-					Fees fee = new Fees(courseId,studentId,0.0,course.getCourseFees());
+
+					Fees fee = new Fees(courseId, studentId, 0.0, course.getCourseFees());
 					feesservice.insertNewRecord(fee);
-					
+
+					System.out.println("You Want To Pay Fees Now(Yes/No): ");
+					String choice = scanner.nextLine();
+
+					if (choice.equalsIgnoreCase("yes")) {
+						studentController.payStudentFees();
+					}
 					return;
 				}
 				System.out.println("Course With id " + courseId + " doesn't exists Or Not Active!!");
 				return;
 			}
-			System.out.println("Student With id " + studentId + " doesn't exists Or Not Active!!");
+			System.out.println("Student With id " + studentId + " doesn't exists !!");
 		} catch (NumberFormatException e) {
 			System.out.println("Invalid input. Please enter numeric values for IDs.");
 		} catch (Exception e) {
@@ -74,15 +77,54 @@ public class StudentCourseController {
 		}
 	}
 
-	public void deleteCourseFromStudent(int student_id) {
-		studentCourseService.deleteStudentCourse(student_id);
-	}
+//	public List<Fees> viewCourseByStudentId(int id) {
+//		if (studentController.studentExistance(id)) {
+//			List<Fees> courses = studentCourseService.getCourseByStudentId(id); 
+//
+//			if (courses == null || courses.isEmpty()) {
+//				System.out.println("No courses found for student ID: " + id);
+//				return null;
+//			}
+//
+//			System.out.println("\n+-------------------------------------------------------------+");
+//			System.out.println("|                    Enrolled Courses                        |");
+//			System.out.println("+-------------------------------------------------------------+");
+//			System.out.printf("| %-10s | %-25s | %-10s |\n", "Course ID", "Course Name", "Course Fee");
+//			System.out.println("+-------------------------------------------------------------+");
+//
+//			for (Fees course : courses) {
+//				System.out.printf("| %-10d | %-25s | ₹%-9.2f |\n", course.getCourseId(), course.getCourseName(),
+//						course.getAmountPaid(), course.getAmountPending());
+//			}
+//
+//			System.out.println("+-------------------------------------------------------------+");
+//		}
+//		System.out.print("Enter Course ID: ");
+//		int courseId = Integer.parseInt(scanner.nextLine().trim());
+//		if (courseController.courseExistance(courseId)) {
+//			Fees fee = feesController.getFeeByStudentAndCourse(id, courseId);
+//			if (fee != null) {
+//				System.out.println("\n------------------------------------");
+//				System.out.println("           Fee Details              ");
+//				System.out.println("------------------------------------");
+//				System.out.println("Course Id     : " + fee.getCourseId());
+//				System.out.println("Course Name     : " + fee.getCourseName());
+//				System.out.println("Amount Paid     : ₹" + fee.getAmountPaid());
+//				System.out.println("Amount Pending  : ₹" + fee.getAmountPending());
+//				System.out.println("------------------------------------\n");
+//			} else {
+//				System.out.println("No fee record found for the given student and course.");
+//			}
+//		}
+//		return fee;
+//
+//	}
 
 	public List<Fees> getEnrolledCoursesByStudentId(int studentId) {
-	    if (studentController.studentExistance(studentId)) {
-	        return studentCourseService.getCourseByStudentId(studentId);
-	    }
-	    return new ArrayList<>();
+		if (studentController.studentExistance(studentId)) {
+			return studentCourseService.getCourseByStudentId(studentId);
+		}
+		return new ArrayList<>();
 	}
 
 	public void getAllCourses(int id) {
@@ -106,9 +148,7 @@ public class StudentCourseController {
 					course.getCourseFees(), course.isActive() ? "Yes" : "No");
 		}
 
-
 		System.out.println(border);
-
 	}
 
 }

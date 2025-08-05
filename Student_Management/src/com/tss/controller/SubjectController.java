@@ -134,25 +134,5 @@ public class SubjectController {
 	            System.out.println(" Failed to delete subject with ID " + subjectId + ".");
 	        }
 	    }
-
-	 public List<Subject> readSubjectsAssignedToTeachers(int teacherId) {
-		 List<Subject> subjects = subjectService.readSubjectsAssignedToTeachers(teacherId);
-
-		    System.out.println("\n+--------------------------------------------------------------+");
-		    System.out.println("|                        SUBJECT RECORDS                       |");
-		    System.out.println("+--------------------------------------------------------------+");
-		    System.out.printf("| %-10s | %-25s | %-20s |\n", "Subject ID", "Subject Name", "Description");
-		    System.out.println("+--------------------------------------------------------------+");
-
-		    for (Subject subject : subjects) {
-		        System.out.printf("| %-10d | %-25s | %-20s |\n",
-		                subject.getSubjectId(),
-		                subject.getSubjectName(),
-		                subject.getSubjectDescription());
-		    }
-
-		    System.out.println("+--------------------------------------------------------------+");
-		return subjects;
-	 }
 }
 
