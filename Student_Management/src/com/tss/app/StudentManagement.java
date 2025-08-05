@@ -22,7 +22,8 @@ public class StudentManagement implements MenuHandler {
 		System.out.println("| 7. Pay Student Fees          |");
 		System.out.println("| 8. View All Course Of Student|");
 		System.out.println("| 9. Manage Notification       |");
-		System.out.println("| 10. Go Back                  |");
+		System.out.println("| 10. Restore Student          |");
+		System.out.println("| 11. Go Back                  |");
 		System.out.println("+------------------------------+");
 	}
 
@@ -76,6 +77,9 @@ public class StudentManagement implements MenuHandler {
 					controller.manageNotification();
 					break;
 				case 10:
+					controller.restoreStudent();
+					break;
+				case 11:
 					System.out.println(">> Returning to main menu...");
 					return;
 				default:

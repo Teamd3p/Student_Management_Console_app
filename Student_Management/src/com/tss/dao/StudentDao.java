@@ -130,4 +130,21 @@ public class StudentDao {
 		
 		return null;
 	}
+
+	public boolean restoreStudent(int studentId) {
+		
+		String sql = "UPDATE Students SET is_Active = True WHERE student_id=?";
+		
+		try {
+			prepareStatement = connection.prepareStatement(sql);
+			prepareStatement.setInt(1, studentId);
+			
+			return prepareStatement.executeUpdate()>0;
+		}catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}
+		
+		return false;
+	}
 }

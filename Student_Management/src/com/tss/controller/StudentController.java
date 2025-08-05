@@ -11,7 +11,9 @@ import com.tss.model.Profile;
 import com.tss.model.Student;
 import com.tss.service.NotificationService;
 import com.tss.service.ProfileService;
+import com.tss.service.StudentCourseService;
 import com.tss.service.StudentService;
+import com.tss.util.InputUtil;
 
 public class StudentController {
 
@@ -244,10 +246,8 @@ public class StudentController {
 
 	public boolean studentExistance(int student_id) {
 		Student student = studentService.readStudentById(student_id);
-		if (student != null)
-		{
-			if(student.isActive())
-			{
+		if (student != null) {
+			if (student.isActive()) {
 				return true;
 			}
 		}
@@ -281,13 +281,11 @@ public class StudentController {
 	}
 
 	public void payStudentFees(int studentId) {
-		
 
 		if (studentCourseController == null) {
 			studentCourseController = new StudentCourseController();
 		}
-
-		// Step 1: Display enrolled courses
+		// Step 1: Display  courses
 		List<Fees> enrolledCourses = studentCourseController.getEnrolledCoursesByStudentId(studentId);
 
 		if (enrolledCourses == null || enrolledCourses.isEmpty()) {
@@ -297,21 +295,19 @@ public class StudentController {
 
 		boolean isPending = false;
 		for (Fees fee : enrolledCourses) {
-			if(fee.getAmountPending()!=0)
-			{
+			if (fee.getAmountPending() != 0) {
 				isPending = true;
 				break;
 			}
 		}
-		
-		if(!isPending)
-		{
+
+		if (!isPending) {
 			System.out.println("Fees ALready Paid !!");
 			return;
 		}
-		
-		List<Fees>pendingAmountCourse = new ArrayList<Fees>();
-		
+
+		List<Fees> pendingAmountCourse = new ArrayList<Fees>();
+
 		System.out.println("\n+--------------------------------------------------------------+");
 		System.out.println("|                  Enrolled Courses                            |");
 		System.out.println("+--------------------------------------------------------------+");
@@ -321,9 +317,8 @@ public class StudentController {
 		for (Fees fee : enrolledCourses) {
 			System.out.printf("| %-10d | %-25s | %-10.2f | %-11.2f |\n", fee.getCourseId(), fee.getCourseName(),
 					fee.getAmountPaid(), fee.getAmountPending());
-			
-			if(fee.getAmountPending()==0)
-			{
+
+			if (fee.getAmountPending() == 0) {
 				pendingAmountCourse.add(fee);
 			}
 		}
@@ -340,8 +335,7 @@ public class StudentController {
 			System.out.println("No fee record found for the selected course.");
 			return;
 		}
-		if(selectedFee.getAmountPending() == 0)
-		{
+		if (selectedFee.getAmountPending() == 0) {
 			System.out.println("For This Course Fees Is Already Paid .");
 			return;
 		}
@@ -633,6 +627,68 @@ public class StudentController {
 		}
 
 		return updated;
+	}
+
+	public void restoreStudent() {
+		List<Student> students = studentService.readAllStudent();
+
+		if (students.isEmpty()) {
+			System.out.println("No Student Present In Database !!");
+			return;
+		}
+
+		boolean hasDeactivated = false;
+
+		for (Student student : students) {
+		    if (!student.isActive()) {
+		        hasDeactivated = true;
+		        break;
+		    }
+		}
+
+		if (!hasDeactivated) {
+		    System.out.println("No deactivated students found.");
+		    return; 
+		}
+		String border = "+------------+--------------------------+--------+---------------------+";
+		String header = "| Student ID | Name                     | Active | Admission           |";
+
+		System.out.println(border);
+		System.out.println("|                    DEACTIVATED STUDENT DETAILS                       |");
+		System.out.println(border);
+		System.out.println(header);
+		System.out.println(border);
+
+		for (Student student : students) {
+		    if (!student.isActive()) {
+		        System.out.printf("| %-10s | %-24s | %-6s | %-19s |\n",
+		            student.getStudentId(),
+		            student.getStudentName(),
+		            "No",
+		            student.getAdmission().toString() // format if needed
+		        );
+		    }
+		}
+		System.out.println(border);
+		
+		int studentId = InputUtil.readInt("Enter Student ID:");
+		
+		
+		Student student = studentService.readStudentById(studentId);
+		if(student == null || student.isActive())
+		{
+			System.out.println("Student Is Already Active Or Not Found !!");
+			return;
+		}
+		
+		boolean restored = studentService.restoreStudent(studentId);
+		
+		if(restored)
+		{
+			System.out.println("Restored Successfully !!");
+			return;
+		}
+		System.out.println("Restored Failed !!");
 	}
 
 }

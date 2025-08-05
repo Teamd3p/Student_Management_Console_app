@@ -22,7 +22,6 @@ public class Fees {
 		this.amountPaid = amountPaid;
 		this.amountPending = amountPending;
 		this.courseName = courseName;
-
 		this.studentName = studentName;
 	}
 
@@ -111,8 +110,6 @@ public class Fees {
 		this.feeId = feeId;
 	}
 
-	public void setFeeId(int feeId) {
-		this.feeId = feeId;
-	}
+
 
 }
