@@ -107,6 +107,9 @@ public class Fees {
 				+ amountPaid + ", amountPending=" + amountPending + ", courseName=" + courseName + ", studentName="
 				+ studentName + "]";
 	}
+	public void setFeeId(int feeId) {
+		this.feeId = feeId;
+	}
 
 	
 }
