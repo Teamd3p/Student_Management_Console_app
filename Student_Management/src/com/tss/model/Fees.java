@@ -11,8 +11,9 @@ public class Fees {
 	private String paymentType;
 
 	public Fees() {
-		
+
 	}
+
 	public Fees(int feeId, int courseId, int studentId, double amountPaid, double amountPending, String courseName,
 			String studentName) {
 		this.feeId = feeId;
@@ -37,9 +38,9 @@ public class Fees {
 		this.studentId = studentId2;
 		this.amountPaid = amountPaid;
 		this.amountPending = courseFees;
-		
+
 	}
-	
+
 	public int getFeeId() {
 		return feeId;
 	}
@@ -67,8 +68,6 @@ public class Fees {
 	public String getStudentName() {
 		return studentName;
 	}
-	
-	
 
 	public void setCourseId(int courseId) {
 		this.courseId = courseId;
@@ -93,14 +92,15 @@ public class Fees {
 	public void setStudentName(String studentName) {
 		this.studentName = studentName;
 	}
-	
 
 	public String getPaymentType() {
 		return paymentType;
 	}
+
 	public void setPaymentType(String paymentType) {
 		this.paymentType = paymentType;
 	}
+
 	@Override
 	public String toString() {
 		return "Fees [feeId=" + feeId + ", courseId=" + courseId + ", studentId=" + studentId + ", amountPaid="
@@ -108,5 +108,8 @@ public class Fees {
 				+ studentName + "]";
 	}
 
-	
+	public void setFeeId(int feeId) {
+		this.feeId = feeId;
+	}
+
 }

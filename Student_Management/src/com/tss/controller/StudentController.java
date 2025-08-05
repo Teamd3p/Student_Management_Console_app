@@ -520,6 +520,7 @@ public class StudentController {
 	}
 
 	public boolean manageNotification() {
+		readAllRecords();
 		System.out.print("Enter Student ID: ");
 		int studentId = Integer.parseInt(scanner.nextLine().trim());
 

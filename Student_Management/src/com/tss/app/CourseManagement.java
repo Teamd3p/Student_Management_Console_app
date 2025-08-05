@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import com.tss.controller.CourseController;
 import com.tss.controller.SubjectCourseController;
+import com.tss.util.InputUtil;
 
 public class CourseManagement implements MenuHandler {
 
@@ -27,14 +28,13 @@ public class CourseManagement implements MenuHandler {
 
     @Override
     public void chooseMenu() {
-        int choice;
+        int choice = -1;
 
         CourseController controller = new CourseController();
         SubjectCourseController subjectCourseController = new SubjectCourseController();
          while (true) {
             showMenu();
-            choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+			choice = InputUtil.readInt("Enter your choice: ");
 
             switch (choice) {
                 case 1:

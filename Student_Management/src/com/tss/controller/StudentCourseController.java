@@ -50,7 +50,8 @@ public class StudentCourseController {
 					studentCourse.setCourseId(courseId);
 					studentCourse.setEnrolledAt(LocalDateTime.now());
 
-					studentCourseService.AssignCourseToStudent(studentCourse);
+					if(studentCourseService.AssignCourseToStudent(studentCourse))
+					{
 
 					Course course = courseService.searchCourse(courseId);
 
@@ -62,6 +63,7 @@ public class StudentCourseController {
 
 					if (choice.equalsIgnoreCase("yes")) {
 						studentController.payStudentFees(studentId);
+					}
 					}
 					return;
 				}

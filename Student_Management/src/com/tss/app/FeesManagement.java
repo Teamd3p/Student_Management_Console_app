@@ -5,6 +5,7 @@ import java.util.Scanner;
 import com.tss.controller.CourseController;
 import com.tss.controller.FeeController;
 import com.tss.controller.StudentController;
+import com.tss.util.InputUtil;
 
 public class FeesManagement implements MenuHandler {
 
@@ -29,12 +30,12 @@ public class FeesManagement implements MenuHandler {
     }
 
     public void chooseMenu() {
-        int choice;
+        int choice = -1;
 
         while (true) {
             showMenu();
-            choice = scanner.nextInt();
-            scanner.nextLine();
+			choice = InputUtil.readInt("Enter your choice: ");
+
             switch (choice) {
                 case 1:
                     System.out.println(">> Viewing total paid fees...");
