@@ -134,5 +134,7 @@ public class SubjectController {
 	            System.out.println(" Failed to delete subject with ID " + subjectId + ".");
 	        }
 	    }
+
+	 
 }
 

@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import com.tss.exception.ValidationException;
 import com.tss.model.Profile;
+import com.tss.model.Subject;
 import com.tss.model.Teacher;
 import com.tss.service.ProfileService;
 import com.tss.service.TeacherService;
@@ -174,6 +175,7 @@ public class TeacherController {
 		System.out.println("Subjects Tables");
 		subjectController.readAllSubjects();
 
+		
 		System.out.print("Enter Subject ID: ");
 		int subjectId = scanner.nextInt();
 		boolean assigned = teacherService.assignSubject(teacherId, subjectId);
@@ -186,13 +188,14 @@ public class TeacherController {
 
 	}
 
-	public boolean removeSubject() {
+	public void removeSubject() {
 		System.out.print("Enter Teacher ID: ");
 		int teacherId = scanner.nextInt();
 
-		System.out.println("Subjects Tables");
-		subjectController.readAllSubjects();
-
+		if(!readAllSubjectsOfTeacher(teacherId))
+		{
+			return;
+		}
 		System.out.print("Enter Subject ID: ");
 		int subjectId = scanner.nextInt();
 		boolean removed = teacherService.removeSubject(teacherId, subjectId);
@@ -201,7 +204,39 @@ public class TeacherController {
 		} else {
 			System.out.println("Remove Operation failed.");
 		}
-		return removed;
+		
+	}
 
+	public boolean readAllSubjectsOfTeacher(int teacherId) {
+		List<Subject>teachersAssignedSubjects = teacherService.readTeacherSubjectById(teacherId);
+		
+		if(teachersAssignedSubjects.isEmpty())
+		{
+			System.out.println("No Subject Assigned To This Teacher");
+			return false;
+		}
+		String title = "Teacher's Subject";
+		int tableWidth = 35; // total width of the box
+
+		int padding = (tableWidth - title.length()) / 2;
+		String formatTitle = String.format("|%" + padding + "s%s%" + padding + "s|\n", "", title, "");
+		if ((title.length() % 2) != (tableWidth % 2)) {
+		    formatTitle = formatTitle.replace("|", "| "); // for odd length mismatch adjustment
+		}
+
+		System.out.println("+" + "-".repeat(tableWidth) + "+");
+		System.out.print(formatTitle);
+		System.out.println("+" + "-".repeat(tableWidth) + "+");
+
+		System.out.printf("| %-10s | %-20s |\n", "Subject ID", "Subject Name");
+		System.out.println("+------------+----------------------+");
+
+		for (Subject subject : teachersAssignedSubjects) {
+		    System.out.printf("| %-10s | %-20s |\n", subject.getSubjectId(), subject.getSubjectName());
+		}
+
+		System.out.println("+------------+----------------------+");
+
+		return true;
 	}
 }

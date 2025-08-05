@@ -89,7 +89,7 @@ public class StudentCourseDao {
 
 	public List<Course> getAllCourses(int id) {
 		List<Course> courses = new ArrayList<>();
-	    String sql = "SELECT c.course_id, c.course_name, c.course_fees, c.is_active, "
+	    String sql = "SELECT c.course_id, c.course_name, c.course_fees, c.is_active "
 	               + "FROM Courses c "
 	               + "JOIN StudentCourse sc ON c.course_id = sc.course_id "
 	               + "WHERE sc.student_id = ?";
