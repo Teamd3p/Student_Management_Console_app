@@ -665,7 +665,7 @@ public class StudentController {
 		            student.getStudentId(),
 		            student.getStudentName(),
 		            "No",
-		            student.getAdmission().toString() // format if needed
+		            student.getAdmission().toString()
 		        );
 		    }
 		}
