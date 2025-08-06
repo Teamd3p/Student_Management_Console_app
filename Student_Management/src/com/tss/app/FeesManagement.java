@@ -14,18 +14,19 @@ public class FeesManagement implements MenuHandler {
     CourseController courseController = new CourseController();
 
     public void showMenu() {
-        System.out.println("\n+-------------------------------+");
-        System.out.println("|        FEES MANAGEMENT        |");
-        System.out.println("+-------------------------------+");
-        System.out.println("| 1. View Total Paid Fees       |");
-        System.out.println("| 2. View Total Pending Fees    |");
-        System.out.println("| 3. View Fees By Student       |");
-        System.out.println("| 4. View Fees By Course        |");
-        System.out.println("| 5. Update Fees Of A Course    |");
-        System.out.println("| 6. Total Earning              |");
-        System.out.println("| 7. Go Back                    |");
-        System.out.println("+-------------------------------+");
-        System.out.print("Enter your choice: ");
+    	System.out.println("╔═══════════════════════════════╗");
+    	System.out.println("║        FEES MANAGEMENT        ║");
+    	System.out.println("╠═══════════════════════════════╣");
+    	System.out.println("║ 1. View Total Paid Fees       ║");
+    	System.out.println("║ 2. View Total Pending Fees    ║");
+    	System.out.println("║ 3. View Fees By Student       ║");
+    	System.out.println("║ 4. View Fees By Course        ║");
+    	System.out.println("║ 5. Update Fees Of A Course    ║");
+    	System.out.println("║ 6. Total Earning              ║");
+    	System.out.println("║ 7. Go Back                    ║");
+    	System.out.println("╚═══════════════════════════════╝");
+    	System.out.print("Enter your choice: ");
+
     }
 
     public void chooseMenu() {

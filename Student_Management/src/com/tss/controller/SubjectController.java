@@ -38,7 +38,7 @@ public class SubjectController {
 
 	
 	public void addSubject() {
-	    System.out.println("\n+------------------------------+");
+	    System.out.println("+------------------------------+");
 	    System.out.println("|        ADD NEW SUBJECT       |");
 	    System.out.println("+------------------------------+");
 
@@ -53,8 +53,8 @@ public class SubjectController {
 	    Subject addedSubject = subjectService.addSubject(subject); // Get back subject with generated ID
 
 	    if (addedSubject != null) {
-	        System.out.println("\n+------------------------------------------------------+");
-	        System.out.println("|                   ✅ SUBJECT ADDED                   |");
+	        System.out.println("+------------------------------------------------------+");
+	        System.out.println("|                     SUBJECT ADDED                    |");
 	        System.out.println("+------------------------------------------------------+");
 	        System.out.printf("| %-15s : %-32d |\n", "Subject ID", addedSubject.getSubjectId());
 	        System.out.printf("| %-15s : %-32s |\n", "Subject Name", addedSubject.getSubjectName());

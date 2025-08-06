@@ -81,7 +81,7 @@ public class TeacherController {
 	        boolean success = teacherService.addTeacher(teacher);
 
 	        if (success) {
-	            int teacherId = teacher.getTeacherId(); // Ensure this ID is being set after insert
+	            int teacherId = teacher.getTeacherId();
 
 	            boolean profileSuccess = false;
 	            while (!profileSuccess) {

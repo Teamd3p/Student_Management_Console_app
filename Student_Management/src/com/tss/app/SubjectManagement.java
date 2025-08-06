@@ -11,16 +11,17 @@ public class SubjectManagement implements MenuHandler {
 
 	@Override
 	public void showMenu() {
-		System.out.println("\n+------------------------------+");
-        System.out.println("|      SUBJECT MANAGEMENT      |");
-        System.out.println("+------------------------------+");
-        System.out.println("| 1. View All Subjects         |");
-        System.out.println("| 2. Add New Subject           |");
-        System.out.println("| 3. Update A Subject          |");
-        System.out.println("| 4. Delete A Subject          |");
-        System.out.println("| 5. Go Back                   |");
-        System.out.println("+------------------------------+");
-        System.out.print("Enter your choice: ");
+		System.out.println("╔══════════════════════════════╗");
+		System.out.println("║      SUBJECT MANAGEMENT      ║");
+		System.out.println("╠══════════════════════════════╣");
+		System.out.println("║ 1. View All Subjects         ║");
+		System.out.println("║ 2. Add New Subject           ║");
+		System.out.println("║ 3. Update A Subject          ║");
+		System.out.println("║ 4. Delete A Subject          ║");
+		System.out.println("║ 5. Go Back                   ║");
+		System.out.println("╚══════════════════════════════╝");
+		System.out.print("Enter your choice: ");
+
 	}
 
 	@Override

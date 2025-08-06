@@ -165,12 +165,16 @@ public class StudentController {
 
 				while (true) {
 					try {
-						System.out.println("\nChoose Notification Preference:");
-						System.out.println("1. SMS");
-						System.out.println("2. Email");
-						System.out.println("3. Both");
-						System.out.println("4. None");
+						System.out.println("╔══════════════════════════════════╗");
+						System.out.println("║     CHOOSE NOTIFICATION TYPE     ║");
+						System.out.println("╠══════════════════════════════════╣");
+						System.out.println("║ 1. SMS                           ║");
+						System.out.println("║ 2. Email                         ║");
+						System.out.println("║ 3. Both                          ║");
+						System.out.println("║ 4. None                          ║");
+						System.out.println("╚══════════════════════════════════╝");
 						System.out.print("Enter your choice: ");
+
 
 						int choice = Integer.parseInt(scanner.nextLine().trim());
 						switch (choice) {
@@ -344,12 +348,16 @@ public class StudentController {
 		// Step 4: Choose payment method
 		String paymentType = null;
 		while (true) {
-			System.out.println("\nChoose Payment Method:");
-			System.out.println("1. Cash");
-			System.out.println("2. UPI");
-			System.out.println("3. Card");
-			System.out.println("4. Exit");
+			System.out.println("╔════════════════════════════════╗");
+			System.out.println("║       CHOOSE PAYMENT METHOD    ║");
+			System.out.println("╠════════════════════════════════╣");
+			System.out.println("║ 1. Cash                        ║");
+			System.out.println("║ 2. UPI                         ║");
+			System.out.println("║ 3. Card                        ║");
+			System.out.println("║ 4. Exit                        ║");
+			System.out.println("╚════════════════════════════════╝");
 			System.out.print("Enter your choice: ");
+
 
 			int choice = Integer.parseInt(scanner.nextLine().trim());
 
@@ -520,11 +528,15 @@ public class StudentController {
 		System.out.println("\n>>> Current Notification Preference: " + currentPreference);
 
 		// Step 2: Ask to Update or Remove
-		System.out.println("\nWhat do you want to do?");
-		System.out.println("1. Update Notification");
-		System.out.println("2. Remove Notification");
-		System.out.println("3. Cancel");
+		System.out.println("╔══════════════════════════════════╗");
+		System.out.println("║      WHAT DO YOU WANT TO DO?     ║");
+		System.out.println("╠══════════════════════════════════╣");
+		System.out.println("║ 1. Add/Update Notification       ║");
+		System.out.println("║ 2. Remove Notification           ║");
+		System.out.println("║ 3. Cancel                        ║");
+		System.out.println("╚══════════════════════════════════╝");
 		System.out.print("Enter your choice: ");
+
 
 		int actionChoice;
 		try {
@@ -539,12 +551,16 @@ public class StudentController {
 
 		if (actionChoice == 1) {
 			// ----- Update Flow -----
-			System.out.println("\nChoose new Notification Preference:");
-			System.out.println("1. SMS");
-			System.out.println("2. Email");
-			System.out.println("3. Both");
-			System.out.println("4. Cancel");
+			System.out.println("╔══════════════════════════════════╗");
+			System.out.println("║   CHOOSE NEW NOTIFICATION TYPE   ║");
+			System.out.println("╠══════════════════════════════════╣");
+			System.out.println("║ 1. SMS                           ║");
+			System.out.println("║ 2. Email                         ║");
+			System.out.println("║ 3. Both                          ║");
+			System.out.println("║ 4. Cancel                        ║");
+			System.out.println("╚══════════════════════════════════╝");
 			System.out.print("Enter your choice: ");
+
 
 			int updateChoice;
 			try {
@@ -573,11 +589,14 @@ public class StudentController {
 
 		} else if (actionChoice == 2) {
 			// ----- Remove Flow -----
-			System.out.println("\nWhich notification do you want to remove?");
-			System.out.println("1. SMS");
-			System.out.println("2. Email");
-			System.out.println("3. Both");
-			System.out.println("4. Cancel");
+			System.out.println("╔══════════════════════════════════╗");
+			System.out.println("║   CHOOSE REMOVE NOTIFICATION     ║");
+			System.out.println("╠══════════════════════════════════╣");
+			System.out.println("║ 1. SMS                           ║");
+			System.out.println("║ 2. Email                         ║");
+			System.out.println("║ 3. Both                          ║");
+			System.out.println("║ 4. Cancel                        ║");
+			System.out.println("╚══════════════════════════════════╝");
 			System.out.print("Enter your choice: ");
 
 			int removeChoice;
@@ -620,5 +639,7 @@ public class StudentController {
 
 		return updated;
 	}
+	
+
 
 }
