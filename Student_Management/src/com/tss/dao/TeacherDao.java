@@ -25,24 +25,41 @@ public class TeacherDao {
 
 	
 
-	public List<Teacher> getAllTeachers() {
-		List<Teacher> teachers = new ArrayList<>();
+	public List<TeacherWithProfileDTO> getAllTeachers() {
+	    List<TeacherWithProfileDTO> list = new ArrayList<>();
 
-		try {
-			stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Teachers");
+	    String query = "SELECT * FROM Teachers INNER JOIN Profiles ON Teachers.teacher_id = Profiles.user_id WHERE user_type = 'teacher' ";
 
-			while (rs.next()) {
-				Teacher teacher = new Teacher(rs.getInt("teacher_id"), rs.getString("teacher_name"),
-						rs.getBoolean("is_active"), rs.getString("joining_date"));
-				teachers.add(teacher);
-			}
+	    try (Statement stmt = connection.createStatement();
+	         ResultSet rs = stmt.executeQuery(query)) {
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	        while (rs.next()) {
+	            Teacher teacher = new Teacher(
+	                rs.getInt("teacher_id"),
+	                rs.getString("teacher_name"),
+	                rs.getBoolean("is_active"),
+	                rs.getString("joining_date")
+	            );
 
-		return teachers;
+	            Profile profile = new Profile(
+	                rs.getInt("id"),
+	                rs.getString("phone_number"),
+	                rs.getString("email"),
+	                rs.getString("address"),
+	                rs.getInt("age"),
+	                rs.getString("user_type"),
+	                rs.getInt("user_id")
+	            );
+
+	            TeacherWithProfileDTO twp = new TeacherWithProfileDTO(teacher, profile);
+	            list.add(twp);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return list;
 	}
 
 	public boolean addTeacher(Teacher teacher) {
@@ -75,26 +92,46 @@ public class TeacherDao {
 
 
 	public Teacher getByIdTeacher(int id) {
-		String sql = "SELECT * FROM Teachers WHERE teacher_id = ?";
+	    String sql = "SELECT t.teacher_id, t.teacher_name, s.subject_name, t.is_active, t.joining_date " +
+	                 "FROM Teachers AS t " +
+	                 "JOIN TeacherSubjects AS ts ON t.teacher_id = ts.teacher_id " +
+	                 "JOIN Subjects AS s ON ts.subject_id = s.subject_id " +
+	                 "WHERE t.teacher_id = ?;";
 
-		try {
-			prepareStatement = connection.prepareStatement(sql);
-			prepareStatement.setInt(1, id);
-			try (ResultSet rs = prepareStatement.executeQuery()) {
-				if (rs.next()) {
-					return new Teacher(rs.getInt("teacher_id"), rs.getString("teacher_name"),
-							rs.getBoolean("is_active"), rs.getString("joining_date"));
-				} else {
-					System.out.println("No teacher found with ID: " + id);
-					return null;
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
+	    try {
+	        prepareStatement = connection.prepareStatement(sql);
+	        prepareStatement.setInt(1, id);
 
+	        try (ResultSet rs = prepareStatement.executeQuery()) {
+	            List<String> subjects = new ArrayList<>();
+	            int teacherId = 0;
+	            String teacherName = null;
+	            boolean isActive = false;
+	            String joiningDate = null;
+
+	            while (rs.next()) {
+	                if (teacherName == null) { // capture common teacher details once
+	                    teacherId = rs.getInt("teacher_id");
+	                    teacherName = rs.getString("teacher_name");
+	                    isActive = rs.getBoolean("is_active");
+	                    joiningDate = rs.getString("joining_date");
+	                }
+	                subjects.add(rs.getString("subject_name"));
+	            }
+
+	            if (teacherName != null) {
+	                return new Teacher(teacherId, teacherName, subjects, isActive, joiningDate);
+	            } else {
+	                System.out.println("No teacher found with ID: " + id);
+	                return null;
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
+
 	
 	public boolean deleteTeacher(int id) {
 		String deleteSub = "DELETE FROM TeacherSubjects WHERE teacher_id = ?";

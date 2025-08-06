@@ -10,7 +10,7 @@ import com.tss.model.Teacher;
 public class TeacherService {
 	private TeacherDao dao = new TeacherDao();
 
-	public List<Teacher> getAllTeachers() {
+	public List<TeacherWithProfileDTO> getAllTeachers() {
 		return dao.getAllTeachers();
 	}
 

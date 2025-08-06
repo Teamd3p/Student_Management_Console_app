@@ -67,7 +67,8 @@ public class Fees {
 	public String getStudentName() {
 		return studentName;
 	}
-
+	
+	
 	public void setCourseId(int courseId) {
 		this.courseId = courseId;
 	}

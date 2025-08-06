@@ -132,25 +132,37 @@ public class StudentCourseController {
 	public void getAllCourses(int id) {
 		List<Course> courses = studentCourseService.getAllCourses(id);
 
-		if (courses.isEmpty() || courses == null) {
+		if (courses == null || courses.isEmpty()) {
 			System.out.println("Student With ID " + id + " Not Enrolled in Any Course !!");
 			return;
 		}
-		String border = "+-------------+--------------------------+-----------+--------+";
-		String title = "|                 Student's Enrolled Courses                  |";
 
-		System.out.println("+-------------------------------------------------------------+");
-		System.out.println(title);
+		String border = "+----------------------------------------------------------------------+";
+		String header = "|                         Student's Enrolled Courses                   |";
+		String columns = "| Course ID   | Course Name                    | Fees (₹)     | Active |";
+		String separator = "|-------------|--------------------------------|--------------|--------|";
+
+		System.out.println();
 		System.out.println(border);
-		System.out.printf("| %-11s | %-24s | %-9s | %-6s |\n", "Course ID", "Course Name", "Fees (₹)", "Active");
+		System.out.println(header);
 		System.out.println(border);
+		System.out.println(columns);
+		System.out.println(separator);
 
 		for (Course course : courses) {
-			System.out.printf("| %-11d | %-24s | ₹%-8.2f | %-6s |\n", course.getCourseId(), course.getCourseName(),
-					course.getCourseFees(), course.isActive() ? "Yes" : "No");
+			String courseName = truncate(course.getCourseName(), 30);
+			System.out.printf("| %-11d | %-30s | ₹%-11.2f | %-6s |\n",
+					course.getCourseId(),
+					courseName,
+					course.getCourseFees(),
+					course.isActive() ? "Yes" : "No");
 		}
 
 		System.out.println(border);
 	}
 
+	private String truncate(String text, int limit) {
+		if (text == null) return "N/A";
+		return text.length() > limit ? text.substring(0, limit - 3) + "..." : text;
+	}
 }

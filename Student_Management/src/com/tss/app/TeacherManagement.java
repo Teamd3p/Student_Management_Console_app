@@ -13,17 +13,19 @@ public class TeacherManagement implements MenuHandler {
 
 	@Override
 	public void showMenu() {
-		System.out.println("\n+------------------------------+");
-		System.out.println("|       TEACHER MANAGEMENT     |");
-		System.out.println("+------------------------------+");
-		System.out.println("| 1. View All Teachers         |");
-		System.out.println("| 2. Add New Teacher           |");
-		System.out.println("| 3. Assign Subjects           |");
-		System.out.println("| 4. Remove A Subject          |");
-		System.out.println("| 5. Search A Teacher          |");
-		System.out.println("| 6. Delete A Teacher          |");
-		System.out.println("| 7. Go Back                   |");
-		System.out.println("+------------------------------+");
+		System.out.println("╔══════════════════════════════╗");
+		System.out.println("║       TEACHER MANAGEMENT     ║");
+		System.out.println("╠══════════════════════════════╣");
+		System.out.println("║ 1. View All Teachers         ║");
+		System.out.println("║ 2. Add New Teacher           ║");
+		System.out.println("║ 3. Assign Subjects           ║");
+		System.out.println("║ 4. Remove A Subject          ║");
+		System.out.println("║ 5. Search A Teacher          ║");
+		System.out.println("║ 6. Delete A Teacher          ║");
+		System.out.println("║ 7. Go Back                   ║");
+		System.out.println("╚══════════════════════════════╝");
+		System.out.print("Enter your choice: ");
+
 	}
 
 	@Override
