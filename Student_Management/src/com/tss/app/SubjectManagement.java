@@ -3,7 +3,8 @@ package com.tss.app;
 import java.util.Scanner;
 
 import com.tss.controller.SubjectController;
-import com.tss.util.InputUtil;
+import com.tss.exception.ValidationException;
+import com.tss.util.InputValidator;
 
 public class SubjectManagement implements MenuHandler {
 	
@@ -31,8 +32,12 @@ public class SubjectManagement implements MenuHandler {
 	        while (true) {
 	            showMenu();
 
-				choice = InputUtil.readInt("Enter your choice: ");
-
+	            try {
+					choice = InputValidator.readChoice("Enter your choice: ");
+				} catch (ValidationException e) {
+					System.out.println(e.getMessage());
+					continue;
+				}
 	            switch (choice) {
                 case 1:
                     subjectController.readAllSubjects();

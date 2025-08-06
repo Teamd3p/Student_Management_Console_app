@@ -4,7 +4,7 @@ import com.tss.controller.CourseController;
 import com.tss.controller.StudentController;
 import com.tss.controller.StudentCourseController;
 import com.tss.exception.ValidationException;
-import com.tss.util.InputUtil;
+import com.tss.util.InputValidator;
 
 public class StudentManagement implements MenuHandler {
 
@@ -36,8 +36,12 @@ public class StudentManagement implements MenuHandler {
 
 		while (true) {
 			showMenu();
-			choice = InputUtil.readInt("Enter your choice: ");
-
+			try {
+				choice = InputValidator.readChoice("Enter your choice: ");
+			} catch (ValidationException e) {
+				System.out.println(e.getMessage());
+				continue;
+			}
 			switch (choice) {
 				case 1:
 					controller.readAllRecords();
@@ -63,15 +67,16 @@ public class StudentManagement implements MenuHandler {
 					break;
 				case 7:
 					controller.readAllRecords();
-					int studentId = InputUtil.readInt("Enter Student ID: ");
+				int studentId = 0;
+				try {
+					studentId = InputValidator.readStudentId("Enter Student ID: ");
+				} catch (ValidationException e) {
+					System.out.println(e.getMessage());
+				}
 					controller.payStudentFees(studentId);
 					break;
 				case 8:
-					try {
-						controller.showAllCoursesById();
-					} catch (ValidationException e) {
-						System.out.println(e.getMessage());
-					}
+				controller.showAllCoursesById();
 					break;
 				case 9:
 					controller.manageNotification();

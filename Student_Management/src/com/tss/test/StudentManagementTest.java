@@ -11,7 +11,8 @@ import com.tss.app.TeacherManagement;
 
 import com.tss.controller.DashboardController;
 import com.tss.controller.FeeController;
-import com.tss.util.InputUtil;
+import com.tss.exception.ValidationException;
+import com.tss.util.InputValidator;
 import com.tss.controller.DashboardController;
 
 
@@ -25,7 +26,13 @@ public class StudentManagementTest {
 
 		while (true) {
 			printMenu();
-			choice = InputUtil.readInt("Enter your choice: ");
+			
+			try {
+				choice = InputValidator.readChoice("Enter your choice: ");
+			} catch (ValidationException e) {
+				System.out.println(e.getMessage());
+				continue;
+			}
 
 				switch (choice) {
 				case 1:
@@ -75,6 +82,5 @@ public class StudentManagementTest {
 		System.out.println("| 6. Dashboard                  |");
 		System.out.println("| 7. Exit                       |");
 		System.out.println("+-------------------------------+");
-		System.out.print("Enter your choice: ");
 	}
 }
