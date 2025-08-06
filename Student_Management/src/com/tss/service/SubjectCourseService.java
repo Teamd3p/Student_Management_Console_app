@@ -26,4 +26,9 @@ public class SubjectCourseService {
         return subjectCourseDao.getSubjectsByCourseId(courseId);
     }
 
+	public boolean checkIfSubjectAlreadyExistsInCourse(int subjectId, int courseId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

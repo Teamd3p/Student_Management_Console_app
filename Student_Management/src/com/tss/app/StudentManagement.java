@@ -70,7 +70,7 @@ public class StudentManagement implements MenuHandler {
 					controller.readAllRecords();
 				int studentId = 0;
 				try {
-					studentId = InputValidator.readStudentId("Enter Student ID: ");
+					studentId = InputValidator.readId("Enter Student ID: ");
 				} catch (ValidationException e) {
 					System.out.println(e.getMessage());
 				}

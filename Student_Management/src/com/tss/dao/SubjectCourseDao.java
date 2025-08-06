@@ -22,18 +22,35 @@ public class SubjectCourseDao {
     }
 
     public boolean insertCourseSubject(SubjectCourse subjectCourse) {
-        String sql = "INSERT INTO CourseSubjects (subject_id, course_id) VALUES (?, ?)";
+        String checkSql = "SELECT 1 FROM CourseSubjects WHERE subject_id = ? AND course_id = ?";
+        String insertSql = "INSERT INTO CourseSubjects (subject_id, course_id) VALUES (?, ?)";
+
         try {
-            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement(checkSql);
             preparedStatement.setInt(1, subjectCourse.getSubjectId());
             preparedStatement.setInt(2, subjectCourse.getCourseId());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                System.out.println("Error: This subject is already assigned to the course.");
+                return false;
+            }
+
+            // If not exists, insert the new record
+            preparedStatement = connection.prepareStatement(insertSql);
+            preparedStatement.setInt(1, subjectCourse.getSubjectId());
+            preparedStatement.setInt(2, subjectCourse.getCourseId());
+
             int rows = preparedStatement.executeUpdate();
             return rows > 0;
+
         } catch (SQLException e) {
             System.err.println("Error inserting course-subject relation: " + e.getMessage());
         }
+
         return false;
     }
+
     
     public List<Subject> getSubjectsByCourseId(int courseId) {
         List<Subject> subjects = new ArrayList<>();

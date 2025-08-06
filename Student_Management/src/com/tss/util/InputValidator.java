@@ -57,15 +57,15 @@ public class InputValidator {
         return age;
     }
 
-    public static int readStudentId(String prompt) throws ValidationException {
+    public static int readId(String prompt) throws ValidationException {
         System.out.print(prompt);
         String input = scanner.nextLine().trim();
         if (!input.matches("\\d+")) {
-            throw new ValidationException("Student ID must be a positive number.");
+            throw new ValidationException("ID must be a positive number.");
         }
         int id = Integer.parseInt(input);
         if (id <= 0) {
-            throw new ValidationException("Student ID must be greater than zero.");
+            throw new ValidationException("ID must be greater than zero.");
         }
         return id;
     }

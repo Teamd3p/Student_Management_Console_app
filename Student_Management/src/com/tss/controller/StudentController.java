@@ -200,7 +200,7 @@ public class StudentController {
 
 	public void searchStudentById() {
 		try {
-			int id = InputValidator.readStudentId("Enter Student ID to search: ");
+			int id = InputValidator.readId("Enter Student ID to search: ");
 			Student student = studentService.readStudentById(id);
 
 			if (student != null) {
@@ -231,7 +231,7 @@ public class StudentController {
 	public void deleteStudentById() {
 		readAllRecords();
 		try {
-			int id = InputValidator.readStudentId("Enter Student ID to Delete: ");
+			int id = InputValidator.readId("Enter Student ID to Delete: ");
 			
 			List<Fees> fees = feeService.getFeesByStudent(id);
 			
@@ -291,7 +291,7 @@ public class StudentController {
 	public void showAllCoursesById() {
 		try {
 			readAllRecords();
-			int id = InputValidator.readStudentId("Enter Student ID: ");
+			int id = InputValidator.readId("Enter Student ID: ");
 			if (!studentExistance(id)) {
 				System.out.println("Student with ID " + id + " not found Or Inactive.");
 				return;
@@ -307,7 +307,7 @@ public class StudentController {
 	public boolean manageNotification() {
 	    readAllRecords();
 	    try {
-	        int studentId = InputValidator.readStudentId("Enter Student ID: ");
+	        int studentId = InputValidator.readId("Enter Student ID: ");
 	        NotificationController notificationController = new NotificationController();
 	        return notificationController.manageStudentNotification(studentId);
 	    } catch (ValidationException e) {
@@ -344,7 +344,7 @@ public class StudentController {
 		System.out.println(border);
 
 		try {
-			int studentId = InputValidator.readStudentId("Enter Student ID: ");
+			int studentId = InputValidator.readId("Enter Student ID: ");
 			Student student = studentService.readStudentById(studentId);
 			if (student == null || student.isActive()) {
 				System.out.println("Student Is Already Active Or Not Found !!");
