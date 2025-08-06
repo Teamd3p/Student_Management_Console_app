@@ -5,8 +5,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
+import com.tss.exception.ValidationException;
 import com.tss.model.Fees;
 import com.tss.service.NotificationService;
+import com.tss.util.InputValidator;
 
 public class PaymentController {
 
@@ -19,7 +21,7 @@ public class PaymentController {
         this.notificationService = new NotificationService();
     }
 
-    public void handleStudentFeePayment(int studentId, List<Fees> enrolledCourses) {
+    public void handleStudentFeePayment(int studentId, List<Fees> enrolledCourses) throws ValidationException {
         boolean hasPending = enrolledCourses.stream().anyMatch(f -> f.getAmountPending() > 0);
 
         if (!hasPending) {
@@ -78,16 +80,21 @@ public class PaymentController {
         System.out.println("+--------------------------------------------------------------+\n");
     }
 
-    private String choosePaymentMethod() {
+    private String choosePaymentMethod() throws ValidationException {
         while (true) {
-            System.out.println("\nChoose Payment Method:");
-            System.out.println("1. Cash\n2. UPI\n3. Card\n4. Cancel");
-            System.out.print("Enter your choice: ");
-            String choice = scanner.nextLine().trim();
+        	System.out.println("╔════════════════════════════════╗");
+			System.out.println("║       CHOOSE PAYMENT METHOD    ║");
+			System.out.println("╠════════════════════════════════╣");
+			System.out.println("║ 1. Cash                        ║");
+			System.out.println("║ 2. UPI                         ║");
+			System.out.println("║ 3. Card                        ║");
+			System.out.println("║ 4. Exit                        ║");
+			System.out.println("╚════════════════════════════════╝");
 
+			int choice = InputValidator.readChoice("Enter your choice: ");
             switch (choice) {
-                case "1": return "Cash";
-                case "2":
+                case 1: return "Cash";
+                case 2:
                     System.out.print("Enter UPI ID: ");
                     String upi = scanner.nextLine().trim();
                     if (!upi.matches("^[\\w.-]+@[a-zA-Z]+$")) {
@@ -95,10 +102,10 @@ public class PaymentController {
                         continue;
                     }
                     return "UPI";
-                case "3":
+                case 3:
                     if (!validateCard()) return null;
                     return "Card";
-                case "4":
+                case 4:
                     return null;
                 default:
                     System.out.println("Invalid choice.");

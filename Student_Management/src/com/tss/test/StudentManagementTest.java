@@ -71,16 +71,17 @@ public class StudentManagementTest {
 		}
 
 	public static void printMenu() {
-		System.out.println("+-------------------------------+");
-		System.out.println("|         MAIN MENU             |");
-		System.out.println("+-------------------------------+");
-		System.out.println("| 1. Student Management         |");
-		System.out.println("| 2. Course Management          |");
-		System.out.println("| 3. Teacher Management         |");
-		System.out.println("| 4. Fees Management            |");
-		System.out.println("| 5. Subject Management         |");
-		System.out.println("| 6. Dashboard                  |");
-		System.out.println("| 7. Exit                       |");
-		System.out.println("+-------------------------------+");
+		System.out.println("╔═══════════════════════════════╗");
+		System.out.println("║           MAIN MENU           ║");
+		System.out.println("╠═══════════════════════════════╣");
+		System.out.println("║ 1. Student Management         ║");
+		System.out.println("║ 2. Course Management          ║");
+		System.out.println("║ 3. Teacher Management         ║");
+		System.out.println("║ 4. Fees Management            ║");
+		System.out.println("║ 5. Subject Management         ║");
+		System.out.println("║ 6. Dashboard                  ║");
+		System.out.println("║ 7. Exit                       ║");
+		System.out.println("╚═══════════════════════════════╝");
+
 	}
 }

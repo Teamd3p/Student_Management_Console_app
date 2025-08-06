@@ -21,9 +21,9 @@ public class FeeService {
 		return dao.getFeesByStudent(studentId);
 	}
 
-	public List<Fees> getFeesByCourse(int courseId) throws SQLException {
-		return dao.getFeesByCourse(courseId);
-	}
+//	public List<Fees> getFeesByCourse(int courseId) throws SQLException {
+//		return dao.getFeesByCourse(courseId);
+//	}
 
 	public boolean updateCourseFees(int courseId, double newAmount) throws SQLException {
 		return dao.updateCourseFees(courseId, newAmount);

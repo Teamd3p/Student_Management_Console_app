@@ -13,18 +13,18 @@ public class CourseManagement implements MenuHandler {
 
     @Override
     public void showMenu() {
-        System.out.println("\n+------------------------------+");
-        System.out.println("|       COURSE MANAGEMENT      |");
-        System.out.println("+------------------------------+");
-        System.out.println("| 1. View All Courses          |");
-        System.out.println("| 2. Add New Course            |");
-        System.out.println("| 3. Add Subjects in a Course  |");
-        System.out.println("| 4. View Subjects of a Course |");
-        System.out.println("| 5. Search a Course           |");
-        System.out.println("| 6. Delete a Course           |");
-        System.out.println("| 7. Go Back                   |");
-        System.out.println("+------------------------------+");
-        System.out.print("Enter your choice: ");
+    	System.out.println("╔══════════════════════════════╗");
+    	System.out.println("║       COURSE MANAGEMENT      ║");
+    	System.out.println("╠══════════════════════════════╣");
+    	System.out.println("║ 1. View All Courses          ║");
+    	System.out.println("║ 2. Add New Course            ║");
+    	System.out.println("║ 3. Add Subjects in a Course  ║");
+    	System.out.println("║ 4. View Subjects of a Course ║");
+    	System.out.println("║ 5. Search a Course           ║");
+    	System.out.println("║ 6. Delete a Course           ║");
+    	System.out.println("║ 7. Go Back                   ║");
+    	System.out.println("╚══════════════════════════════╝");
+
     }
 
     @Override
