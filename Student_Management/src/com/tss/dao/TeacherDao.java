@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 import com.tss.database.DBConnection;
+import com.tss.model.Subject;
 import com.tss.model.Teacher;
 
 public class TeacherDao {
@@ -114,6 +115,7 @@ public class TeacherDao {
 
 	
 	public boolean deleteTeacher(int id) {
+		String deleteSub = "DELETE FROM TeacherSubjects WHERE teacher_id = ?";
 	    String checkSql = "SELECT is_active FROM Teachers WHERE teacher_id = ?";
 	    String updateSql = "UPDATE Teachers SET is_active = false WHERE teacher_id = ?";
 
@@ -129,11 +131,16 @@ public class TeacherDao {
 	                System.out.println("Teacher is already inactive.");
 	                return false;
 	            }
-
+	            
+	            prepareStatement = connection.prepareStatement(deleteSub);
+	            prepareStatement.setInt(1, id);
+	            if(prepareStatement.executeUpdate()>0)
+	            {
 	            prepareStatement = connection.prepareStatement(updateSql);
 	            prepareStatement.setInt(1, id);
 	            int rowsUpdated = prepareStatement.executeUpdate();
 	            return rowsUpdated > 0;
+	            }
 	        } else {
 	            System.out.println("Teacher ID not found.");
 	            return false;
@@ -142,6 +149,7 @@ public class TeacherDao {
 	        e.printStackTrace();
 	        return false;
 	    }
+		return false;
 	}
 
 	
@@ -246,5 +254,33 @@ public class TeacherDao {
 	}
 
 
+
+	public List<Subject> getSubjectsOfTeachers(int teacherId) {
+		List<Subject> subjects = new ArrayList<Subject>();
+		String sql = "SELECT s.* " +
+	             "FROM Teachers t " +
+	             "JOIN TeacherSubjects tc ON tc.teacher_id = t.teacher_id " +
+	             "JOIN Subjects s ON s.subject_id = tc.subject_id " +
+	             "WHERE tc.teacher_id = ?";
+
+		try {
+			prepareStatement = connection.prepareStatement(sql);
+			prepareStatement.setInt(1, teacherId);
+			ResultSet result = prepareStatement.executeQuery();
+			
+			while(result.next())
+			{
+				Subject subject = new Subject();
+				subject.setSubjectId(result.getInt(1));
+				subject.setSubjectName(result.getString(2));
+				subjects.add(subject);
+			}
+		}
+		catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}
+		return subjects;
+	}
 
 }

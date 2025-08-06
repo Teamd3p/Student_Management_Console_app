@@ -69,7 +69,7 @@ public class Fees {
 	}
 	
 	public void setFeeId(int feeId) {
-		this.feeId = feeId;
+		this.feeId= feeId;
 	}
 
 	public void setCourseId(int courseId) {

@@ -1,6 +1,7 @@
 package com.tss.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,14 +19,12 @@ public class StudentController {
 	private ProfileService profileService;
 	private StudentCourseController studentCourseController;
 	private FeeController feesController;
-	private StudentController studentController;
 	private NotificationService notificationService;
 	private Scanner scanner = new Scanner(System.in);
 
 	public StudentController() {
 		this.studentService = new StudentService();
 		this.profileService = new ProfileService();
-		this.studentController = studentController;
 		this.feesController = new FeeController();
 		this.notificationService = new NotificationService();
 	}
@@ -33,19 +32,23 @@ public class StudentController {
 	public void readAllRecords() {
 		List<Student> students = studentService.readAllStudent();
 		List<Profile> profiles = profileService.readAllProfiles("student");
+		System.out.println(
+				"\n+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
+	
+		System.out.println(
+				"|                                                           STUDENT RECORDS                                                                                |");
 
-		// Header
 		System.out.println(
-				"\n+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
-		System.out.println(
-				"|                                                           STUDENT RECORDS                                                                           |");
-		System.out.println(
-				"+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
-		System.out.printf("| %-10s | %-20s | %-6s | %-15s | %-25s | %-20s | %-5s | %-25s |\n", "Student ID", "Name",
-				"Active", "Phone", "Email", "Address", "Age", "Admission");
-		System.out.println(
-				"+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+				"+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
 
+		
+		System.out.printf("| %-12s | %-20s | %-6s | %-15s | %-25s | %-30s | %-3s | %-20s |\n",
+				"Student ID", "Name", "Active", "Phone", "Email", "Address", "Age", "Admission");
+
+		
+		System.out.println(
+				"+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
+		
 		for (Student student : students) {
 			Profile matchedProfile = null;
 			for (Profile profile : profiles) {
@@ -54,31 +57,36 @@ public class StudentController {
 					break;
 				}
 			}
-
 			String phone = matchedProfile != null ? matchedProfile.getPhoneNumber() : "N/A";
-			String email = matchedProfile != null ? matchedProfile.getEmail() : "N/A";
-			String address = matchedProfile != null ? matchedProfile.getAddress() : "N/A";
+			String email = matchedProfile != null ? truncate(matchedProfile.getEmail(), 25) : "N/A";
+			String address = matchedProfile != null ? truncate(matchedProfile.getAddress(), 30) : "N/A";
 			int age = matchedProfile != null ? matchedProfile.getAge() : 0;
 
-			System.out.printf("| %-10d | %-20s | %-6s | %-15s | %-25s | %-20s | %-5d | %-25s |\n",
-					student.getStudentId(), student.getStudentName(), student.isActive() ? "Yes" : "No", phone, email,
-					address, age, student.getAdmission());
+
+			System.out.printf("| %-12d | %-20s | %-6s | %-15s | %-25s | %-30s | %-3d | %-20s |\n",
+					student.getStudentId(),student.getStudentName(),student.isActive() ? "Yes" : "No",
+					phone,email,address,age,student.getAdmission());
 		}
 
 		System.out.println(
-				"+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+				"+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
 	}
 
+	
+	private String truncate(String value, int limit) {
+		if (value == null) return "N/A";
+		return value.length() > limit ? value.substring(0, limit - 3) + "..." : value;
+	}
+	
+	
 	public void insertStudent() throws ValidationException {
 		try {
-			// --- Student Name ---
 			System.out.print("\nEnter Full Student Name: ");
 			String name = scanner.nextLine();
 			if (!name.contains(" ") || !name.matches("[a-zA-Z ]+")) {
 				throw new ValidationException("Enter Proper Name");
 			}
 
-			// --- Admission Date ---
 			System.out.print("Enter Admission Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
 			String dateInput = scanner.nextLine().trim();
 			LocalDateTime admission = dateInput.isEmpty() ? LocalDateTime.now()
@@ -252,7 +260,12 @@ public class StudentController {
 	public boolean studentExistance(int student_id) {
 		Student student = studentService.readStudentById(student_id);
 		if (student != null)
-			return true;
+		{
+			if(student.isActive())
+			{
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -282,11 +295,9 @@ public class StudentController {
 
 	}
 
-	public void payStudentFees() {
-		System.out.print("Enter Student ID: ");
-		int studentId = Integer.parseInt(scanner.nextLine().trim());
+	public void payStudentFees(int studentId) {
+		
 
-		// Initialize studentCourseController only once
 		if (studentCourseController == null) {
 			studentCourseController = new StudentCourseController();
 		}
@@ -310,8 +321,11 @@ public class StudentController {
 		
 		if(!isPending)
 		{
+			System.out.println("Fees ALready Paid !!");
 			return;
 		}
+		
+		List<Fees>pendingAmountCourse = new ArrayList<Fees>();
 		
 		System.out.println("\n+--------------------------------------------------------------+");
 		System.out.println("|                  Enrolled Courses                            |");
@@ -322,6 +336,11 @@ public class StudentController {
 		for (Fees fee : enrolledCourses) {
 			System.out.printf("| %-10d | %-25s | %-10.2f | %-11.2f |\n", fee.getCourseId(), fee.getCourseName(),
 					fee.getAmountPaid(), fee.getAmountPending());
+			
+			if(fee.getAmountPending()==0)
+			{
+				pendingAmountCourse.add(fee);
+			}
 		}
 		System.out.println("+--------------------------------------------------------------+\n");
 
@@ -334,6 +353,11 @@ public class StudentController {
 
 		if (selectedFee == null) {
 			System.out.println("No fee record found for the selected course.");
+			return;
+		}
+		if(selectedFee.getAmountPending() == 0)
+		{
+			System.out.println("For This Course Fees Is Already Paid .");
 			return;
 		}
 

@@ -70,8 +70,7 @@ public class StudentManagement implements MenuHandler {
 				controller.readAllRecords();
 				System.out.print("Enter Student ID: ");
 				int studentId = Integer.parseInt(scanner.nextLine().trim());
-
-				controller.payStudentFees();
+				controller.payStudentFees(studentId);
 				break;
 			case 8:
 				try {

@@ -18,48 +18,60 @@ public class SubjectController {
 	}
 	
 	public void readAllSubjects() {
-	    List<Subject> subjects = subjectService.readAllSubjects();
+		 List<Subject> allSubjects = subjectService.readAllSubjects();
+	        if (allSubjects.isEmpty()) {
+	            System.out.println(">> No subjects found to update.");
+	            return ;
+	        }
 
-	    System.out.println("\n+--------------------------------------------------------------+");
-	    System.out.println("|                        SUBJECT RECORDS                       |");
-	    System.out.println("+--------------------------------------------------------------+");
-	    System.out.printf("| %-10s | %-25s | %-20s |\n", "Subject ID", "Subject Name", "Description");
-	    System.out.println("+--------------------------------------------------------------+");
+	        System.out.println("+-------------------------------------------------+");
+	        System.out.println("|                   SUBJECT LIST                  |");
+	        System.out.println("+----+---------------------+----------------------+");
+	        System.out.printf("| %-2s | %-19s | %-20s |\n", "ID", "Subject Name", "Description");
+	        System.out.println("+----+---------------------+----------------------+");
 
-	    for (Subject subject : subjects) {
-	        System.out.printf("| %-10d | %-25s | %-20s |\n",
-	                subject.getSubjectId(),
-	                subject.getSubjectName(),
-	                subject.getSubjectDescription());
-	    }
-
-	    System.out.println("+--------------------------------------------------------------+");
+	        for (Subject s : allSubjects) {
+	            System.out.printf("| %-2d | %-19s | %-20s |\n",
+	                    s.getSubjectId(),
+	                    truncateText(s.getSubjectName(), 19),
+	                    truncateText(s.getSubjectDescription(), 20));
+	        }
+	        System.out.println("+----+---------------------+----------------------+");
+	        
 	}
 
 	
 	public void addSubject() {
-	    System.out.println("+------------------------------+");
-	    System.out.println("|        ADD NEW SUBJECT       |");
-	    System.out.println("+------------------------------+");
+	    System.out.println("\n+--------------------------------+");
+	    System.out.println("|        ADD NEW SUBJECT         |");
+	    System.out.println("+--------------------------------+");
 
 	    System.out.print("Enter Subject Name: ");
-	    String name = scanner.nextLine();
+	    String subjectName = scanner.nextLine().trim();
+	    if (subjectName.isEmpty()) {
+	        System.out.println("❌ Subject name cannot be empty.");
+	        return;
+	    }
 
 	    System.out.print("Enter Subject Description: ");
-	    String desc = scanner.nextLine();
+	    String subjectDescription = scanner.nextLine().trim();
+	    if (subjectDescription.length() > 100) {
+	        System.out.println("❌ Description too long (max 100 chars).");
+	        return;
+	    }
 
-	    Subject subject = new Subject(name, desc); // No ID taken from user
+	    Subject subject = new Subject(subjectName, subjectDescription); 
 
 	    Subject addedSubject = subjectService.addSubject(subject); // Get back subject with generated ID
 
 	    if (addedSubject != null) {
-	        System.out.println("+------------------------------------------------------+");
-	        System.out.println("|                     SUBJECT ADDED                    |");
-	        System.out.println("+------------------------------------------------------+");
-	        System.out.printf("| %-15s : %-32d |\n", "Subject ID", addedSubject.getSubjectId());
-	        System.out.printf("| %-15s : %-32s |\n", "Subject Name", addedSubject.getSubjectName());
-	        System.out.printf("| %-15s : %-32s |\n", "Description", addedSubject.getSubjectDescription());
-	        System.out.println("+------------------------------------------------------+\n");
+	    	System.out.println("\n+-----------------------------------------------------------+");
+	    	System.out.println("|                  ✅ SUBJECT ADDED SUCCESSFULLY            |");
+	    	System.out.println("+-----------------------+-----------------------------------+");
+	    	System.out.printf("| %-21s | %-33s |\n", "Subject ID", addedSubject.getSubjectId());
+	    	System.out.printf("| %-21s | %-33s |\n", "Subject Name", addedSubject.getSubjectName());
+	    	System.out.printf("| %-21s | %-33s |\n", "Description", addedSubject.getSubjectDescription());
+	    	System.out.println("+-----------------------+-----------------------------------+\n");
 	    } else {
 	        System.out.println("❌ Failed to add subject.");
 	    }
@@ -67,6 +79,27 @@ public class SubjectController {
 	
 	 
 	 public void updateSubject() {
+		 
+		 List<Subject> allSubjects = subjectService.readAllSubjects();
+	        if (allSubjects.isEmpty()) {
+	            System.out.println(">> No subjects found to update.");
+	            return ;
+	        }
+
+	        System.out.println("+-------------------------------------------------+");
+	        System.out.println("|                   SUBJECT LIST                  |");
+	        System.out.println("+----+---------------------+----------------------+");
+	        System.out.printf("| %-2s | %-19s | %-20s |\n", "ID", "Subject Name", "Description");
+	        System.out.println("+----+---------------------+----------------------+");
+
+	        for (Subject s : allSubjects) {
+	            System.out.printf("| %-2d | %-19s | %-20s |\n",
+	                    s.getSubjectId(),
+	                    truncateText(s.getSubjectName(), 19),
+	                    truncateText(s.getSubjectDescription(), 20));
+	        }
+	        System.out.println("+----+---------------------+----------------------+");
+	        
 		 
 		 	System.out.println("\n+-------------------------------+");
 	        System.out.println("|        UPDATE SUBJECT         |");
@@ -92,47 +125,21 @@ public class SubjectController {
 	        
 
 	        if (updated) {
-	        	 System.out.println("\n+------------------------------------------------------+");
-	             System.out.println("|                 🔄 SUBJECT UPDATED                   |");
-	             System.out.println("+------------------------------------------------------+");
-	             System.out.printf("| %-15s : %-32d |\n", "Subject ID", subject.getSubjectId());
-	             System.out.printf("| %-15s : %-32s |\n", "Subject Name", subject.getSubjectName());
-	             System.out.printf("| %-15s : %-32s |\n", "Description", subject.getSubjectDescription());
-	             System.out.println("+------------------------------------------------------+\n");
+	        	System.out.println("\n+------------------------------------------------------------+");
+	        	System.out.println("|                    🔄 SUBJECT UPDATED SUCCESSFULLY         |");
+	        	System.out.println("+-----------------------+------------------------------------+");
+	        	System.out.printf("| %-21s | %-34d |\n", "Subject ID", subject.getSubjectId());
+	        	System.out.printf("| %-21s | %-34s |\n", "Subject Name", subject.getSubjectName());
+	        	System.out.printf("| %-21s | %-34s |\n", "Description", subject.getSubjectDescription());
+	        	System.out.println("+-----------------------+------------------------------------+\n");
 	        } else {
 	            System.out.println(" Failed to update subject.");
 	        }
 	    }
-	 
-	 public void deleteSubjectById() {
-		 	
-		 	System.out.println("\n+-------------------------------+");
-	        System.out.println("|        DELETE SUBJECT         |");
-	        System.out.println("+-------------------------------+");
-
-	        System.out.print("Enter Subject ID to Delete: ");
-	        int subjectId = Integer.parseInt(scanner.nextLine());
-		 
-	        Subject subject = subjectService.getSubjectById(subjectId);
-
-	        if (subject == null) {
-	            System.out.println(" Subject with ID " + subjectId + " not found.");
-	            return;
-	        }
-
-	        boolean deleted = subjectService.deleteSubjectById(subjectId);
-
-	        if (deleted) {
-	        	System.out.println("\n+------------------------------------------------------+");
-	            System.out.println("|                🗑️ SUBJECT DELETED                    |");
-	            System.out.println("+------------------------------------------------------+");
-	            System.out.printf("| %-15s : %-32d |\n", "Subject ID", subject.getSubjectId());
-	            System.out.printf("| %-15s : %-32s |\n", "Subject Name", subject.getSubjectName());
-	            System.out.printf("| %-15s : %-32s |\n", "Description", subject.getSubjectDescription());
-	            System.out.println("+------------------------------------------------------+\n");
-	        } else {
-	            System.out.println(" Failed to delete subject with ID " + subjectId + ".");
-	        }
+	    private String truncateText(String text, int maxLength) {
+	        if (text == null) return "";
+	        return text.length() > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
 	    }
+	    
 }
 

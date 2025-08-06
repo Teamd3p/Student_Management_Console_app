@@ -14,7 +14,21 @@ public class FeeController {
 
 	public void getTotalPaidFees() {
 		try {
-			System.out.println("Total Paid: ₹" + feeService.getTotalPaidFees());
+			double totalPaid = feeService.getTotalPaidFees();
+
+			String border = "+-------------------------------------------+";
+			String title  = "|               TOTAL FEES PAID             |";
+			String header = "| Description              | Amount (₹)     |";
+			String separator = "|--------------------------|----------------|";
+
+			System.out.println();
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.println(header);
+			System.out.println(separator);
+			System.out.printf("| %-24s | ₹%-14.2f|\n", "All Students Combined", totalPaid);
+			System.out.println(border);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -22,7 +36,21 @@ public class FeeController {
 
 	public void getTotalPendingFees() {
 		try {
-			System.out.println("Total Pending: ₹" + feeService.getTotalPendingFees());
+			double totalPending = feeService.getTotalPendingFees();
+
+			String border    = "+-------------------------------------------+";
+			String title     = "|              TOTAL FEES PENDING           |";
+			String header    = "| Description              | Amount (₹)     |";
+			String separator = "|--------------------------|----------------|";
+
+			System.out.println();
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.println(header);
+			System.out.println(separator);
+			System.out.printf("| %-24s | ₹%-14.2f|\n", "All Students Combined", totalPending);
+			System.out.println(border);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -33,33 +61,56 @@ public class FeeController {
 		int studentId = scanner.nextInt();
 		List<Fees> fee;
 		try {
-			fee = feeService.getFeesByStudent(studentId);
-			if (fee != null) {
-				System.out.println(fee);
-			} else {
-				System.out.println("Student not found.");
+			List<Fees> feeList = feeService.getFeesByStudent(studentId);
+			
+			if (feeList == null || feeList.isEmpty()) {
+				System.out.println("No fee records found for this student.");
+				return;
 			}
-		} catch (SQLException e) {
+
+			String border    = "+-------------------------------------------------------------------------------------+";
+			String title     = "|                                STUDENT FEES DETAILS                                 |";
+			String header    = "| Fee ID | Course Name        | Amount Paid (₹)  | Amount Pending (₹) | Student Name  |";
+			String separator = "|--------|--------------------|------------------|--------------------|---------------|";
+
+			System.out.println();
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.println(header);
+			System.out.println(separator);
+
+			for (Fees f : feeList) {
+				System.out.printf("| %-6d | %-18s | ₹%-14.2f  | ₹%-16.2f  | %-14s|\n",
+						f.getFeeId(),truncate(f.getCourseName(), 18),f.getAmountPaid(),f.getAmountPending(),
+						truncate(f.getStudentName(), 14)
+				);
+			}
+			System.out.println(border);		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 	}
 
-	public void getCourseFees() {
-		System.out.print("Enter Course ID: ");
-		int courseId = scanner.nextInt();
-		try {
-			List<Fees> fee = feeService.getFeesByCourse(courseId);
-			if (fee != null) {
-				System.out.println(fee);
-			} else {
-				System.out.println("Course not found.");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
+	private String truncate(String value, int limit) {
+		if (value == null) return "N/A";
+		return value.length() > limit ? value.substring(0, limit - 3) + "..." : value;
 	}
+	
+//	public void getCourseFees() {
+//		System.out.print("Enter Course ID: ");
+//		int courseId = scanner.nextInt();
+//		try {
+//			List<Fees> fee = feeService.getFeesByCourse(courseId);
+//			if (fee != null) {
+//				System.out.println(fee);
+//			} else {
+//				System.out.println("Course not found.");
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	public void printFeeForStudent(List<Fees> feeList) {
 		System.out.println(
@@ -128,7 +179,21 @@ public class FeeController {
 
 	public void getTotalEarning() {
 		try {
-			System.out.println("Total Earning: ₹" + feeService.getTotalEarning());
+			double totalEarning = feeService.getTotalEarning();
+
+			String border    = "+-------------------------------------------+";
+			String title     = "|              TOTAL EARNINGS               |";
+			String header    = "| Description              | Amount (₹)     |";
+			String separator = "|--------------------------|----------------|";
+
+			System.out.println();
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.println(header);
+			System.out.println(separator);
+			System.out.printf("| %-24s | ₹%-14.2f|\n", "Fees Collected (All)", totalEarning);
+			System.out.println(border);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

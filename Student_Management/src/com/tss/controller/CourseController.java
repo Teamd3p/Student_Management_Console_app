@@ -24,13 +24,18 @@ public class CourseController {
 		System.out.println("+-------------------------------------------------------------+");
 
 		for (Course course : courses) {
-			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n", course.getCourseId(), course.getCourseName(),
-					course.getCourseFees(), course.isActive() ? "Yes" : "No");
+			String name = truncate(course.getCourseName(), 20);
+			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n",
+					course.getCourseId(),
+					name,
+					course.getCourseFees(),
+					course.isActive() ? "Yes" : "No");
 		}
 
 		System.out.println("+-------------------------------------------------------------+");
 	}
-
+	
+	
 	public void addNewCourse() {
 		System.out.print("Enter Course Name: ");
 		String name = scanner.nextLine();
@@ -38,14 +43,11 @@ public class CourseController {
 		System.out.print("Enter Course Fees: ");
 		double fees = scanner.nextDouble();
 
-		System.out.print("Is the course active? (true/false): ");
-		boolean isActive = scanner.nextBoolean();
 		scanner.nextLine();
 
 		Course course = new Course();
 		course.setCourseName(name);
 		course.setCourseFees(fees);
-		course.setActive(isActive);
 
 		boolean success = courseService.addCourse(course);
 		if (success) {
@@ -63,21 +65,26 @@ public class CourseController {
 		Course course = courseService.searchCourse(course_id);
 
 		if (course != null) {
-			System.out.println("\n+-------------------------------------------------------------+");
-			System.out.println("|                        COURSE RECORDS                       |");
-			System.out.println("+-------------------------------------------------------------+");
-			System.out.printf("| %-10s | %-20s | %-10s | %-10s |\n", "Course ID", "Course Name", "Fees", "Active");
-			System.out.println("+-------------------------------------------------------------+");
+			String border = "+------------+-------------------------------+--------------+-------+";
+			String header = "| Course ID  | Course Name                   | Fees (₹)     | Active|";
 
-			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n", course.getCourseId(), course.getCourseName(),
-					course.getCourseFees(), course.isActive() ? "Yes" : "No");
+			System.out.println();
+			System.out.println(border);
+			System.out.println("|                      COURSE RECORDS                               |");
+			System.out.println(border);
+			System.out.println(header);
+			System.out.println(border);
 
-			System.out.println("+-------------------------------------------------------------+");
+			String courseName = truncate(course.getCourseName(), 30);
+
+			System.out.printf("| %-10d | %-30s|₹%10.2f   | %-6s|\n",
+					course.getCourseId(),courseName,course.getCourseFees(),course.isActive() ? "Yes" : "No");
+			System.out.println(border);
 		} else {
 			System.out.println("\nNo existing course with this ID: " + course_id);
 		}
 	}
-
+	
 	public boolean courseExistance(int course_id) {
 		Course course = courseService.searchCourse(course_id);
 		if (course != null)
@@ -121,12 +128,22 @@ public class CourseController {
 		System.out.println("+-------------------------------------------------------------+");
 
 		for (Course course : courses) {
-			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n", course.getCourseId(), course.getCourseName(),
-					course.getCourseFees(), course.isActive() ? "Yes" : "No");
+			String name = truncate(course.getCourseName(), 20);
+			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n",
+					course.getCourseId(),
+					name,
+					course.getCourseFees(),
+					course.isActive() ? "Yes" : "No");
 		}
 
 		System.out.println("+-------------------------------------------------------------+");
 		return courses;
+	}
+	
+	
+	private String truncate(String value, int limit) {
+		if (value == null) return "N/A";
+		return value.length() > limit ? value.substring(0, limit - 3) + "..." : value;
 	}
 
 }

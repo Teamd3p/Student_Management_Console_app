@@ -3,6 +3,7 @@ package com.tss.service;
 import java.util.List;
 
 import com.tss.dao.TeacherDao;
+import com.tss.model.Subject;
 import com.tss.model.Teacher;
 
 public class TeacherService {
@@ -30,6 +31,10 @@ public class TeacherService {
 
 	public boolean removeSubject(int teacherId, int subjectId) {
 		return dao.removeSubject(teacherId, subjectId);
+	}
+
+	public List<Subject> readTeacherSubjectById(int teacherId) {
+		return dao.getSubjectsOfTeachers(teacherId);
 	}
 
 }

@@ -20,56 +20,61 @@ public class SubjectCourseController {
         this.subjectController = new SubjectController();
     }
 
-    public void addSubjectsToCourse() {
-        List<Course> activeCourses = courseController.radAllActiveCourse();
-        
-        System.out.print("Enter Course ID: ");
-        int courseId = scanner.nextInt();
-        scanner.nextLine(); 
+  public void addSubjectsToCourse() {
+    List<Course> activeCourses = courseController.radAllActiveCourse();
+    
+    System.out.print("Enter Course ID: ");
+    int courseId = scanner.nextInt();
+    scanner.nextLine(); 
 
-        boolean courseExists = false;
-        for (Course course : activeCourses) {
-            if (course.getCourseId() == courseId) {
-                courseExists = true;
-                break;
-            }
+    boolean courseExists = false;
+    for (Course course : activeCourses) {
+        if (course.getCourseId() == courseId) {
+            courseExists = true;
+            break;
         }
+    }
 
-        if (!courseExists) {
-            System.out.println("Invalid Course ID. Operation cancelled.");
-            return;
-        }
+    if (!courseExists) {
+        System.out.println("❌ Invalid Course ID. Operation cancelled.");
+        return;
+    }
 
-        subjectController.readAllSubjects();
+    subjectController.readAllSubjects();
 
-        System.out.print("Enter number of subjects to add: ");
-        int count = scanner.nextInt();
+    System.out.print("Enter number of subjects to add: ");
+    int count = scanner.nextInt();
+    scanner.nextLine();
+
+    if (count <= 0) {
+        System.out.println("Number of subjects must be greater than zero. Operation cancelled.");
+        return;
+    }
+
+    for (int i = 0; i < count; i++) {
+        System.out.print("Enter Subject ID " + (i + 1) + ": ");
+        int subjectId = scanner.nextInt();
         scanner.nextLine();
 
-        for (int i = 0; i < count; i++) {
-            System.out.print("Enter Subject ID " + (i + 1) + ": ");
-            int subjectId = scanner.nextInt();
-            scanner.nextLine();
-
-            boolean success = subjectCourseService.addSubjectToCourse(courseId, subjectId);
-            if (success) {
-                System.out.println("✅ Subject " + subjectId + " added to Course " + courseId);
-            } else {
-                System.out.println("❌ Failed to add Subject " + subjectId);
-            }
+        boolean success = subjectCourseService.addSubjectToCourse(courseId, subjectId);
+        if (success) {
+            System.out.println("Subject " + subjectId + " added to Course " + courseId);
+        } else {
+            System.out.println("Failed to add Subject " + subjectId);
         }
-
-        System.out.println("✔ Finished adding subjects to course.");
     }
+
+    System.out.println("✔ Finished adding subjects to course.");
+}
 
 
     public void viewSubjectsOfCourse() {
         System.out.println(">> Available Courses:");
-        courseController.readAllCourseRecords(); // show all courses
+        courseController.readAllCourseRecords(); 
 
         System.out.print("Enter Course ID to view its subjects: ");
         int courseId = scanner.nextInt();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine(); 
 
         List<Subject> subjects = subjectCourseService.viewSubjectsOfCourse(courseId); // call service
 

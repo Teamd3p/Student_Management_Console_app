@@ -50,9 +50,6 @@ public class SubjectManagement implements MenuHandler {
                     subjectController.updateSubject();
                     break;
                 case 4:
-                    subjectController.deleteSubjectById();
-                    break;
-                case 5:
                     System.out.println("🔙 Returning to main menu...");
                     return;
                 default:

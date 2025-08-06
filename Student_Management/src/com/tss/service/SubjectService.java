@@ -26,11 +26,7 @@ public class SubjectService {
 	 public boolean updateSubject(Subject subject) {
 	        return subjectDao.updateSubject(subject);
 	    }
-	 
-	 public boolean deleteSubjectById(int subjectId) {
-	        return subjectDao.deleteSubjectById(subjectId);
-	    }
-	 
+
 	 public Subject getSubjectById(int subjectId) {
 		    return subjectDao.getSubjectById(subjectId);
 		}
