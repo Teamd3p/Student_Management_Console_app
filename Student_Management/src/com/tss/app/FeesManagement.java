@@ -5,7 +5,8 @@ import java.util.Scanner;
 import com.tss.controller.CourseController;
 import com.tss.controller.FeeController;
 import com.tss.controller.StudentController;
-import com.tss.util.InputUtil;
+import com.tss.exception.ValidationException;
+import com.tss.util.InputValidator;
 
 public class FeesManagement implements MenuHandler {
 
@@ -34,8 +35,12 @@ public class FeesManagement implements MenuHandler {
 
         while (true) {
             showMenu();
-			choice = InputUtil.readInt("Enter your choice: ");
-
+            try {
+				choice = InputValidator.readChoice("Enter your choice: ");
+			} catch (ValidationException e) {
+				System.out.println(e.getMessage());
+				continue;
+			}
             switch (choice) {
                 case 1:
                     System.out.println(">> Viewing total paid fees...");

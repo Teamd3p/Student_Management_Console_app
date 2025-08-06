@@ -3,7 +3,8 @@ package com.tss.app;
 import java.util.Scanner;
 
 import com.tss.controller.TeacherController;
-import com.tss.util.InputUtil;
+import com.tss.exception.ValidationException;
+import com.tss.util.InputValidator;
 
 public class TeacherManagement implements MenuHandler {
 	TeacherController teacherController = new TeacherController();
@@ -23,7 +24,6 @@ public class TeacherManagement implements MenuHandler {
 		System.out.println("| 6. Delete A Teacher          |");
 		System.out.println("| 7. Go Back                   |");
 		System.out.println("+------------------------------+");
-		System.out.print("Enter your choice: ");
 	}
 
 	@Override
@@ -32,8 +32,12 @@ public class TeacherManagement implements MenuHandler {
 
 		while (true) {
 			showMenu();
-			choice = InputUtil.readInt("Enter your choice: ");
-
+			try {
+				choice = InputValidator.readChoice("Enter your choice: ");
+			} catch (ValidationException e) {
+				System.out.println(e.getMessage());
+				continue;
+			}
 
 			switch (choice) {
 			case 1:
@@ -64,6 +68,7 @@ public class TeacherManagement implements MenuHandler {
 				break;
 			case 6:
 				System.out.println(">> Soft deleting a teacher...");
+				teacherController.displayAllTeachers();
 				teacherController.deleteTeacher();
 				teacherController.displayAllTeachers();
 				break;

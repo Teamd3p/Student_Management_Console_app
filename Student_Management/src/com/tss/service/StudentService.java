@@ -42,4 +42,8 @@ public class StudentService {
 		return studentDao.payStudentFees(id);
 		
 	}
+
+	public boolean restoreStudent(int studentId) {
+		return studentDao.restoreStudent(studentId);
+	}
 }

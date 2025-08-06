@@ -14,6 +14,9 @@ public class Teacher {
 		this.joiningDate = joiningDate;
 	}
 
+	public Teacher() {
+	}
+
 	public int getTeacherId() {
 		return teacherId;
 	}
