@@ -88,12 +88,10 @@ public class StudentController {
 			if (success) {
 				int studentId = student.getStudentId();
 
-				// --- Profile ---
 				Profile profile = new Profile();
 				profile.setUserType("student");
 				profile.setUserId(studentId);
 
-				// Phone
 				while (true) {
 					try {
 						System.out.print("Enter Phone Number (10 digits): ");
@@ -108,7 +106,6 @@ public class StudentController {
 					}
 				}
 
-				// Email
 				while (true) {
 					try {
 						System.out.print("Enter Email: ");
@@ -123,7 +120,6 @@ public class StudentController {
 					}
 				}
 
-				// Address
 				while (true) {
 					try {
 						System.out.print("Enter Address: ");
@@ -138,7 +134,6 @@ public class StudentController {
 					}
 				}
 
-				// Age
 				while (true) {
 					try {
 						System.out.print("Enter Age: ");
@@ -157,7 +152,6 @@ public class StudentController {
 
 				boolean profileSuccess = profileService.insertProfile(profile);
 
-				// Notification Preference
 				String preference = "None";
 
 				while (true) {
@@ -192,10 +186,8 @@ public class StudentController {
 					}
 				}
 
-				// Insert into Notification table
 				boolean notificationSuccess = notificationService.insertNotificationPreference(studentId, preference);
 
-				// Display result
 				if (profileSuccess && notificationSuccess) {
 					System.out.println("Student, profile, and notification preference added successfully.");
 				} else if (!profileSuccess && !notificationSuccess) {
