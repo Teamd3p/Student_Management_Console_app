@@ -68,7 +68,9 @@ public class Fees {
 		return studentName;
 	}
 	
-	
+	public void setFeeId(int feeId) {
+		this.feeId= feeId;
+	}
 
 	public void setCourseId(int courseId) {
 		this.courseId = courseId;

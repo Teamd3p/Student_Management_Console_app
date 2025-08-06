@@ -32,19 +32,23 @@ public class StudentController {
 	public void readAllRecords() {
 		List<Student> students = studentService.readAllStudent();
 		List<Profile> profiles = profileService.readAllProfiles("student");
+		System.out.println(
+				"\n+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
+	
+		System.out.println(
+				"|                                                           STUDENT RECORDS                                                                                |");
 
-		// Header
 		System.out.println(
-				"\n+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
-		System.out.println(
-				"|                                                           STUDENT RECORDS                                                                           |");
-		System.out.println(
-				"+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
-		System.out.printf("| %-10s | %-20s | %-6s | %-15s | %-25s | %-20s | %-5s | %-25s |\n", "Student ID", "Name",
-				"Active", "Phone", "Email", "Address", "Age", "Admission");
-		System.out.println(
-				"+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+				"+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
 
+		
+		System.out.printf("| %-12s | %-20s | %-6s | %-15s | %-25s | %-30s | %-3s | %-20s |\n",
+				"Student ID", "Name", "Active", "Phone", "Email", "Address", "Age", "Admission");
+
+		
+		System.out.println(
+				"+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
+		
 		for (Student student : students) {
 			Profile matchedProfile = null;
 			for (Profile profile : profiles) {
@@ -53,21 +57,28 @@ public class StudentController {
 					break;
 				}
 			}
-
 			String phone = matchedProfile != null ? matchedProfile.getPhoneNumber() : "N/A";
-			String email = matchedProfile != null ? matchedProfile.getEmail() : "N/A";
-			String address = matchedProfile != null ? matchedProfile.getAddress() : "N/A";
+			String email = matchedProfile != null ? truncate(matchedProfile.getEmail(), 25) : "N/A";
+			String address = matchedProfile != null ? truncate(matchedProfile.getAddress(), 30) : "N/A";
 			int age = matchedProfile != null ? matchedProfile.getAge() : 0;
 
-			System.out.printf("| %-10d | %-20s | %-6s | %-15s | %-25s | %-20s | %-5d | %-25s |\n",
-					student.getStudentId(), student.getStudentName(), student.isActive() ? "Yes" : "No", phone, email,
-					address, age, student.getAdmission());
+
+			System.out.printf("| %-12d | %-20s | %-6s | %-15s | %-25s | %-30s | %-3d | %-20s |\n",
+					student.getStudentId(),student.getStudentName(),student.isActive() ? "Yes" : "No",
+					phone,email,address,age,student.getAdmission());
 		}
 
 		System.out.println(
-				"+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+				"+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
 	}
 
+	
+	private String truncate(String value, int limit) {
+		if (value == null) return "N/A";
+		return value.length() > limit ? value.substring(0, limit - 3) + "..." : value;
+	}
+	
+	
 	public void insertStudent() throws ValidationException {
 		try {
 			System.out.print("\nEnter Full Student Name: ");

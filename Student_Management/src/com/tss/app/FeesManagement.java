@@ -52,10 +52,11 @@ public class FeesManagement implements MenuHandler {
                 case 4:
                     System.out.println(">> Viewing fees by course...");
                     courseController.readAllCourseRecords();
-                    feeController.getCourseFees();
+//                    feeController.getCourseFees();
                     break;
                 case 5:
                     System.out.println(">> Updating fees of a course...");
+                    courseController.readAllCourseRecords();
                     feeController.updateCourseFee();
                     break;
                 case 6:
