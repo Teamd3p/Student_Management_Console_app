@@ -3,6 +3,7 @@ package com.tss.service;
 import java.util.List;
 
 import com.tss.dao.TeacherDao;
+import com.tss.dto.TeacherWithProfileDTO;
 import com.tss.model.Subject;
 import com.tss.model.Teacher;
 
@@ -35,6 +36,10 @@ public class TeacherService {
 
 	public List<Subject> readTeacherSubjectById(int teacherId) {
 		return dao.getSubjectsOfTeachers(teacherId);
+	}
+
+	public List<TeacherWithProfileDTO> getAllActiveTeachers() {
+		return dao.getAllActiveTeachers();
 	}
 
 }
