@@ -19,4 +19,10 @@ public class StudentCourseService {
     {
     	studentCourseDao.deleteCourseOfStudent(student_id);
     }
+    
+    public boolean checkAssignmentOfCourse(int student_id)
+    {
+    	return studentCourseDao.checkStudentCourseAssignment(student_id);
+    }
 }
+

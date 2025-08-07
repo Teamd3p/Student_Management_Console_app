@@ -5,17 +5,24 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.tss.model.Fees;
-import com.tss.model.Teacher;
 import com.tss.service.FeeService;
 
 public class FeeController {
 
 	private FeeService feeService = new FeeService();
+	private StudentController studentController = new StudentController();
 	private Scanner scanner = new Scanner(System.in);
 
 	public void getTotalPaidFees() {
 		try {
-			System.out.println("Total Paid: ₹" + feeService.getTotalPaidFees());
+			double totalPaid = feeService.getTotalPaidFees();
+			String border = "+------------------------------------------------------+";
+			String title = "|            TOTAL FEES PAID BY STUDENTS               |";
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.printf("| %-25s : ₹%-20.2f    |\n", "Total Paid", totalPaid);
+			System.out.println(border);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -23,7 +30,14 @@ public class FeeController {
 
 	public void getTotalPendingFees() {
 		try {
-			System.out.println("Total Pending: ₹" + feeService.getTotalPendingFees());
+			double totalPending = feeService.getTotalPendingFees();
+			String border = "+----------------------------------------------------------+";
+			String title = "|         TOTAL FEES PENDING FROM STUDENTS                 |";
+			System.out.println(border);
+			System.out.println(title);
+			System.out.println(border);
+			System.out.printf("| %-32s : ₹%-20.2f |\n", "Total Pending", totalPending);
+			System.out.println(border);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -32,37 +46,39 @@ public class FeeController {
 	public void getStudentsFees() {
 		System.out.print("Enter Student ID: ");
 		int studentId = scanner.nextInt();
-		List<Fees> fee;
+		scanner.nextLine();
+
 		try {
-			fee = feeService.getFeesByStudent(studentId);
-			if (fee != null) {
-				System.out.println(fee);
-			} else {
-				System.out.println("Student not found.");
+			List<Fees> fee = feeService.getFeesByStudent(studentId);
+			if (fee == null || fee.isEmpty()) {
+				System.out.println("No courses assigned to student. No fees data available.");
+				return;
 			}
+			System.out.println(fee);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 	}
 
-	public boolean checkPendingFees(int student_id)
-	{
-		List<Fees> fees;
+	public boolean checkPendingFees(int student_id) {
 		try {
-			fees = feeService.getFeesByStudent(student_id);
-			if(fees == null)
+			List<Fees> fees = feeService.getFeesByStudent(student_id);
+
+			if (fees == null || fees.isEmpty()) {
 				return false;
-			for(Fees fee : fees)
-			{
-				if(fee.getAmountPending()==0.0)
-					return false;
+			}
+
+			for (Fees fee : fees) {
+				if (fee.getAmountPending() > 0.0) {
+					return true;
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return true;
+		return false;
 	}
+
 	public void getCourseFees() {
 		System.out.print("Enter Course ID: ");
 		int courseId = scanner.nextInt();
@@ -90,13 +106,11 @@ public class FeeController {
 				"Total Fee", "Paid", "Pending");
 		System.out.println(
 				"+------------------------------------------------------------------------------------------+");
-
 		for (Fees fee : feeList) {
 			double totalFee = fee.getAmountPaid() + fee.getAmountPending();
 			System.out.printf("| %-8d | %-12d | %-20s | %-10.2f | %-10.2f | %-10.2f |\n", fee.getFeeId(),
 					fee.getStudentId(), fee.getStudentName(), totalFee, fee.getAmountPaid(), fee.getAmountPending());
 		}
-
 		System.out.println(
 				"+------------------------------------------------------------------------------------------+");
 	}
@@ -152,6 +166,10 @@ public class FeeController {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void deleteStudent(int id) {
+		feeService.deleteStudent(id);
 	}
 
 }

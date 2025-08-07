@@ -1,6 +1,7 @@
 package com.tss.controller;
 
 import java.time.LocalDateTime;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,7 +28,6 @@ public class StudentController {
 		List<Student> students = studentService.readAllStudent();
 		List<Profile> profiles = profileService.readAllProfiles("student");
 
-		// Header
 		System.out.println(
 				"\n+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
 		System.out.println(
@@ -108,8 +108,8 @@ public class StudentController {
 					try {
 						System.out.print("Enter Phone Number (10 digits): ");
 						String phone = scanner.nextLine().trim();
-						if (!phone.matches("\\d{10}+")) {
-							throw new ValidationException("Phone number must be exactly 10 digits and Positive.");
+						if (!phone.matches("\\d{10}")) {
+							throw new ValidationException("Phone number must be exactly 10 digits and positive.");
 						}
 						profile.setPhoneNumber(phone);
 						break;
@@ -153,7 +153,7 @@ public class StudentController {
 						if (!ageStr.matches("\\d+"))
 							throw new ValidationException("Age must be a positive integer.");
 						int age = Integer.parseInt(ageStr);
-						if (age < 1 && age > 80)
+						if (age < 1 || age > 80)
 							throw new ValidationException("Age Must Be Between 1 to 80");
 						profile.setAge(age);
 						break;
@@ -181,49 +181,88 @@ public class StudentController {
 	}
 
 	public void searchStudentById() {
-		System.out.print("Enter Student ID to search: ");
-		int id = scanner.nextInt();
-		scanner.nextLine();
+		try {
+			System.out.print("Enter Student ID to search: ");
+			String input = scanner.nextLine().trim();
 
-		Student student = studentService.readStudentById(id);
+			if (!input.matches("\\d+"))
+				throw new ValidationException("Student ID must be a positive number.");
 
-		if (student != null) {
-			String border = "+------------------------------------------------------------+";
-			String title = "|                    STUDENT DETAIL                          |";
+			int id = Integer.parseInt(input);
+			if (id <= 0)
+				throw new ValidationException("Student ID must be greater than zero.");
 
-			System.out.println(border);
-			System.out.println(title);
-			System.out.println(border);
-			System.out.printf("| %-15s : %-40s |\n", "Student ID", student.getStudentId());
-			System.out.printf("| %-15s : %-40s |\n", "Name", student.getStudentName());
-			System.out.printf("| %-15s : %-40s |\n", "Active", student.isActive() ? "Yes" : "No");
-			System.out.printf("| %-15s : %-40s |\n", "Admission", student.getAdmission());
-			System.out.println(border);
-		} else {
-			System.out.println("Student with ID " + id + " not found.");
+			Student student = studentService.readStudentById(id);
+
+			if (student != null) {
+				String border = "+------------------------------------------------------------+";
+				String title = "|                    STUDENT DETAIL                          |";
+
+				System.out.println(border);
+				System.out.println(title);
+				System.out.println(border);
+				System.out.printf("| %-15s : %-40s |\n", "Student ID", student.getStudentId());
+				System.out.printf("| %-15s : %-40s |\n", "Name", student.getStudentName());
+				System.out.printf("| %-15s : %-40s |\n", "Active", student.isActive() ? "Yes" : "No");
+				System.out.printf("| %-15s : %-40s |\n", "Admission", student.getAdmission());
+				System.out.println(border);
+			} else {
+				System.out.println("Student with ID " + id + " not found.");
+			}
+		} catch (ValidationException e) {
+			System.out.println("Error: " + e.getMessage());
 		}
 	}
 
 	public boolean studentExistance(int student_id) {
 		Student student = studentService.readStudentById(student_id);
-		if (student != null)
-			return true;
-		return false;
+		return student != null;
 	}
 
 	public void deleteStudentById() {
 		readAllRecords();
-		System.out.print("Enter Student ID to Delete: ");
-		int id = scanner.nextInt();
-		scanner.nextLine();
+		try {
+			System.out.print("Enter Student ID to Delete: ");
+			String input = scanner.nextLine().trim();
 
-		feecontroller = new FeeController();
-		studentCourseController = new StudentCourseController();
+			if (!input.matches("\\d+"))
+				throw new ValidationException("Student ID must be a positive number.");
 
-		if (feecontroller.checkPendingFees(id)) {
-			System.out.println("Cannot Deactive Student Because Student Fees is Pending !!");
-			return;
+			int id = Integer.parseInt(input);
+			if (id <= 0)
+				throw new ValidationException("Student ID must be greater than zero.");
+
+			feecontroller = new FeeController();
+			studentCourseController = new StudentCourseController();
+
+			if (feecontroller.checkPendingFees(id)) {
+				System.out.println("Cannot Deactivate Student Because Student Fees is Pending !!");
+				return;
+			}
+			
+			feecontroller.deleteStudent(id);
+			studentCourseController.deleteCourseFromStudent(id);
+			Student student = studentService.deleteStudentById(id);
+
+			if (student != null) {
+				String border = "+------------------------------------------------------------+";
+				String title = "|                    DELETED STUDENT DETAIL                   |";
+
+				System.out.println(border);
+				System.out.println(title);
+				System.out.println(border);
+				System.out.printf("| %-15s : %-40s |\n", "Student ID", student.getStudentId());
+				System.out.printf("| %-15s : %-40s |\n", "Name", student.getStudentName());
+				System.out.printf("| %-15s : %-40s |\n", "Active", student.isActive() ? "Yes" : "No");
+				System.out.printf("| %-15s : %-40s |\n", "Admission", student.getAdmission());
+				System.out.println(border);
+			} else {
+				System.out.println("Student with ID " + id + " not found Or Already Inactive.");
+			}
+		} catch (ValidationException e) {
+			System.out.println("Error: " + e.getMessage());
 		}
+<<<<<<< HEAD
 
 		studentCourseController.deleteCourseFromStudent(id);
 		Student student = studentService.deleteStudentById(id);
@@ -244,6 +283,7 @@ public class StudentController {
 			System.out.println("Student with ID " + id + " not found Or Already Inactive.");
 		}
 
+=======
+>>>>>>> 489fc909dad716c349abb96fff8f00b46d2c18a5
 	}
-
 }
