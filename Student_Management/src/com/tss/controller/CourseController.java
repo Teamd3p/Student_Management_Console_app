@@ -5,7 +5,6 @@ import java.util.Scanner;
 
 import com.tss.exception.ValidationException;
 import com.tss.model.Course;
-import com.tss.model.Student;
 import com.tss.service.CourseService;
 import com.tss.util.InputValidator;
 
@@ -59,7 +58,6 @@ public class CourseController {
 			}
 		}
 
-		// Validate course fees
 		while (true) {
 			System.out.print("Enter Course Fees: ");
 			String input = scanner.nextLine().trim();
