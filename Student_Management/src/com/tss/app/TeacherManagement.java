@@ -13,17 +13,23 @@ public class TeacherManagement implements MenuHandler {
 
 	@Override
 	public void showMenu() {
-		System.out.println("╔══════════════════════════════╗");
-		System.out.println("║       TEACHER MANAGEMENT     ║");
-		System.out.println("╠══════════════════════════════╣");
-		System.out.println("║ 1. View All Teachers         ║");
-		System.out.println("║ 2. Add New Teacher           ║");
-		System.out.println("║ 3. Assign Subjects           ║");
-		System.out.println("║ 4. Remove A Subject          ║");
-		System.out.println("║ 5. Search A Teacher          ║");
-		System.out.println("║ 6. Delete A Teacher          ║");
-		System.out.println("║ 7. Go Back                   ║");
-		System.out.println("╚══════════════════════════════╝");
+		final String RESET = "\u001B[0m";
+	    final String BOLD = "\u001B[1m";
+	    final String PURPLE = "\u001B[35m";
+
+
+	    System.out.println(PURPLE +BOLD+ "╔══════════════════════════════╗"+RESET);
+	    System.out.println(PURPLE +BOLD+"║       TEACHER MANAGEMENT     ║"+RESET);
+	    System.out.println(PURPLE +BOLD+"╠══════════════════════════════╣"+RESET);
+	    System.out.println(PURPLE+"║ 1. View All Teachers         ║"+RESET);
+	    System.out.println(PURPLE+"║ 2. Add New Teacher           ║"+RESET);
+	    System.out.println(PURPLE+"║ 3. Assign Subjects           ║"+RESET);
+	    System.out.println(PURPLE+"║ 4. Remove A Subject          ║"+RESET);
+	    System.out.println(PURPLE+"║ 5. Search A Teacher          ║"+RESET);
+	    System.out.println(PURPLE+"║ 6. Delete A Teacher          ║"+RESET);
+	    System.out.println(PURPLE+"║ 7. Restore Teacher           ║"+RESET);
+	    System.out.println(PURPLE+"║ 8. Go Back                   ║"+RESET);
+	    System.out.println(PURPLE+"╚══════════════════════════════╝" + RESET);
 
 	}
 
@@ -53,14 +59,10 @@ public class TeacherManagement implements MenuHandler {
 			case 3:
 				System.out.println(">> Assigning subjects to teacher...");
 				System.out.println("Teachers Tables");
-				teacherController.displayAllActiveTeachers();
 				teacherController.assignSubject();
 				
 				break;
 			case 4:
-				System.out.println(">> Removing a subject from teacher...");
-				System.out.println("Teachers Tables");
-				teacherController.displayAllTeachers();
 				teacherController.removeSubject();
 				break;
 			case 5:
@@ -69,11 +71,13 @@ public class TeacherManagement implements MenuHandler {
 				break;
 			case 6:
 				System.out.println(">> Soft deleting a teacher...");
-				teacherController.displayAllTeachers();
 				teacherController.deleteTeacher();
-				teacherController.displayAllTeachers();
 				break;
 			case 7:
+				System.out.println(">> Restoring a teacher...");
+				teacherController.restoreTeacher();
+				break;
+			case 8:
 				System.out.println(">> Returning to main menu...");
 				return;
 			default:

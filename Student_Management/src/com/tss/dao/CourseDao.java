@@ -44,30 +44,43 @@ public class CourseDao {
         return courses;
     }
 
-    public boolean insertCourse(Course course) {
+    public Course insertCourse(Course course) {
         String sql = "SELECT * FROM Courses WHERE LOWER(course_name) = ?";
         String query = "INSERT INTO Courses (course_name, course_fees) VALUES (?, ?)";
 
         try {
+            // Check if course already exists
             prepareStatement = connection.prepareStatement(sql);
             prepareStatement.setString(1, course.getCourseName().toLowerCase());
             ResultSet result = prepareStatement.executeQuery();
 
             if (!result.next()) {
-                prepareStatement = connection.prepareStatement(query);
+                // Insert course and get generated ID
+                prepareStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 prepareStatement.setString(1, course.getCourseName());
                 prepareStatement.setDouble(2, course.getCourseFees());
+
                 int rows = prepareStatement.executeUpdate();
-                return rows > 0;
+
+                if (rows > 0) {
+                    ResultSet generatedKeys = prepareStatement.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        course.setCourseId(generatedKeys.getInt(1)); // set new course ID
+                    }
+                    return course; // return with ID set
+                }
             } else {
                 System.out.println(">> Course already exists.");
+                // Optionally set the existing course's ID before returning
+                course.setCourseId(result.getInt("course_id"));
+                return course;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return false;
+        return null; // return null if insertion failed
     }
+
 
 
     public Course searchCourse(int course_id) {
@@ -154,4 +167,46 @@ public class CourseDao {
 
         return courses;
     }
+    public List<Course> readAlldeActiveCourses() {
+        List<Course> courses = new ArrayList<>();
+        String sql = "SELECT * FROM Courses WHERE is_active = ?";
+
+        try {
+            prepareStatement = connection.prepareStatement(sql);
+            prepareStatement.setBoolean(1, false);
+            ResultSet result = prepareStatement.executeQuery();
+
+            while (result.next()) {
+                Course course = new Course(
+                    result.getInt("course_id"),
+                    result.getString("course_name"),
+                    result.getDouble("course_fees"),
+                    result.getBoolean("is_active")
+                );
+                courses.add(course);
+            }
+
+            result.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return courses;
+    }
+
+	public boolean restoreCourse(int courseId) {
+		String sql = "UPDATE Courses SET is_active = true WHERE course_id = ?";
+		try
+		{
+			prepareStatement = connection.prepareStatement(sql);
+			prepareStatement.setInt(1, courseId);
+			
+			return prepareStatement.executeUpdate()>0;
+		}
+		catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}
+		return false;
+	}
 }

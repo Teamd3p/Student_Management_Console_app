@@ -38,11 +38,19 @@ public class InputValidator {
     public static String readAddress(String prompt) throws ValidationException {
         System.out.print(prompt);
         String address = scanner.nextLine().trim();
+
         if (address == null || address.isEmpty()) {
             throw new ValidationException("Address cannot be empty.");
         }
+
+        // Check if the address starts with a letter (A-Z or a-z)
+        if (!address.matches("^[A-Za-z].*")) {
+            throw new ValidationException("Address must start with a letter.");
+        }
+
         return address;
     }
+
 
     public static int readAge(String prompt) throws ValidationException {
         System.out.print(prompt);

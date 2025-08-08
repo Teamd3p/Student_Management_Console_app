@@ -3,12 +3,16 @@ package com.tss.controller;
 import java.util.List;
 import java.util.Scanner;
 
+import com.tss.exception.ValidationException;
 import com.tss.model.Course;
+import com.tss.model.Student;
 import com.tss.service.CourseService;
+import com.tss.util.InputValidator;
 
 public class CourseController {
 	private CourseService courseService;
 	private Scanner scanner = new Scanner(System.in);
+	private SubjectCourseController subjectCourseController;
 
 	public CourseController() {
 		this.courseService = new CourseService();
@@ -40,6 +44,7 @@ public class CourseController {
 		String name;
 		double fees = -1;
 
+		subjectCourseController = new SubjectCourseController();
 		// Validate course name (non-empty + contains alphabet)
 		while (true) {
 			System.out.print("Enter Course Name: ");
@@ -47,8 +52,8 @@ public class CourseController {
 
 			if (name.isEmpty()) {
 				System.out.println(">> Course name cannot be empty. Please try again.");
-			} else if (!name.matches(".*[a-zA-Z].*")) {
-				System.out.println(">> Course name must contain at least one alphabet character.");
+			} else if (!name.matches("[a-zA-Z ]+")) {
+			    System.out.println(">> Course name must contain only alphabets and spaces.");
 			} else {
 				break;
 			}
@@ -76,9 +81,10 @@ public class CourseController {
 		course.setCourseName(name);
 		course.setCourseFees(fees);
 
-		boolean success = courseService.addCourse(course);
-		if (success) {
+		Course courses = courseService.addCourse(course);
+		if (courses!=null) {
 			System.out.println(">> Course added successfully.");
+			return;
 		} else {
 			System.out.println(">> Failed to add course.");
 		}
@@ -86,8 +92,7 @@ public class CourseController {
 
 	public void searchCourse() {
 
-		System.out.println("Enter course id to search the course");
-		int course_id = scanner.nextInt();
+		int course_id = InputValidator.readId("Enter course id to search the course");
 
 		Course course = courseService.searchCourse(course_id);
 
@@ -114,17 +119,15 @@ public class CourseController {
 	
 	public boolean courseExistance(int course_id) {
 		Course course = courseService.searchCourse(course_id);
-		if (course != null)
-			return true;
-		return false;
+		return course != null && course.isActive();
+
 	}
 
 	public void softDeleteCourse() {
 
 		radAllActiveCourse();
 
-		System.out.println("Enter course id to delete the course");
-		int course_id = scanner.nextInt();
+		int course_id = InputValidator.readId("Enter course id to delete the course");
 
 		Course course = courseService.softDeleteCourse(course_id);
 
@@ -146,6 +149,11 @@ public class CourseController {
 	}
 
 	public List<Course> radAllActiveCourse() {
+		List<Course> courses = courseService.readAllActiveCourses();		
+		return courses;
+	}
+	public void printAllActiveCourse()
+	{
 		List<Course> courses = courseService.readAllActiveCourses();
 
 		System.out.println("\n+-------------------------------------------------------------+");
@@ -164,7 +172,6 @@ public class CourseController {
 		}
 
 		System.out.println("+-------------------------------------------------------------+");
-		return courses;
 	}
 	
 	
@@ -173,4 +180,47 @@ public class CourseController {
 		return value.length() > limit ? value.substring(0, limit - 3) + "..." : value;
 	}
 
+	public void restoreCourse() {
+		List<Course> courses = courseService.readAlldeActiveCourses();
+		
+		if(courses.isEmpty())
+		{
+			System.out.println("Course Is Empty !!");
+			return;
+		}
+		System.out.println("\n+-------------------------------------------------------------+");
+		System.out.println("|                DEACTIVATED COURSE RECORDS                   |");
+		System.out.println("+-------------------------------------------------------------+");
+		System.out.printf("| %-10s | %-20s | %-10s | %-10s |\n", "Course ID", "Course Name", "Fees", "Active");
+		System.out.println("+-------------------------------------------------------------+");
+
+		for (Course course : courses) {
+			String name = truncate(course.getCourseName(), 20);
+			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n",
+					course.getCourseId(),
+					name,
+					course.getCourseFees(),
+					course.isActive() ? "Yes" : "No");
+		}
+
+		System.out.println("+-------------------------------------------------------------+");
+		
+	
+	
+	try {
+		int courseId = InputValidator.readId("Enter Course ID: ");
+		Course course = courseService.searchCourse(courseId);
+		if (course == null || course.isActive()) {
+			System.out.println("Course Is Already Active Or Not Found !!");
+			return;
+		}
+
+		boolean restored = courseService.restoreCourse(courseId);
+		System.out.println(restored ? "Restored Successfully !!" : "Restore Failed !!");
+
+	} catch (ValidationException e) {
+		System.out.println("Error: " + e.getMessage());
+	}
+
+}
 }

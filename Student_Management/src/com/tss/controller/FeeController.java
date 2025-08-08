@@ -4,12 +4,15 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
+import com.tss.model.Course;
 import com.tss.model.Fees;
 import com.tss.service.FeeService;
+import com.tss.util.InputValidator;
 
 public class FeeController {
 
 	private FeeService feeService = new FeeService();
+	private CourseController courseController = new CourseController();
 	private Scanner scanner = new Scanner(System.in);
 
 	public void getTotalPaidFees() {
@@ -95,22 +98,7 @@ public class FeeController {
 		if (value == null) return "N/A";
 		return value.length() > limit ? value.substring(0, limit - 3) + "..." : value;
 	}
-	
-//	public void getCourseFees() {
-//		System.out.print("Enter Course ID: ");
-//		int courseId = scanner.nextInt();
-//		try {
-//			List<Fees> fee = feeService.getFeesByCourse(courseId);
-//			if (fee != null) {
-//				System.out.println(fee);
-//			} else {
-//				System.out.println("Course not found.");
-//			}
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//
-//	}
+
 
 	public void printFeeForStudent(List<Fees> feeList) {
 		System.out.println(
@@ -165,8 +153,23 @@ public class FeeController {
 	}
 
 	public void updateCourseFee() {
-		System.out.print("Enter Course ID: ");
-		int id = scanner.nextInt();
+		
+		List<Course> courses = courseController.radAllActiveCourse();
+
+		if (courses.isEmpty()) {
+		    System.out.println("No active courses found.");
+		    return;
+		}
+
+		int id = InputValidator.readId("Enter Course ID: ");
+
+		boolean exists = courses.stream()
+		        .anyMatch(course -> course.getCourseId() == id);
+
+		if (!exists) {
+		    System.out.println("Invalid Course ID. Please enter a valid one from the displayed list.");
+		    return;
+		}
 		System.out.print("Enter New Paid Amount: ");
 		double paid = scanner.nextDouble();
 		try {

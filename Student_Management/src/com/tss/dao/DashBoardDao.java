@@ -21,49 +21,49 @@ public class DashBoardDao {
 	    public List<Dashboard> getDashboardData() {
 	        List<Dashboard> list = new ArrayList<>();
 	        String query = """
-	                SELECT
-	                    ROW_NUMBER() OVER (ORDER BY RAND()) AS `Sr No`,
-	                    s.student_id,
-	                    s.student_name,
-	                    c.course_name,
-	                    IFNULL(f.amount_paid, 0),
-	                    (IFNULL(c.course_fees, 0) - IFNULL(f.amount_paid, 0)),
-	                    IFNULL(c.course_fees, 0),
-	                    GROUP_CONCAT(DISTINCT sub.subject_name ORDER BY sub.subject_name SEPARATOR ', '),
-	                    GROUP_CONCAT(DISTINCT t.teacher_name ORDER BY t.teacher_name SEPARATOR ', ')
-	                FROM Students s
-	                LEFT JOIN StudentCourse sc ON sc.student_id = s.student_id
-	                LEFT JOIN Courses c ON c.course_id = sc.course_id
-	                LEFT JOIN Fees f ON f.student_id = s.student_id AND f.course_id = c.course_id
-	                LEFT JOIN CourseSubjects cs ON cs.course_id = c.course_id
-	                LEFT JOIN Subjects sub ON sub.subject_id = cs.subject_id
-	                LEFT JOIN TeacherSubjects ts ON ts.subject_id = sub.subject_id
-	                LEFT JOIN Teachers t ON t.teacher_id = ts.teacher_id
-	                GROUP BY s.student_id, s.student_name, c.course_id, c.course_name, c.course_fees, f.amount_paid
+	                 SELECT
+				        ROW_NUMBER() OVER (ORDER BY RAND()) AS SrNo,
+				        s.student_id,
+				        s.student_name,
+				        GROUP_CONCAT(DISTINCT c.course_name ORDER BY c.course_name SEPARATOR ', ') AS courses,
+				        GROUP_CONCAT(DISTINCT IFNULL(c.course_fees, 0) ORDER BY c.course_name SEPARATOR ', ') AS course_fees,
+				        GROUP_CONCAT(DISTINCT IFNULL(f.amount_paid, 0) ORDER BY c.course_name SEPARATOR ', ') AS amount_paid,
+				        GROUP_CONCAT(DISTINCT (IFNULL(c.course_fees, 0) - IFNULL(f.amount_paid, 0)) ORDER BY c.course_name SEPARATOR ', ') AS due_amounts,
+				        GROUP_CONCAT(DISTINCT sub.subject_name ORDER BY sub.subject_name SEPARATOR ', ') AS subjects,
+				        GROUP_CONCAT(DISTINCT t.teacher_name ORDER BY t.teacher_name SEPARATOR ', ') AS teachers
+				    FROM Students s
+				    LEFT JOIN StudentCourse sc ON sc.student_id = s.student_id
+				    LEFT JOIN Courses c ON c.course_id = sc.course_id
+				    LEFT JOIN Fees f ON f.student_id = s.student_id AND f.course_id = c.course_id
+				    LEFT JOIN CourseSubjects cs ON cs.course_id = c.course_id
+				    LEFT JOIN Subjects sub ON sub.subject_id = cs.subject_id
+				    LEFT JOIN TeacherSubjects ts ON ts.subject_id = sub.subject_id
+				    LEFT JOIN Teachers t ON t.teacher_id = ts.teacher_id
+				    GROUP BY s.student_id, s.student_name
 	                """;
 
 	        try (PreparedStatement stmt = connection.prepareStatement(query);
-	             ResultSet rs = stmt.executeQuery()) {
+	                ResultSet rs = stmt.executeQuery()) {
 
-	            while (rs.next()) {
-	                Dashboard dash = new Dashboard(
-	                    rs.getInt(1),  
-	                    rs.getInt(2),  
-	                    rs.getString(3), 
-	                    rs.getString(4), 
-	                    rs.getDouble(5), 
-	                    rs.getDouble(6), 
-	                    rs.getDouble(7), 
-	                    rs.getString(8), 
-	                    rs.getString(9) 
-	                );
-	                list.add(dash);
-	            }
+	               while (rs.next()) {
+	                   Dashboard dash = new Dashboard(
+	                       rs.getInt("SrNo"),
+	                       rs.getInt("student_id"),
+	                       rs.getString("student_name"),
+	                       rs.getString("courses"),
+	                       rs.getString("course_fees"),
+	                       rs.getString("amount_paid"),
+	                       rs.getString("due_amounts"),
+	                       rs.getString("subjects"),
+	                       rs.getString("teachers")
+	                   );
+	                   list.add(dash);
+	               }
 
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
+	           } catch (SQLException e) {
+	               e.printStackTrace();
+	           }
 
-	        return list;
-	    }	    
+	           return list;
+	       }
 }

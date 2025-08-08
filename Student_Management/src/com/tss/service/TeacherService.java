@@ -42,4 +42,12 @@ public class TeacherService {
 		return dao.getAllActiveTeachers();
 	}
 
+	public List<TeacherWithProfileDTO> getAlldeActiveTeachers() {
+		return dao.getAlldeActiveTeachers();
+	}
+
+	public boolean restoreStudent(int teacherId) {
+		return dao.restoreTeacher(teacherId);
+	}
+
 }

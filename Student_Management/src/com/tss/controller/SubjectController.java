@@ -49,14 +49,14 @@ public class SubjectController {
 	    System.out.print("Enter Subject Name: ");
 	    String subjectName = scanner.nextLine().trim();
 	    if (subjectName.isEmpty()) {
-	        System.out.println("❌ Subject name cannot be empty.");
+	        System.out.println("Subject name cannot be empty.");
 	        return;
 	    }
 
 	    System.out.print("Enter Subject Description: ");
 	    String subjectDescription = scanner.nextLine().trim();
 	    if (subjectDescription.length() > 100) {
-	        System.out.println("❌ Description too long (max 100 chars).");
+	        System.out.println("Description too long (max 100 chars).");
 	        return;
 	    }
 
