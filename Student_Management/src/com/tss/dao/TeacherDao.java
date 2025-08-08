@@ -25,24 +25,41 @@ public class TeacherDao {
 
 	
 
-	public List<Teacher> getAllTeachers() {
-		List<Teacher> teachers = new ArrayList<>();
+	public List<TeacherWithProfileDTO> getAllTeachers() {
+	    List<TeacherWithProfileDTO> list = new ArrayList<>();
 
-		try {
-			stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Teachers");
+	    String query = "SELECT * FROM Teachers INNER JOIN Profiles ON Teachers.teacher_id = Profiles.user_id WHERE user_type = 'teacher' ";
 
-			while (rs.next()) {
-				Teacher teacher = new Teacher(rs.getInt("teacher_id"), rs.getString("teacher_name"),
-						rs.getBoolean("is_active"), rs.getString("joining_date"));
-				teachers.add(teacher);
-			}
+	    try (Statement stmt = connection.createStatement();
+	         ResultSet rs = stmt.executeQuery(query)) {
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	        while (rs.next()) {
+	            Teacher teacher = new Teacher(
+	                rs.getInt("teacher_id"),
+	                rs.getString("teacher_name"),
+	                rs.getBoolean("is_active"),
+	                rs.getString("joining_date")
+	            );
 
-		return teachers;
+	            Profile profile = new Profile(
+	                rs.getInt("id"),
+	                rs.getString("phone_number"),
+	                rs.getString("email"),
+	                rs.getString("address"),
+	                rs.getInt("age"),
+	                rs.getString("user_type"),
+	                rs.getInt("user_id")
+	            );
+
+	            TeacherWithProfileDTO twp = new TeacherWithProfileDTO(teacher, profile);
+	            list.add(twp);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return list;
 	}
 
 	public boolean addTeacher(Teacher teacher) {

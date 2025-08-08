@@ -63,4 +63,48 @@ public class DashboardController {
 		    if (input == null || input.trim().isEmpty()) return "null";
 		    return input.length() > width ? input.substring(0, width - 3) + "..." : String.format("%-" + width + "s", input);
 		}
+	 
+	 public void printFeesBarGraph(List<Dashboard> list) {
+		    final String RESET = "\u001B[0m";
+		    final String GREEN = "\u001B[32m";
+		    final String RED = "\u001B[31m";
+		    final String CYAN = "\u001B[36m";
+		    final String YELLOW = "\u001B[33m";
+
+		    System.out.println("\n📊 FEES PAID VS REMAINING (Colored Bar Graph)");
+		    System.out.println("=".repeat(90));
+		    System.out.printf("%-4s %-15s %-20s %-35s %-10s\n", "No.", "Student", "Course", "Progress", "Paid %");
+		    System.out.println("-".repeat(90));
+
+		    int count = 1;
+		    for (Dashboard d : list) {
+		        String name = d.getStudentName();
+		        String course = d.getCourseName();
+
+		        int paid = (int) d.getPaidFee();
+		        int total = (int) d.getPendingFee();
+
+		        if (paid < 0) paid = 0;
+		        if (total <= 0) total = 1;
+		        if (paid > total) paid = total;
+
+		        int paidBlocks = paid * 30 / total;
+		        int remainingBlocks = 30 - paidBlocks;
+		        int percent = (paid * 100) / total;
+
+		        String bar = "["
+		                + GREEN + "█".repeat(paidBlocks)
+		                + RED + "░".repeat(remainingBlocks)
+		                + RESET + "]";
+
+		        System.out.printf("%-4d %-15s " + CYAN + "%-20s" + RESET + " %-35s " + YELLOW + "%3d%%" + RESET + "\n",
+		                count++, name, course, bar, percent);
+		    }
+
+		    System.out.println("=".repeat(90));
+		}
+
+
+
+
 }

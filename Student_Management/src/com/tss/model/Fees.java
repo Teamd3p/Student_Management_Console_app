@@ -68,6 +68,7 @@ public class Fees {
 		return studentName;
 	}
 	
+	
 	public void setCourseId(int courseId) {
 		this.courseId = courseId;
 	}

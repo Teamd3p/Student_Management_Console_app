@@ -21,52 +21,55 @@ public class TeacherController {
     private final SubjectController subjectController = new SubjectController();
     private final Scanner scanner = new Scanner(System.in);
 
-    public void displayAllTeachers() {
-        List<Teacher> teachers = teacherService.getAllTeachers();
-        List<Profile> profiles = profileService.readAllProfiles("Teacher");
+   public void displayAllTeachers() {
 
-        if (teachers.isEmpty()) {
-            System.out.println("No Teacher Found.");
-            return;
-        }
+    List<TeacherWithProfileDTO> teachers = teacherService.getAllTeachers();
 
-        System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
-        System.out.println("|                                                         TEACHER RECORDS                                                                             |");
-        System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
-        System.out.printf("| %-10s | %-20s | %-6s | %-15s | %-25s | %-20s | %-5s | %-25s |\n", "Teacher ID", "Name", "Active", "Phone", "Email", "Address", "Age", "Joining Date");
-        System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
-
-        for (Teacher teacher : teachers) {
-            Profile matchedProfile = profiles.stream()
-                    .filter(p -> p.getUserId() == teacher.getTeacherId())
-                    .findFirst().orElse(null);
-
-            String phone = matchedProfile != null ? matchedProfile.getPhoneNumber() : "N/A";
-            String email = matchedProfile != null ? matchedProfile.getEmail() : "N/A";
-            String address = matchedProfile != null ? matchedProfile.getAddress() : "N/A";
-            int age = matchedProfile != null ? matchedProfile.getAge() : 0;
-
-            System.out.printf("| %-10d | %-20s | %-6s | %-15s | %-25s | %-20s | %-5d | %-25s |\n",
-                    teacher.getTeacherId(), teacher.getTeacherName(), teacher.isActive() ? "Yes" : "No",
-                    phone, email, address, age, teacher.getJoiningDate());
-        }
-
-        System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+    if (teachers.isEmpty()) {
+        System.out.println("No Teacher Found.");
+        return;
     }
+
+    System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+    System.out.println("|                                                         TEACHER RECORDS                                                                             |");
+    System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+    System.out.printf("| %-10s | %-20s | %-6s | %-15s | %-25s | %-20s | %-5s | %-25s |\n", 
+                      "Teacher ID", "Name", "Active", "Phone", "Email", "Address", "Age", "Joining Date");
+    System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+
+    for (TeacherWithProfileDTO dto : teachers) {
+        Teacher teacher = dto.getTeacher();
+        Profile profile = dto.getProfile();
+
+        String phone = profile != null ? profile.getPhoneNumber() : "N/A";
+        String email = profile != null ? profile.getEmail() : "N/A";
+        String address = profile != null ? profile.getAddress() : "N/A";
+        int age = profile != null ? profile.getAge() : 0;
+
+        System.out.printf("| %-10d | %-20s | %-6s | %-15s | %-25s | %-20s | %-5d | %-25s |\n",
+                teacher.getTeacherId(),
+                teacher.getTeacherName(),
+                teacher.isActive() ? "Yes" : "No",
+                phone, email, address, age,
+                teacher.getJoiningDate());
+    }
+
+    System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+}
+
 
     public void addTeacher() {
         try {
             Teacher teacher = new Teacher();
+
             teacher.setTeacherName(InputValidator.readName("Enter Teacher Name: "));
             teacher.setActive(true);
 
             System.out.print("Enter Joining Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
             String dateInput = scanner.nextLine().trim();
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime joiningDate = dateInput.isEmpty()
                     ? LocalDateTime.now()
-                    : LocalDateTime.parse(dateInput, formatter);
+                    : LocalDateTime.parse(dateInput.replace(" ", "T"));
 
             String formattedDate = joiningDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             teacher.setJoiningDate(formattedDate);
@@ -85,7 +88,7 @@ public class TeacherController {
                     Profile profile = new Profile();
                     profile.setUserType("teacher");
                     profile.setUserId(teacherId);
-
+                 
                     while (true) {
                         try {
                             profile.setPhoneNumber(InputValidator.readPhone("Enter Phone Number: "));
@@ -122,6 +125,7 @@ public class TeacherController {
                         }
                     }
 
+
                     profileSuccess = profileService.insertProfile(profile);
 
                     if (profileSuccess) {
@@ -145,7 +149,7 @@ public class TeacherController {
 
     public void getTeacherById() {
         try {
-            int id = InputValidator.readId("Enter Teacher ID: ");
+            int id = InputValidator.readStudentId("Enter Teacher ID: ");
             Teacher teacher = teacherService.getByIdTeacher(id);
             System.out.println(teacher != null ? teacher : "Teacher not found.");
         } catch (ValidationException e) {
@@ -155,7 +159,7 @@ public class TeacherController {
 
     public boolean deleteTeacher() {
         try {
-            int id = InputValidator.readId("Enter Teacher ID to Delete: ");
+            int id = InputValidator.readStudentId("Enter Teacher ID to Delete: ");
             boolean updated = teacherService.deleteTeacher(id);
             System.out.println(updated ? "Teacher deleted successfully!" : "Delete failed.");
             return updated;
@@ -167,11 +171,11 @@ public class TeacherController {
 
     public boolean assignSubject() {
         try {
-            int teacherId = InputValidator.readId("Enter Teacher ID: ");
+            int teacherId = InputValidator.readStudentId("Enter Teacher ID: ");
             System.out.println("Subjects Table");
             subjectController.readAllSubjects();
 
-            int subjectId = InputValidator.readId("Enter Subject ID: ");
+            int subjectId = InputValidator.readStudentId("Enter Subject ID: ");
             boolean assigned = teacherService.assignSubject(teacherId, subjectId);
 
             System.out.println(assigned ? "Subject assigned to teacher successfully!" : "Assignment failed.");
@@ -184,10 +188,10 @@ public class TeacherController {
 
     public void removeSubject() {
         try {
-            int teacherId = InputValidator.readId("Enter Teacher ID: ");
+            int teacherId = InputValidator.readStudentId("Enter Teacher ID: ");
             if (!readAllSubjectsOfTeacher(teacherId)) return;
 
-            int subjectId = InputValidator.readId("Enter Subject ID to remove: ");
+            int subjectId = InputValidator.readStudentId("Enter Subject ID to remove: ");
             boolean removed = teacherService.removeSubject(teacherId, subjectId);
 
             System.out.println(removed ? "Subject removed from teacher successfully!" : "Remove operation failed.");
@@ -203,46 +207,98 @@ public class TeacherController {
             return false;
         }
 
-        System.out.println("+------------+----------------------+\n| Subject ID | Subject Name         |\n+------------+----------------------+");
+        System.out.println("+------------+----------------------+");
+        System.out.printf("| %-10s | %-20s |\n", "Subject ID", "Subject Name");
+        System.out.println("+------------+----------------------+");
+
         for (Subject subject : assignedSubjects) {
             System.out.printf("| %-10d | %-20s |\n", subject.getSubjectId(), subject.getSubjectName());
         }
-        System.out.println("+------------+----------------------+");
-        return true;
-    }
 
-    public void displayAllActiveTeachers() {
-        List<TeacherWithProfileDTO> teachers = teacherService.getAllActiveTeachers();
+		System.out.printf("| %-10s | %-20s |\n", "Subject ID", "Subject Name");
+		System.out.println("+------------+----------------------+");
 
-        if (teachers.isEmpty()) {
-            System.out.println("No Teacher Found.");
-            return ;
-        }
+		for (Subject subject : assignedSubjects) {
+		    System.out.printf("| %-10s | %-20s |\n", subject.getSubjectId(), subject.getSubjectName());
+		}
 
-        System.out.println("\n+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
-        System.out.println("|                                                         TEACHER RECORDS                                                                             |");
-        System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
-        System.out.printf("| %-10s | %-20s | %-6s | %-15s | %-25s | %-20s | %-5s | %-25s |\n",
-                "Teacher ID", "Name", "Active", "Phone", "Email", "Address", "Age", "Joining Date");
-        System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+		System.out.println("+------------+----------------------+");
 
-        for (TeacherWithProfileDTO dto : teachers) {
-            Teacher teacher = dto.getTeacher();
-            Profile profile = dto.getProfile();
+		return true;
+	}
+	
+	
+	
+	public int displayAllActiveTeachers() {
+	    List<TeacherWithProfileDTO> teachers = teacherService.getAllActiveTeachers();
 
-            String phone = profile != null ? profile.getPhoneNumber() : "N/A";
-            String email = profile != null ? profile.getEmail() : "N/A";
-            String address = profile != null ? profile.getAddress() : "N/A";
-            int age = profile != null ? profile.getAge() : 0;
+	    if (teachers.isEmpty()) {
+	        System.out.println("No Teacher Found.");
+	        return -1;
+	    }
 
-       
-            System.out.printf("| %-10d | %-20s | %-6s | %-15s | %-25s | %-20s | %-5d | %-25s |\n",
-                    teacher.getTeacherId(), teacher.getTeacherName(), teacher.isActive() ? "Yes" : "No",
-                    phone, email, address, age, teacher.getJoiningDate());
-        }
+	    System.out.println(
+	            "\n+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+	    System.out.println(
+	            "|                                                         TEACHER RECORDS                                                                             |");
+	    System.out.println(
+	            "+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+	    System.out.printf("| %-10s | %-20s | %-6s | %-15s | %-25s | %-20s | %-5s | %-25s |\n",
+	            "Teacher ID", "Name", "Active", "Phone", "Email", "Address", "Age", "Joining Date");
+	    System.out.println(
+	            "+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
 
-        System.out.println("+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+	    for (TeacherWithProfileDTO dto : teachers) {
+	        Teacher teacher = dto.getTeacher();
+	        Profile profile = dto.getProfile();
 
-        
-    }
+	        String phone = profile != null ? profile.getPhoneNumber() : "N/A";
+	        String email = profile != null ? profile.getEmail() : "N/A";
+	        String address = profile != null ? profile.getAddress() : "N/A";
+	        int age = profile != null ? profile.getAge() : 0;
+
+	        System.out.printf("| %-10d | %-20s | %-6s | %-15s | %-25s | %-20s | %-5d | %-25s |\n",
+	                teacher.getTeacherId(),
+	                teacher.getTeacherName(),
+	                teacher.isActive() ? "Yes" : "No",
+	                phone, email, address, age,
+	                teacher.getJoiningDate());
+	    }
+
+	    System.out.println(
+	            "+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+
+	    Scanner scanner = new Scanner(System.in);
+	    TeacherWithProfileDTO selectedTeacher = null;
+
+	    while (selectedTeacher == null) {
+	        System.out.print("\nEnter Teacher ID from the above list (or 0 to cancel): ");
+	        int selectedId = scanner.nextInt();
+
+	        if (selectedId == 0) {
+	            System.out.println("Teacher selection cancelled.");
+	            return -1;
+	        }
+
+	        for (TeacherWithProfileDTO dto : teachers) {
+	            if (dto.getTeacher().getTeacherId() == selectedId) {
+	                selectedTeacher = dto;
+	                break;
+	            }
+	        }
+
+	        if (selectedTeacher == null) {
+	            System.out.println("Invalid Teacher ID or Teacher is inactive. Please try again.");
+	        }
+	    }
+
+	    System.out.println("\nYou selected:");
+	    System.out.println(selectedTeacher.getTeacher().toString());
+	    System.out.println(selectedTeacher.getProfile().toString());
+
+	    return selectedTeacher.getTeacher().getTeacherId();
+	}
+	
+	
+	
 }
