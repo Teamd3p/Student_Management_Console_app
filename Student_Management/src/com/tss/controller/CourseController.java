@@ -84,7 +84,7 @@ public class CourseController {
 		Course courses = courseService.addCourse(course);
 		if (courses!=null) {
 			System.out.println(">> Course added successfully.");
-			subjectCourseController.addSubjectsToCourse(courses.getCourseId());
+			return;
 		} else {
 			System.out.println(">> Failed to add course.");
 		}
