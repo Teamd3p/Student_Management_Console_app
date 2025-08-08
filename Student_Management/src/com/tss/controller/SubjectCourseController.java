@@ -20,11 +20,10 @@ public class SubjectCourseController {
 		this.subjectController = new SubjectController();
 	}
 
-	public void addSubjectsToCourse() {
+	public void addSubjectsToCourse(int courseId) {
     List<Course> activeCourses = courseController.radAllActiveCourse();
 
-    System.out.print("Enter Course ID: ");
-    int courseId = scanner.nextInt();
+   
     scanner.nextLine();
 
     boolean courseExists = false;
@@ -36,7 +35,7 @@ public class SubjectCourseController {
     }
 
     if (!courseExists) {
-        System.out.println("❌ Invalid Course ID. Operation cancelled.");
+        System.out.println("Invalid Course ID. Operation cancelled.");
         return;
     }
 

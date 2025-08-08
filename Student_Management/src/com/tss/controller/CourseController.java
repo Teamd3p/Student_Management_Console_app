@@ -12,9 +12,11 @@ import com.tss.util.InputValidator;
 public class CourseController {
 	private CourseService courseService;
 	private Scanner scanner = new Scanner(System.in);
+	private SubjectCourseController subjectCourseController;
 
 	public CourseController() {
 		this.courseService = new CourseService();
+		this.subjectCourseController = new SubjectCourseController();
 	}
 
 	public void readAllCourseRecords() {
@@ -50,8 +52,8 @@ public class CourseController {
 
 			if (name.isEmpty()) {
 				System.out.println(">> Course name cannot be empty. Please try again.");
-			} else if (!name.matches(".*[a-zA-Z].*")) {
-				System.out.println(">> Course name must contain at least one alphabet character.");
+			} else if (!name.matches("[a-zA-Z ]+")) {
+			    System.out.println(">> Course name must contain only alphabets and spaces.");
 			} else {
 				break;
 			}
@@ -79,9 +81,10 @@ public class CourseController {
 		course.setCourseName(name);
 		course.setCourseFees(fees);
 
-		boolean success = courseService.addCourse(course);
-		if (success) {
+		Course courses = courseService.addCourse(course);
+		if (courses!=null) {
 			System.out.println(">> Course added successfully.");
+			subjectCourseController.addSubjectsToCourse(courses.getCourseId());
 		} else {
 			System.out.println(">> Failed to add course.");
 		}
@@ -148,6 +151,11 @@ public class CourseController {
 	}
 
 	public List<Course> radAllActiveCourse() {
+		List<Course> courses = courseService.readAllActiveCourses();		
+		return courses;
+	}
+	public void printAllActiveCourse()
+	{
 		List<Course> courses = courseService.readAllActiveCourses();
 
 		System.out.println("\n+-------------------------------------------------------------+");
@@ -166,7 +174,6 @@ public class CourseController {
 		}
 
 		System.out.println("+-------------------------------------------------------------+");
-		return courses;
 	}
 	
 	

@@ -16,7 +16,7 @@ public class CourseService {
 		return courseDao.readAllCourses();
 	}
 
-	public boolean addCourse(Course course) {
+	public Course addCourse(Course course) {
 		return courseDao.insertCourse(course);
 	}
 

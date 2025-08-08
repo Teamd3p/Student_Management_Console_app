@@ -55,7 +55,9 @@ public class CourseManagement implements MenuHandler {
                     controller.addNewCourse();
                     break;
                 case 3:
-                    subjectCourseController.addSubjectsToCourse();
+                	controller.printAllActiveCourse();
+                	int courseId = InputValidator.readId("Enter Course ID: ");
+                    subjectCourseController.addSubjectsToCourse(courseId);
                     break;
                 case 4:
                 	subjectCourseController.viewSubjectsOfCourse();
