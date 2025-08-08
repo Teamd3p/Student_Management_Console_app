@@ -62,7 +62,6 @@ public class FeeController {
 	public void getStudentsFees() {
 		System.out.print("Enter Student ID: ");
 		int studentId = scanner.nextInt();
-		List<Fees> fee;
 		try {
 			List<Fees> feeList = feeService.getFeesByStudent(studentId);
 			
@@ -122,6 +121,7 @@ public class FeeController {
 				"+------------------------------------------------------------------------------------------+");
 	}
 
+	@SuppressWarnings("unused")
 	private void printFeeCourses() {
 		System.out.println("Enter Course ID: ");
 		int courseId = scanner.nextInt();
@@ -155,7 +155,8 @@ public class FeeController {
 	public void updateCourseFee() {
 		
 		List<Course> courses = courseController.radAllActiveCourse();
-
+		courseController.printAllActiveCourse();
+		
 		if (courses.isEmpty()) {
 		    System.out.println("No active courses found.");
 		    return;

@@ -36,7 +36,7 @@ public class StudentCourseController {
 		try {			
 
 			if (studentController.studentExistance(studentId)) {
-				courseController.radAllActiveCourse();
+				courseController.printAllActiveCourse();
 				System.out.print("Enter Course ID: ");
 				int courseId = Integer.parseInt(scanner.nextLine().trim());
 

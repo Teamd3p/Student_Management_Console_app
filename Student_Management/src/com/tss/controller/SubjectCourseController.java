@@ -23,7 +23,8 @@ public class SubjectCourseController {
 	public void addSubjectsToCourse(int courseId) {
     List<Course> activeCourses = courseController.radAllActiveCourse();
 
-   
+    courseController.printAllActiveCourse();
+    
     scanner.nextLine();
 
     boolean courseExists = false;
@@ -63,7 +64,6 @@ public class SubjectCourseController {
             successfulAdds++;
         } else {
             System.out.println("❌ Failed to add Subject " + subjectId + ". Try another subject.");
-            // Do not increment successfulAdds here, let user retry
         }
     }
 
@@ -73,7 +73,7 @@ public class SubjectCourseController {
 
 	public void viewSubjectsOfCourse() {
 		System.out.println(">> Available Courses:");
-		courseController.readAllCourseRecords();
+		courseController.printAllActiveCourse();
 
 		System.out.print("Enter Course ID to view its subjects: ");
 		int courseId = scanner.nextInt();

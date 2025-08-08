@@ -28,17 +28,13 @@ public class CourseController {
 
 		for (Course course : courses) {
 			String name = truncate(course.getCourseName(), 20);
-			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n",
-					course.getCourseId(),
-					name,
-					course.getCourseFees(),
-					course.isActive() ? "Yes" : "No");
+			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n", course.getCourseId(), name,
+					course.getCourseFees(), course.isActive() ? "Yes" : "No");
 		}
 
 		System.out.println("+-------------------------------------------------------------+");
 	}
-	
-	
+
 	public void addNewCourse() {
 		String name;
 		double fees = -1;
@@ -52,7 +48,7 @@ public class CourseController {
 			if (name.isEmpty()) {
 				System.out.println(">> Course name cannot be empty. Please try again.");
 			} else if (!name.matches("[a-zA-Z ]+")) {
-			    System.out.println(">> Course name must contain only alphabets and spaces.");
+				System.out.println(">> Course name must contain only alphabets and spaces.");
 			} else {
 				break;
 			}
@@ -80,7 +76,7 @@ public class CourseController {
 		course.setCourseFees(fees);
 
 		Course courses = courseService.addCourse(course);
-		if (courses!=null) {
+		if (courses != null) {
 			System.out.println(">> Course added successfully.");
 			return;
 		} else {
@@ -107,14 +103,14 @@ public class CourseController {
 
 			String courseName = truncate(course.getCourseName(), 30);
 
-			System.out.printf("| %-10d | %-30s|₹%10.2f   | %-6s|\n",
-					course.getCourseId(),courseName,course.getCourseFees(),course.isActive() ? "Yes" : "No");
+			System.out.printf("| %-10d | %-30s|₹%10.2f   | %-6s|\n", course.getCourseId(), courseName,
+					course.getCourseFees(), course.isActive() ? "Yes" : "No");
 			System.out.println(border);
 		} else {
 			System.out.println("\nNo existing course with this ID: " + course_id);
 		}
 	}
-	
+
 	public boolean courseExistance(int course_id) {
 		Course course = courseService.searchCourse(course_id);
 		return course != null && course.isActive();
@@ -123,7 +119,7 @@ public class CourseController {
 
 	public void softDeleteCourse() {
 
-		radAllActiveCourse();
+		printAllActiveCourse();
 
 		int course_id = InputValidator.readId("Enter course id to delete the course");
 
@@ -147,11 +143,11 @@ public class CourseController {
 	}
 
 	public List<Course> radAllActiveCourse() {
-		List<Course> courses = courseService.readAllActiveCourses();		
+		List<Course> courses = courseService.readAllActiveCourses();
 		return courses;
 	}
-	public void printAllActiveCourse()
-	{
+
+	public void printAllActiveCourse() {
 		List<Course> courses = courseService.readAllActiveCourses();
 
 		System.out.println("\n+-------------------------------------------------------------+");
@@ -162,27 +158,23 @@ public class CourseController {
 
 		for (Course course : courses) {
 			String name = truncate(course.getCourseName(), 20);
-			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n",
-					course.getCourseId(),
-					name,
-					course.getCourseFees(),
-					course.isActive() ? "Yes" : "No");
+			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n", course.getCourseId(), name,
+					course.getCourseFees(), course.isActive() ? "Yes" : "No");
 		}
 
 		System.out.println("+-------------------------------------------------------------+");
 	}
-	
-	
+
 	private String truncate(String value, int limit) {
-		if (value == null) return "N/A";
+		if (value == null)
+			return "N/A";
 		return value.length() > limit ? value.substring(0, limit - 3) + "..." : value;
 	}
 
 	public void restoreCourse() {
 		List<Course> courses = courseService.readAlldeActiveCourses();
-		
-		if(courses.isEmpty())
-		{
+
+		if (courses.isEmpty()) {
 			System.out.println("Course Is Empty !!");
 			return;
 		}
@@ -194,31 +186,26 @@ public class CourseController {
 
 		for (Course course : courses) {
 			String name = truncate(course.getCourseName(), 20);
-			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n",
-					course.getCourseId(),
-					name,
-					course.getCourseFees(),
-					course.isActive() ? "Yes" : "No");
+			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n", course.getCourseId(), name,
+					course.getCourseFees(), course.isActive() ? "Yes" : "No");
 		}
 
 		System.out.println("+-------------------------------------------------------------+");
-		
-	
-	
-	try {
-		int courseId = InputValidator.readId("Enter Course ID: ");
-		Course course = courseService.searchCourse(courseId);
-		if (course == null || course.isActive()) {
-			System.out.println("Course Is Already Active Or Not Found !!");
-			return;
+
+		try {
+			int courseId = InputValidator.readId("Enter Course ID: ");
+			Course course = courseService.searchCourse(courseId);
+			if (course == null || course.isActive()) {
+				System.out.println("Course Is Already Active Or Not Found !!");
+				return;
+			}
+
+			boolean restored = courseService.restoreCourse(courseId);
+			System.out.println(restored ? "Restored Successfully !!" : "Restore Failed !!");
+
+		} catch (ValidationException e) {
+			System.out.println("Error: " + e.getMessage());
 		}
 
-		boolean restored = courseService.restoreCourse(courseId);
-		System.out.println(restored ? "Restored Successfully !!" : "Restore Failed !!");
-
-	} catch (ValidationException e) {
-		System.out.println("Error: " + e.getMessage());
 	}
-
-}
 }

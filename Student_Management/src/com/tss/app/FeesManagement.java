@@ -60,7 +60,7 @@ public class FeesManagement implements MenuHandler {
                     break;
                 case 4:
                     System.out.println(">> Viewing fees by course...");
-                    courseController.radAllActiveCourse();
+                    courseController.printAllActiveCourse();
                     break;
                 case 5:
                     System.out.println(">> Updating fees of a course...");
