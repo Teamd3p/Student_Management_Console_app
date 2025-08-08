@@ -16,7 +16,6 @@ public class CourseController {
 
 	public CourseController() {
 		this.courseService = new CourseService();
-		this.subjectCourseController = new SubjectCourseController();
 	}
 
 	public void readAllCourseRecords() {
@@ -45,6 +44,7 @@ public class CourseController {
 		String name;
 		double fees = -1;
 
+		subjectCourseController = new SubjectCourseController();
 		// Validate course name (non-empty + contains alphabet)
 		while (true) {
 			System.out.print("Enter Course Name: ");
@@ -92,8 +92,7 @@ public class CourseController {
 
 	public void searchCourse() {
 
-		System.out.println("Enter course id to search the course");
-		int course_id = scanner.nextInt();
+		int course_id = InputValidator.readId("Enter course id to search the course");
 
 		Course course = courseService.searchCourse(course_id);
 
@@ -128,8 +127,7 @@ public class CourseController {
 
 		radAllActiveCourse();
 
-		System.out.println("Enter course id to delete the course");
-		int course_id = scanner.nextInt();
+		int course_id = InputValidator.readId("Enter course id to delete the course");
 
 		Course course = courseService.softDeleteCourse(course_id);
 
