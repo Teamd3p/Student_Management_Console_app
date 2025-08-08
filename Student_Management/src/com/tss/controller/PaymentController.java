@@ -138,21 +138,112 @@ public class PaymentController {
         }
     }
 
-	private void printReceipt(String method, int studentId, double amountToPay, String courseName, String paymentType) {
-		System.out.println("\n====================================================");
-		System.out.println("                   PAYMENT RECEIPT                  ");
-		System.out.println("====================================================");
-		System.out.printf("Receipt No.    : %05d\n", (int) (Math.random() * 100000));
-		System.out.printf("Date & Time    : %s\n", java.time.LocalDateTime.now());
-		System.out.printf("Student ID     : %d\n", studentId);
-		System.out.printf("Course Name    : %s\n", courseName);
-		System.out.printf("Amount Paid    : ₹%.2f\n", amountToPay);
-		System.out.printf("Payment Method : %s\n", paymentType);
-		System.out.println("----------------------------------------------------");
-		System.out.println("          Thank you for your payment!               ");
-		System.out.println("      An official receipt has been sent via         ");
-		System.out.println("              " + method.toUpperCase() + " NOTIFICATION             ");
-		System.out.println("====================================================\n");
-	}
+ // ANSI color constants (place at class level or above these methods)
+    private static final String RESET      = "\u001B[0m";
+    private static final String BOLD       = "\u001B[1m";
+    private static final String BLUE       = "\u001B[34m";
+    private static final String GREEN_DARK = "\u001B[32;1m";
+    private static final String PURPLE_DARK= "\u001B[35;1m";
 
+    // Main print method (paste into your class)
+    private void printReceipt(String method, int studentId, double amountToPay, String courseName, String paymentType) {
+        // Layout constants
+        final int innerWidth = 52;   // number of characters BETWEEN the vertical bars
+        final int labelWidth = 15;   // width for the label (left column)
+        final int leading = 1;       // 1 space after the left border
+        final int sepWidth = 3;      // " : "
+
+        // Build borders dynamically so they always match innerWidth
+        String horiz = repeat('─', innerWidth);
+        String topBorder = "┌" + horiz + "┐";
+        String midBorder = "├" + horiz + "┤";
+        String bottomBorder = "└" + horiz + "┘";
+
+        System.out.println(topBorder);
+
+        // Title (centered)
+        String title = "PAYMENT RECEIPT";
+        printCenteredLine(title, BOLD + PURPLE_DARK, innerWidth);
+
+        System.out.println(midBorder);
+
+        // Rows (we pass raw value and color separately so wrapping & length computation are correct)
+        printRow("Receipt No.", String.format("%05d", (int) (Math.random() * 100000)), BLUE, innerWidth, labelWidth, leading, sepWidth);
+        // short date format so it fits better
+        String dateTime = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        printRow("Date & Time", dateTime, BLUE, innerWidth, labelWidth, leading, sepWidth);
+        printRow("Student ID", String.valueOf(studentId), BLUE, innerWidth, labelWidth, leading, sepWidth);
+        printRow("Course Name", courseName, BLUE, innerWidth, labelWidth, leading, sepWidth);
+        printRow("Amount Paid", "₹" + String.format("%.2f", amountToPay), BOLD + GREEN_DARK, innerWidth, labelWidth, leading, sepWidth);
+        printRow("Payment Method", paymentType, BLUE, innerWidth, labelWidth, leading, sepWidth);
+
+        System.out.println(midBorder);
+
+        // Footer — centered lines (with requested colors)
+        printCenteredLine("Thank you for your payment!", BOLD + GREEN_DARK, innerWidth);
+        printCenteredLine("An official receipt has been sent via", BLUE, innerWidth);
+        printCenteredLine(method.toUpperCase() + " NOTIFICATION", BOLD + BLUE, innerWidth);
+
+        System.out.println(bottomBorder);
+    }
+
+    // Helper to print a row with wrapping and ANSI-safe alignment
+    private void printRow(String label, String valueRaw, String valueColorAnsi,
+                          int innerWidth, int labelWidth, int leading, int sepWidth) {
+
+        // available characters for value on first line:
+        int available = innerWidth - (leading + labelWidth + sepWidth);
+
+        // prepare label padded
+        String labelPadded = String.format("%-" + labelWidth + "s", label);
+
+        // if fits on single line:
+        if (valueRaw.length() <= available) {
+            int padRight = innerWidth - (leading + labelWidth + sepWidth + valueRaw.length());
+            String content = spaces(leading) + labelPadded + " : " + valueColorAnsi + valueRaw + RESET + spaces(padRight);
+            System.out.println("│" + content + "│");
+            return;
+        }
+
+        // first line (label + first part of value)
+        String first = valueRaw.substring(0, available);
+        int padFirst = innerWidth - (leading + labelWidth + sepWidth + first.length());
+        String contentFirst = spaces(leading) + labelPadded + " : " + valueColorAnsi + first + RESET + spaces(padFirst);
+        System.out.println("│" + contentFirst + "│");
+
+        // subsequent continuation lines (value column only)
+        int indent = leading + labelWidth + sepWidth;          // spaces to align under the value column
+        int perLine = innerWidth - indent;                     // width available per continuation line
+        int pos = available;
+        while (pos < valueRaw.length()) {
+            int end = Math.min(valueRaw.length(), pos + perLine);
+            String part = valueRaw.substring(pos, end);
+            int pad = innerWidth - (indent + part.length());
+            String cont = spaces(indent) + valueColorAnsi + part + RESET + spaces(pad);
+            System.out.println("│" + cont + "│");
+            pos = end;
+        }
+    }
+
+    // Helper to print centered line (uses raw text length for centering and prints colored text)
+    private void printCenteredLine(String rawText, String colorAnsi, int innerWidth) {
+        int leftPad = (innerWidth - rawText.length()) / 2;
+        int rightPad = innerWidth - leftPad - rawText.length();
+        String content = spaces(leftPad) + colorAnsi + rawText + RESET + spaces(rightPad);
+        System.out.println("│" + content + "│");
+    }
+
+    // small utility: repeat a char n times
+    private static String repeat(char ch, int count) {
+        if (count <= 0) return "";
+        char[] arr = new char[count];
+        java.util.Arrays.fill(arr, ch);
+        return new String(arr);
+    }
+
+    // small utility: spaces
+    private static String spaces(int n) {
+        if (n <= 0) return "";
+        return repeat(' ', n);
+    }
 }
