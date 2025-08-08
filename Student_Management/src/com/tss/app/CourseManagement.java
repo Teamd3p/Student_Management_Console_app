@@ -13,17 +13,22 @@ public class CourseManagement implements MenuHandler {
 
     @Override
     public void showMenu() {
-    	System.out.println("╔══════════════════════════════╗");
-    	System.out.println("║       COURSE MANAGEMENT      ║");
-    	System.out.println("╠══════════════════════════════╣");
-    	System.out.println("║ 1. View All Courses          ║");
-    	System.out.println("║ 2. Add New Course            ║");
-    	System.out.println("║ 3. Add Subjects in a Course  ║");
-    	System.out.println("║ 4. View Subjects of a Course ║");
-    	System.out.println("║ 5. Search a Course           ║");
-    	System.out.println("║ 6. Delete a Course           ║");
-    	System.out.println("║ 7. Go Back                   ║");
-    	System.out.println("╚══════════════════════════════╝");
+    	final String PURPLE = "\u001B[35m";  // Purple ANSI
+    	final String RESET = "\u001B[0m";    // Reset to default
+    	final String BOLD = "\033[1m";
+
+    	System.out.println(PURPLE + BOLD+ "╔══════════════════════════════╗" + RESET);
+    	System.out.println(PURPLE + BOLD+ "║       COURSE MANAGEMENT      ║" + RESET);
+    	System.out.println(PURPLE +  BOLD+"╠══════════════════════════════╣" + RESET);
+    	System.out.println(PURPLE + "║ 1. View All Courses          ║" + RESET);
+    	System.out.println(PURPLE + "║ 2. Add New Course            ║" + RESET);
+    	System.out.println(PURPLE + "║ 3. Add Subjects in a Course  ║" + RESET);
+    	System.out.println(PURPLE + "║ 4. View Subjects of a Course ║" + RESET);
+    	System.out.println(PURPLE + "║ 5. Search a Course           ║" + RESET);
+    	System.out.println(PURPLE + "║ 6. Delete a Course           ║" + RESET);
+    	System.out.println(PURPLE + "║ 7. Restore Course            ║" + RESET);
+    	System.out.println(PURPLE + "║ 8. Go Back                   ║" + RESET);
+    	System.out.println(PURPLE + "╚══════════════════════════════╝" + RESET);
 
     }
 
@@ -62,6 +67,9 @@ public class CourseManagement implements MenuHandler {
                     controller.softDeleteCourse();
                     break;
                 case 7:
+                	controller.restoreCourse();
+                	break;
+                case 8:
                     System.out.println(">> Returning to main menu...");
                     return;
                 default:

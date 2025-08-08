@@ -154,4 +154,46 @@ public class CourseDao {
 
         return courses;
     }
+    public List<Course> readAlldeActiveCourses() {
+        List<Course> courses = new ArrayList<>();
+        String sql = "SELECT * FROM Courses WHERE is_active = ?";
+
+        try {
+            prepareStatement = connection.prepareStatement(sql);
+            prepareStatement.setBoolean(1, false);
+            ResultSet result = prepareStatement.executeQuery();
+
+            while (result.next()) {
+                Course course = new Course(
+                    result.getInt("course_id"),
+                    result.getString("course_name"),
+                    result.getDouble("course_fees"),
+                    result.getBoolean("is_active")
+                );
+                courses.add(course);
+            }
+
+            result.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return courses;
+    }
+
+	public boolean restoreCourse(int courseId) {
+		String sql = "UPDATE Courses SET is_active = true WHERE course_id = ?";
+		try
+		{
+			prepareStatement = connection.prepareStatement(sql);
+			prepareStatement.setInt(1, courseId);
+			
+			return prepareStatement.executeUpdate()>0;
+		}
+		catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}
+		return false;
+	}
 }

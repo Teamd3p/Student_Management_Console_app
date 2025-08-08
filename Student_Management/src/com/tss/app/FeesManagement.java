@@ -16,17 +16,21 @@ public class FeesManagement implements MenuHandler {
     CourseController courseController = new CourseController();
 
     public void showMenu() {
-    	System.out.println("╔═══════════════════════════════╗");
-    	System.out.println("║        FEES MANAGEMENT        ║");
-    	System.out.println("╠═══════════════════════════════╣");
-    	System.out.println("║ 1. View Total Paid Fees       ║");
-    	System.out.println("║ 2. View Total Pending Fees    ║");
-    	System.out.println("║ 3. View Fees By Student       ║");
-    	System.out.println("║ 4. View Fees By Course        ║");
-    	System.out.println("║ 5. Update Fees Of A Course    ║");
-    	System.out.println("║ 6. Total Earning              ║");
-    	System.out.println("║ 7. Go Back                    ║");
-    	System.out.println("╚═══════════════════════════════╝");
+    	 final String RESET = "\u001B[0m";
+  	   final String PURPLE = "\u001B[35m";
+  	    final String BOLD = "\u001B[1m";
+  	
+  	System.out.println(PURPLE + BOLD+"╔═══════════════════════════════╗"+RESET);
+  	System.out.println(PURPLE +BOLD +"║        FEES MANAGEMENT        ║"+RESET);
+  	System.out.println(PURPLE+BOLD+"╠═══════════════════════════════╣"+RESET);
+  	System.out.println(PURPLE+"║ 1. View Total Paid Fees       ║"+RESET);
+  	System.out.println(PURPLE+"║ 2. View Total Pending Fees    ║"+RESET);
+  	System.out.println(PURPLE+"║ 3. View Fees By Student       ║"+RESET);
+  	System.out.println(PURPLE+"║ 4. View Fees By Course        ║"+RESET);
+  	System.out.println(PURPLE+"║ 5. Update Fees Of A Course    ║"+RESET);
+  	System.out.println(PURPLE+"║ 6. Total Earning              ║"+RESET);
+  	System.out.println(PURPLE+"║ 7. Go Back                    ║"+RESET);
+  	System.out.println(PURPLE+"╚═══════════════════════════════╝"+RESET);
     }
 
     public void chooseMenu() {
@@ -56,12 +60,10 @@ public class FeesManagement implements MenuHandler {
                     break;
                 case 4:
                     System.out.println(">> Viewing fees by course...");
-                    courseController.readAllCourseRecords();
-//                    feeController.getCourseFees();
+                    courseController.radAllActiveCourse();
                     break;
                 case 5:
                     System.out.println(">> Updating fees of a course...");
-                    courseController.readAllCourseRecords();
                     feeController.updateCourseFee();
                     break;
                 case 6:

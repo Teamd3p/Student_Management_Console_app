@@ -3,8 +3,11 @@ package com.tss.controller;
 import java.util.List;
 import java.util.Scanner;
 
+import com.tss.exception.ValidationException;
 import com.tss.model.Course;
+import com.tss.model.Student;
 import com.tss.service.CourseService;
+import com.tss.util.InputValidator;
 
 public class CourseController {
 	private CourseService courseService;
@@ -114,9 +117,8 @@ public class CourseController {
 	
 	public boolean courseExistance(int course_id) {
 		Course course = courseService.searchCourse(course_id);
-		if (course != null)
-			return true;
-		return false;
+		return course != null && course.isActive();
+
 	}
 
 	public void softDeleteCourse() {
@@ -173,4 +175,47 @@ public class CourseController {
 		return value.length() > limit ? value.substring(0, limit - 3) + "..." : value;
 	}
 
+	public void restoreCourse() {
+		List<Course> courses = courseService.readAlldeActiveCourses();
+		
+		if(courses.isEmpty())
+		{
+			System.out.println("Course Is Empty !!");
+			return;
+		}
+		System.out.println("\n+-------------------------------------------------------------+");
+		System.out.println("|                DEACTIVATED COURSE RECORDS                   |");
+		System.out.println("+-------------------------------------------------------------+");
+		System.out.printf("| %-10s | %-20s | %-10s | %-10s |\n", "Course ID", "Course Name", "Fees", "Active");
+		System.out.println("+-------------------------------------------------------------+");
+
+		for (Course course : courses) {
+			String name = truncate(course.getCourseName(), 20);
+			System.out.printf("| %-10d | %-20s | %-10.2f | %-10s |\n",
+					course.getCourseId(),
+					name,
+					course.getCourseFees(),
+					course.isActive() ? "Yes" : "No");
+		}
+
+		System.out.println("+-------------------------------------------------------------+");
+		
+	
+	
+	try {
+		int courseId = InputValidator.readId("Enter Course ID: ");
+		Course course = courseService.searchCourse(courseId);
+		if (course == null || course.isActive()) {
+			System.out.println("Course Is Already Active Or Not Found !!");
+			return;
+		}
+
+		boolean restored = courseService.restoreCourse(courseId);
+		System.out.println(restored ? "Restored Successfully !!" : "Restore Failed !!");
+
+	} catch (ValidationException e) {
+		System.out.println("Error: " + e.getMessage());
+	}
+
+}
 }
