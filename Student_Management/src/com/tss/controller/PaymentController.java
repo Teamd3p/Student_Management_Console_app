@@ -5,8 +5,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
+import com.tss.exception.ValidationException;
 import com.tss.model.Fees;
 import com.tss.service.NotificationService;
+import com.tss.util.InputValidator;
 
 public class PaymentController {
 
@@ -19,7 +21,7 @@ public class PaymentController {
         this.notificationService = new NotificationService();
     }
 
-    public void handleStudentFeePayment(int studentId, List<Fees> enrolledCourses) {
+    public void handleStudentFeePayment(int studentId, List<Fees> enrolledCourses) throws ValidationException {
         boolean hasPending = enrolledCourses.stream().anyMatch(f -> f.getAmountPending() > 0);
 
         if (!hasPending) {
@@ -63,97 +65,151 @@ public class PaymentController {
     }
 
     private void printPendingCourses(List<Fees> enrolledCourses) {
-        System.out.println("\n+--------------------------------------------------------------+");
-        System.out.println("|                  Enrolled Courses with Pending Fees          |");
-        System.out.println("+--------------------------------------------------------------+");
-        System.out.printf("| %-10s | %-25s | %-10s | %-10s |\n", "Course ID", "Course Name", "Paid (₹)", "Pending (₹)");
-        System.out.println("+--------------------------------------------------------------+");
+        // Column widths
+        int col1 = 10; // Course ID
+        int col2 = 25; // Course Name
+        int col3 = 12; // Paid (₹)
+        int col4 = 12; // Pending (₹)
+
+        int tableWidth = col1 + col2 + col3 + col4 + 13; // extra for separators and spaces
+
+        String horizontalLine = "+" + "-".repeat(tableWidth - 2) + "+";
+
+        System.out.println("\n" + horizontalLine);
+        System.out.printf("| %-" + (tableWidth - 4) + "s |\n", "Enrolled Courses with Pending Fees");
+        System.out.println(horizontalLine);
+        System.out.printf("| %-"+col1+"s | %-"+col2+"s | %"+col3+"s | %"+col4+"s |\n",
+                "Course ID", "Course Name", "Paid (₹)", "Pending (₹)");
+        System.out.println(horizontalLine);
 
         for (Fees fee : enrolledCourses) {
             if (fee.getAmountPending() > 0) {
-                System.out.printf("| %-10d | %-25s | %-10.2f | %-11.2f |\n",
-                        fee.getCourseId(), fee.getCourseName(), fee.getAmountPaid(), fee.getAmountPending());
+                System.out.printf("| %-"+col1+"d | %-"+col2+"s | %"+col3+".2f | %"+col4+".2f |\n",
+                        fee.getCourseId(), fee.getCourseName(),
+                        fee.getAmountPaid(), fee.getAmountPending());
             }
         }
-        System.out.println("+--------------------------------------------------------------+\n");
+        System.out.println(horizontalLine + "\n");
     }
 
-    private String choosePaymentMethod() {
-        while (true) {
-            System.out.println("\nChoose Payment Method:");
-            System.out.println("1. Cash\n2. UPI\n3. Card\n4. Cancel");
-            System.out.print("Enter your choice: ");
-            String choice = scanner.nextLine().trim();
 
+    private String choosePaymentMethod() throws ValidationException {
+        System.out.println("╔════════════════════════════════╗");
+        System.out.println("║       CHOOSE PAYMENT METHOD    ║");
+        System.out.println("╠════════════════════════════════╣");
+        System.out.println("║ 1. Cash                        ║");
+        System.out.println("║ 2. UPI                         ║");
+        System.out.println("║ 3. Card                        ║");
+        System.out.println("║ 4. Exit                        ║");
+        System.out.println("╚════════════════════════════════╝");
+
+        int choice = InputValidator.readChoice("Enter your choice: ");
+        while (true) {
             switch (choice) {
-                case "1": return "Cash";
-                case "2":
-                    System.out.print("Enter UPI ID: ");
-                    String upi = scanner.nextLine().trim();
-                    if (!upi.matches("^[\\w.-]+@[a-zA-Z]+$")) {
-                        System.out.println("Invalid UPI ID.");
-                        continue;
-                    }
-                    return "UPI";
-                case "3":
-                    if (!validateCard()) return null;
-                    return "Card";
-                case "4":
+            case 1:
+                return "Cash";
+            case 2:
+                System.out.print("Enter UPI ID: ");
+                String upi = scanner.nextLine().trim();
+                if (!upi.matches("^[\\w.-]+@[a-zA-Z]+$")) {
+                    System.out.println("Invalid UPI ID.");
+                    continue;
+                }
+                return "UPI";
+            case 3:
+                if (!validateCard())
                     return null;
-                default:
-                    System.out.println("Invalid choice.");
+                return "Card";
+            case 4:
+                return null;
+            default:
+                System.out.println("Invalid choice.");
             }
         }
     }
 
     private boolean validateCard() {
-        System.out.print("Enter 16-digit Card Number: ");
-        if (!scanner.nextLine().trim().matches("\\d{16}")) return false;
-        System.out.print("Enter 3-digit CVV: ");
-        if (!scanner.nextLine().trim().matches("\\d{3}")) return false;
-        System.out.print("Enter Expiry Date (MM/YY): ");
-        String expiryInput = scanner.nextLine().trim();
-        if (!expiryInput.matches("^(0[1-9]|1[0-2])/\\d{2}$") ||
-            YearMonth.parse("20" + expiryInput.substring(3), DateTimeFormatter.ofPattern("yyyy"))
-                     .withMonth(Integer.parseInt(expiryInput.substring(0, 2)))
-                     .isBefore(YearMonth.now())) {
-            System.out.println("Invalid or expired card.");
-            return false;
-        }
+        while (true) {
+            System.out.print("Enter 16-digit Card Number: ");
+            String cardNumber = scanner.nextLine().trim();
+            if (!cardNumber.matches("\\d{16}")) {
+                System.out.println("Invalid Card Number. Please enter exactly 16 digits.");
+                continue;
+            }
 
-        return true;
+            System.out.print("Enter 3-digit CVV: ");
+            String cvv = scanner.nextLine().trim();
+            if (!cvv.matches("\\d{3}")) {
+                System.out.println("Invalid CVV. Please enter exactly 3 digits.");
+                continue;
+            }
+
+            System.out.print("Enter Expiry Date (MM/YY): ");
+            String expiryInput = scanner.nextLine().trim();
+            try {
+                if (!expiryInput.matches("^(0[1-9]|1[0-2])/\\d{2}$")) {
+                    System.out.println("Invalid expiry format. Please use MM/YY.");
+                    continue;
+                }
+
+                YearMonth expiry = YearMonth.parse("20" + expiryInput.substring(3), DateTimeFormatter.ofPattern("yyyy"))
+                        .withMonth(Integer.parseInt(expiryInput.substring(0, 2)));
+
+                if (expiry.isBefore(YearMonth.now())) {
+                    System.out.println("Card has expired. Please enter a valid date.");
+                    continue;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid expiry date format.");
+                continue;
+            }
+
+            // If all checks pass
+            return true;
+        }
     }
 
     private void sendReceipt(int studentId, Fees fee, double amount, String paymentType) {
         String preference = notificationService.getNotificationPreference(studentId);
 
-        if ("SMS".equalsIgnoreCase(preference) || "Both".equalsIgnoreCase(preference)) {
-            printReceipt("SMS", studentId, amount, fee.getCourseName(), paymentType);
-        }
-        if ("Email".equalsIgnoreCase(preference) || "Both".equalsIgnoreCase(preference)) {
-            printReceipt("Email", studentId, amount, fee.getCourseName(), paymentType);
-        }
         if ("None".equalsIgnoreCase(preference)) {
             System.out.println("No notifications sent.");
+            return;
         }
+
+        String sendMethod;
+        switch (preference.toLowerCase()) {
+            case "sms":
+                sendMethod = "SMS";
+                break;
+            case "email":
+                sendMethod = "Email";
+                break;
+            case "both":
+                sendMethod = "SMS & Email";
+                break;
+            default:
+                sendMethod = "Unknown";
+        }
+
+        // Print only one receipt with combined delivery method if needed
+        printReceipt(sendMethod, studentId, amount, fee.getCourseName(), paymentType);
     }
 
- // ANSI color constants (place at class level or above these methods)
-    private static final String RESET      = "\u001B[0m";
-    private static final String BOLD       = "\u001B[1m";
-    private static final String BLUE       = "\u001B[34m";
-    private static final String GREEN_DARK = "\u001B[32;1m";
-    private static final String PURPLE_DARK= "\u001B[35;1m";
 
-    // Main print method (paste into your class)
+    private static final String RESET = "\u001B[0m";
+    private static final String BOLD = "\u001B[1m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String GREEN_DARK = "\u001B[32;1m";
+    private static final String PURPLE_DARK = "\u001B[35;1m";
+
     private void printReceipt(String method, int studentId, double amountToPay, String courseName, String paymentType) {
         // Layout constants
-        final int innerWidth = 52;   // number of characters BETWEEN the vertical bars
-        final int labelWidth = 15;   // width for the label (left column)
-        final int leading = 1;       // 1 space after the left border
-        final int sepWidth = 3;      // " : "
+        final int innerWidth = 52;
+        final int labelWidth = 15;
+        final int leading = 1;
+        final int sepWidth = 3;
 
-        // Build borders dynamically so they always match innerWidth
         String horiz = repeat('─', innerWidth);
         String topBorder = "┌" + horiz + "┐";
         String midBorder = "├" + horiz + "┤";
@@ -161,25 +217,24 @@ public class PaymentController {
 
         System.out.println(topBorder);
 
-        // Title (centered)
         String title = "PAYMENT RECEIPT";
         printCenteredLine(title, BOLD + PURPLE_DARK, innerWidth);
 
         System.out.println(midBorder);
 
-        // Rows (we pass raw value and color separately so wrapping & length computation are correct)
-        printRow("Receipt No.", String.format("%05d", (int) (Math.random() * 100000)), BLUE, innerWidth, labelWidth, leading, sepWidth);
-        // short date format so it fits better
-        String dateTime = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        printRow("Receipt No.", String.format("%05d", (int) (Math.random() * 100000)), BLUE, innerWidth, labelWidth,
+                leading, sepWidth);
+        String dateTime = java.time.LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         printRow("Date & Time", dateTime, BLUE, innerWidth, labelWidth, leading, sepWidth);
         printRow("Student ID", String.valueOf(studentId), BLUE, innerWidth, labelWidth, leading, sepWidth);
         printRow("Course Name", courseName, BLUE, innerWidth, labelWidth, leading, sepWidth);
-        printRow("Amount Paid", "₹" + String.format("%.2f", amountToPay), BOLD + GREEN_DARK, innerWidth, labelWidth, leading, sepWidth);
+        printRow("Amount Paid", "₹" + String.format("%.2f", amountToPay), BOLD + GREEN_DARK, innerWidth, labelWidth,
+                leading, sepWidth);
         printRow("Payment Method", paymentType, BLUE, innerWidth, labelWidth, leading, sepWidth);
 
         System.out.println(midBorder);
 
-        // Footer — centered lines (with requested colors)
         printCenteredLine("Thank you for your payment!", BOLD + GREEN_DARK, innerWidth);
         printCenteredLine("An official receipt has been sent via", BLUE, innerWidth);
         printCenteredLine(method.toUpperCase() + " NOTIFICATION", BOLD + BLUE, innerWidth);
@@ -187,33 +242,28 @@ public class PaymentController {
         System.out.println(bottomBorder);
     }
 
-    // Helper to print a row with wrapping and ANSI-safe alignment
-    private void printRow(String label, String valueRaw, String valueColorAnsi,
-                          int innerWidth, int labelWidth, int leading, int sepWidth) {
+    private void printRow(String label, String valueRaw, String valueColorAnsi, int innerWidth, int labelWidth,
+            int leading, int sepWidth) {
 
-        // available characters for value on first line:
         int available = innerWidth - (leading + labelWidth + sepWidth);
 
-        // prepare label padded
         String labelPadded = String.format("%-" + labelWidth + "s", label);
 
-        // if fits on single line:
         if (valueRaw.length() <= available) {
             int padRight = innerWidth - (leading + labelWidth + sepWidth + valueRaw.length());
-            String content = spaces(leading) + labelPadded + " : " + valueColorAnsi + valueRaw + RESET + spaces(padRight);
+            String content = spaces(leading) + labelPadded + " : " + valueColorAnsi + valueRaw + RESET
+                    + spaces(padRight);
             System.out.println("│" + content + "│");
             return;
         }
 
-        // first line (label + first part of value)
         String first = valueRaw.substring(0, available);
         int padFirst = innerWidth - (leading + labelWidth + sepWidth + first.length());
         String contentFirst = spaces(leading) + labelPadded + " : " + valueColorAnsi + first + RESET + spaces(padFirst);
         System.out.println("│" + contentFirst + "│");
 
-        // subsequent continuation lines (value column only)
-        int indent = leading + labelWidth + sepWidth;          // spaces to align under the value column
-        int perLine = innerWidth - indent;                     // width available per continuation line
+        int indent = leading + labelWidth + sepWidth;
+        int perLine = innerWidth - indent;
         int pos = available;
         while (pos < valueRaw.length()) {
             int end = Math.min(valueRaw.length(), pos + perLine);
@@ -225,7 +275,6 @@ public class PaymentController {
         }
     }
 
-    // Helper to print centered line (uses raw text length for centering and prints colored text)
     private void printCenteredLine(String rawText, String colorAnsi, int innerWidth) {
         int leftPad = (innerWidth - rawText.length()) / 2;
         int rightPad = innerWidth - leftPad - rawText.length();
@@ -233,17 +282,18 @@ public class PaymentController {
         System.out.println("│" + content + "│");
     }
 
-    // small utility: repeat a char n times
     private static String repeat(char ch, int count) {
-        if (count <= 0) return "";
+        if (count <= 0)
+            return "";
         char[] arr = new char[count];
         java.util.Arrays.fill(arr, ch);
         return new String(arr);
     }
 
-    // small utility: spaces
     private static String spaces(int n) {
-        if (n <= 0) return "";
+        if (n <= 0)
+            return "";
         return repeat(' ', n);
     }
+
 }

@@ -32,7 +32,15 @@ public class CourseService {
 		return courseDao.readAllActiveCourses();
 
 	}
+	
+	public List<Course> readAlldeActiveCourses()
+	{
+		return courseDao.readAlldeActiveCourses();
+	}
 
+	public boolean restoreCourse(int courseId) {
+		return courseDao.restoreCourse(courseId);
+	}
 	
 	
 }

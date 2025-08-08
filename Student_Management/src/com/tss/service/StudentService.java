@@ -2,6 +2,7 @@ package com.tss.service;
 
 import java.util.List;
 import com.tss.dao.StudentDao;
+import com.tss.dto.StudentWithProfileDTO;
 import com.tss.model.Student;
 
 public class StudentService {
@@ -45,5 +46,9 @@ public class StudentService {
 
 	public boolean restoreStudent(int studentId) {
 		return studentDao.restoreStudent(studentId);
+	}
+
+	public List<StudentWithProfileDTO> getAllActiveStudents() {		 
+		return studentDao.getAllActiveStudents();
 	}
 }

@@ -18,5 +18,11 @@ public class DashBoardService {
 		return dashboardDao.getDashboardData();
 	}
 	
+	public double getTotalEarnings() {
+	        List<Dashboard> dashboards = getDashboardData();
+	        return dashboards.stream()
+	                .mapToDouble(Dashboard::getTotalPaid)
+	                .sum();
+	    }
 	
 }

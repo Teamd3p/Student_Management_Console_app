@@ -2,9 +2,12 @@ package com.tss.controller;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
+import com.tss.dto.StudentWithProfileDTO;
 import com.tss.exception.ValidationException;
 import com.tss.model.Fees;
 import com.tss.model.Profile;
@@ -36,21 +39,18 @@ public class StudentController {
 		List<Profile> profiles = profileService.readAllProfiles("student");
 		System.out.println(
 				"\n+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
-	
+
 		System.out.println(
 				"|                                                           STUDENT RECORDS                                                                                |");
 
 		System.out.println(
 				"+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
 
-		
-		System.out.printf("| %-12s | %-20s | %-6s | %-15s | %-25s | %-30s | %-3s | %-20s |\n",
-				"Student ID", "Name", "Active", "Phone", "Email", "Address", "Age", "Admission");
+		System.out.printf("| %-12s | %-20s | %-6s | %-15s | %-25s | %-30s | %-3s | %-20s |\n", "Student ID", "Name",
+				"Active", "Phone", "Email", "Address", "Age", "Admission");
 
-		
 		System.out.println(
 				"+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
-		
 		for (Student student : students) {
 			Profile matchedProfile = null;
 			for (Profile profile : profiles) {
@@ -64,30 +64,65 @@ public class StudentController {
 			String address = matchedProfile != null ? truncate(matchedProfile.getAddress(), 30) : "N/A";
 			int age = matchedProfile != null ? matchedProfile.getAge() : 0;
 
-
 			System.out.printf("| %-12d | %-20s | %-6s | %-15s | %-25s | %-30s | %-3d | %-20s |\n",
-					student.getStudentId(),student.getStudentName(),student.isActive() ? "Yes" : "No",
-					phone,email,address,age,student.getAdmission());
+					student.getStudentId(), student.getStudentName(), student.isActive() ? "Yes" : "No", phone, email,
+					address, age, student.getAdmission());
 		}
 
 		System.out.println(
 				"+----------------------------------------------------------------------------------------------------------------------------------------------------------+");
 	}
 
-	
 	private String truncate(String value, int limit) {
-		if (value == null) return "N/A";
+		if (value == null)
+			return "N/A";
 		return value.length() > limit ? value.substring(0, limit - 3) + "..." : value;
 	}
 
 	public void insertStudent() throws ValidationException {
 		try {
-			String name = InputValidator.readName("Enter Full Student Name: ");
+			String name;
+			while (true) {
+				try {
+					name = InputValidator.readName("Enter Full Student Name: ");
+					break;
+				} catch (ValidationException e) {
+					System.out.println("Error: " + e.getMessage());
+				}
+			}
 
-			System.out.print("Enter Admission Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
-			String dateInput = scanner.nextLine().trim();
-			LocalDateTime admission = dateInput.isEmpty() ? LocalDateTime.now()
-					: LocalDateTime.parse(dateInput.replace(" ", "T"));
+			String phoneNumber = "";
+			while (true) {
+				try {
+					phoneNumber = InputValidator.readPhone("Enter Phone Number (10 digits): ");
+					break;
+				} catch (ValidationException e) {
+					System.out.println("Error: " + e.getMessage());
+				}
+			}
+
+			if (profileService.checkExistanceOfUser(name, phoneNumber, "student")) {
+				System.out.println("A student with the same name and phone number already exists.");
+				return;
+			}
+
+			LocalDateTime admission = null;
+			while (true) {
+				System.out.print("Enter Admission Date (yyyy-MM-dd HH:mm) or press Enter for now: ");
+				String dateInput = scanner.nextLine().trim();
+				if (dateInput.isEmpty()) {
+					admission = LocalDateTime.now();
+					break;
+				}
+
+				try {
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+					admission = LocalDateTime.parse(dateInput, formatter);
+					break;
+				} catch (DateTimeParseException e) {
+					System.out.println("Invalid format. Please use yyyy-MM-dd HH:mm (e.g., 2025-08-06 14:30)");
+				}
+			}
 
 			Student student = new Student(name, admission);
 			if (!studentService.insertStudent(student)) {
@@ -101,41 +136,33 @@ public class StudentController {
 			Profile profile = new Profile();
 			profile.setUserType("student");
 			profile.setUserId(studentId);
+			profile.setPhoneNumber(phoneNumber);
 
+			// email
+			String email = "";
 			while (true) {
 				try {
-					String phone = InputValidator.readPhone("Enter Phone Number (10 digits): ");
-					profile.setPhoneNumber(phone);
+					profile.setEmail(InputValidator.readEmail("Enter Email: "));
 					break;
 				} catch (ValidationException e) {
 					System.out.println("Error: " + e.getMessage());
 				}
 			}
 
+			// address
 			while (true) {
 				try {
-					String email = InputValidator.readEmail("Enter Email: ");
-					profile.setEmail(email);
+					profile.setAddress(InputValidator.readAddress("Enter Address: "));
 					break;
 				} catch (ValidationException e) {
 					System.out.println("Error: " + e.getMessage());
 				}
 			}
 
+			// age
 			while (true) {
 				try {
-					String address = InputValidator.readAddress("Enter Address: ");
-					profile.setAddress(address);
-					break;
-				} catch (ValidationException e) {
-					System.out.println("Error: " + e.getMessage());
-				}
-			}
-
-			while (true) {
-				try {
-					int age = InputValidator.readAge("Enter Age: ");
-					profile.setAge(age);
+					profile.setAge(InputValidator.readAge("Enter Age: "));
 					break;
 				} catch (ValidationException e) {
 					System.out.println("Error: " + e.getMessage());
@@ -144,6 +171,7 @@ public class StudentController {
 
 			boolean profileSuccess = profileService.insertProfile(profile);
 
+			// notification preference
 			String preference = "None";
 			while (true) {
 				try {
@@ -158,18 +186,10 @@ public class StudentController {
 					int choice = InputValidator.readChoice("Enter your choice: ");
 
 					switch (choice) {
-						case 1:
-							preference = "SMS";
-							break;
-						case 2:
-							preference = "Email";
-							break;
-						case 3:
-							preference = "Both";
-							break;
-						case 4:
-							preference = "None";
-							break;
+					case 1 -> preference = "SMS";
+					case 2 -> preference = "Email";
+					case 3 -> preference = "Both";
+					case 4 -> preference = "None";
 					}
 					break;
 				} catch (ValidationException e) {
@@ -189,8 +209,14 @@ public class StudentController {
 				System.out.println("Student added, but failed to add notification preference.");
 			}
 
-			readAllRecords();
+			studentCourseController = new StudentCourseController();
+			boolean assigned = false;
+			while (!assigned) {
 
+				if (studentCourseController.AssignCourseToStudent(studentId)) {
+					assigned = true;
+				}
+			}
 		} catch (ValidationException ve) {
 			throw ve;
 		} catch (Exception e) {
@@ -200,7 +226,7 @@ public class StudentController {
 
 	public void searchStudentById() {
 		try {
-			int id = InputValidator.readStudentId("Enter Student ID to search: ");
+			int id = InputValidator.readId("Enter Student ID to search: ");
 			Student student = studentService.readStudentById(id);
 
 			if (student != null) {
@@ -229,19 +255,17 @@ public class StudentController {
 	}
 
 	public void deleteStudentById() {
-		readAllRecords();
+		displayAllActiveStudents();
 		try {
-			int id = InputValidator.readStudentId("Enter Student ID to Delete: ");
-			
+			int id = InputValidator.readId("Enter Student ID to Delete: ");
+
 			List<Fees> fees = feeService.getFeesByStudent(id);
-			
+
 			boolean isPending = fees.stream().anyMatch(fee -> fee.getAmountPending() > 0);
-			if (fees.isEmpty()) {
-			    System.out.println("No fee records found for student ID: " + id);
-			    return;
-			} else if (isPending) {
-			    System.out.println("Student with ID " + id + " has pending fees.");
-			    return;
+			if (isPending) {
+				System.out.println("Student with ID " + id + " has pending fees.");
+
+				return;
 			}
 
 			Student student = studentService.deleteStudentById(id);
@@ -269,29 +293,27 @@ public class StudentController {
 
 	public void payStudentFees(int studentId) {
 		try {
-		if (studentCourseController == null)
-			studentCourseController = new StudentCourseController();
+			if (studentCourseController == null)
+				studentCourseController = new StudentCourseController();
 
-		List<Fees> enrolledCourses = studentCourseController.getEnrolledCoursesByStudentId(studentId);
+			List<Fees> enrolledCourses = studentCourseController.getEnrolledCoursesByStudentId(studentId);
 
-		if (enrolledCourses == null || enrolledCourses.isEmpty()) {
-			System.out.println("No enrolled courses for this student.");
-			return;
-		}
+			if (enrolledCourses == null || enrolledCourses.isEmpty()) {
+				System.out.println("No enrolled courses for this student.");
+				return;
+			}
 
-		PaymentController paymentController = new PaymentController();
-		paymentController.handleStudentFeePayment(studentId, enrolledCourses);
-		}
-		catch(ValidationException e)
-		{
+			PaymentController paymentController = new PaymentController();
+			paymentController.handleStudentFeePayment(studentId, enrolledCourses);
+		} catch (ValidationException e) {
 			System.out.println(e.getMessage());
 		}
 	}
 
 	public void showAllCoursesById() {
 		try {
-			readAllRecords();
-			int id = InputValidator.readStudentId("Enter Student ID: ");
+			displayAllActiveStudents();
+			int id = InputValidator.readId("Enter Student ID: ");
 			if (!studentExistance(id)) {
 				System.out.println("Student with ID " + id + " not found Or Inactive.");
 				return;
@@ -304,16 +326,21 @@ public class StudentController {
 		}
 	}
 
-	public boolean manageNotification() {
-	    readAllRecords();
-	    try {
-	        int studentId = InputValidator.readStudentId("Enter Student ID: ");
-	        NotificationController notificationController = new NotificationController();
-	        return notificationController.manageStudentNotification(studentId);
-	    } catch (ValidationException e) {
-	        System.out.println("Error: " + e.getMessage());
-	        return false;
-	    }
+	public void manageNotification() {
+		displayAllActiveStudents();
+		try {
+			int studentId = InputValidator.readId("Enter Student ID: ");
+
+			if (!studentExistance(studentId)) {
+				System.out.println("Student with ID " + studentId + " not found Or Inactive.");
+				return;
+			}
+			NotificationController notificationController = new NotificationController();
+			notificationController.manageStudentNotification(studentId);
+
+		} catch (ValidationException e) {
+			System.out.println("Error: " + e.getMessage());
+		}
 	}
 
 	public void restoreStudent() {
@@ -337,14 +364,14 @@ public class StudentController {
 
 		for (Student student : students) {
 			if (!student.isActive()) {
-				System.out.printf("| %-10d | %-24s | %-6s | %-19s |\n",
-						student.getStudentId(), student.getStudentName(), "No", student.getAdmission());
+				System.out.printf("| %-10d | %-24s | %-6s | %-19s |\n", student.getStudentId(),
+						student.getStudentName(), "No", student.getAdmission());
 			}
 		}
 		System.out.println(border);
 
 		try {
-			int studentId = InputValidator.readStudentId("Enter Student ID: ");
+			int studentId = InputValidator.readId("Enter Student ID: ");
 			Student student = studentService.readStudentById(studentId);
 			if (student == null || student.isActive()) {
 				System.out.println("Student Is Already Active Or Not Found !!");
@@ -357,5 +384,44 @@ public class StudentController {
 		} catch (ValidationException e) {
 			System.out.println("Error: " + e.getMessage());
 		}
+	}
+
+	public List<StudentWithProfileDTO> displayAllActiveStudents() {
+		List<StudentWithProfileDTO> students = studentService.getAllActiveStudents();
+
+		if (students.isEmpty()) {
+			System.out.println("No Student Found.");
+			return students;
+		}
+
+		System.out.println(
+				"\n+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+		System.out.println(
+				"|                                                         STUDENT RECORDS                                                                             |");
+		System.out.println(
+				"+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+		System.out.printf("| %-10s | %-20s | %-6s | %-15s | %-25s | %-20s | %-5s | %-25s |\n", "Student ID", "Name",
+				"Active", "Phone", "Email", "Address", "Age", "Admission Date");
+		System.out.println(
+				"+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+
+		for (StudentWithProfileDTO dto : students) {
+			Student student = dto.getStudent();
+			Profile profile = dto.getProfile();
+
+			String phone = profile != null ? profile.getPhoneNumber() : "N/A";
+			String email = profile != null ? profile.getEmail() : "N/A";
+			String address = profile != null ? profile.getAddress() : "N/A";
+			int age = profile != null ? profile.getAge() : 0;
+
+			System.out.printf("| %-10d | %-20s | %-6s | %-15s | %-25s | %-20s | %-5d | %-25s |\n",
+					student.getStudentId(), student.getStudentName(), student.isActive() ? "Yes" : "No", phone, email,
+					address, age, student.getAdmission());
+		}
+
+		System.out.println(
+				"+-----------------------------------------------------------------------------------------------------------------------------------------------------+");
+
+		return students;
 	}
 }

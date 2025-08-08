@@ -13,16 +13,20 @@ public class SubjectManagement implements MenuHandler {
 
 	@Override
 	public void showMenu() {
-		System.out.println("╔══════════════════════════════╗");
-		System.out.println("║      SUBJECT MANAGEMENT      ║");
-		System.out.println("╠══════════════════════════════╣");
-		System.out.println("║ 1. View All Subjects         ║");
-		System.out.println("║ 2. Add New Subject           ║");
-		System.out.println("║ 3. Update A Subject          ║");
-		System.out.println("║ 4. Delete A Subject          ║");
-		System.out.println("║ 5. Go Back                   ║");
-		System.out.println("╚══════════════════════════════╝");
-		System.out.print("Enter your choice: ");
+		final String RESET = "\u001B[0m";
+	    final String BOLD = "\u001B[1m";
+	    final String PURPLE = "\u001B[35m";
+
+		
+		System.out.println(PURPLE+BOLD+"╔══════════════════════════════╗"+RESET);
+		System.out.println(PURPLE+BOLD+"║      SUBJECT MANAGEMENT      ║"+RESET);
+		System.out.println(PURPLE+BOLD+"╠══════════════════════════════╣"+RESET);
+		System.out.println(PURPLE+"║ 1. View All Subjects         ║"+RESET);
+		System.out.println(PURPLE+"║ 2. Add New Subject           ║"+RESET);
+		System.out.println(PURPLE+"║ 3. Update A Subject          ║"+RESET);
+		System.out.println(PURPLE+"║ 4. Go Back                   ║"+RESET);
+		System.out.println(PURPLE+"╚══════════════════════════════╝"+RESET);
+	
 
 	}
 

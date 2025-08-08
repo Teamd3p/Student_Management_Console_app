@@ -3,17 +3,14 @@ package com.tss.test;
 import java.util.Scanner;
 
 import com.tss.app.CourseManagement;
+import com.tss.app.DashboardManagement;
 import com.tss.app.FeesManagement;
 import com.tss.app.MenuHandler;
 import com.tss.app.StudentManagement;
 import com.tss.app.SubjectManagement;
 import com.tss.app.TeacherManagement;
-
-import com.tss.controller.DashboardController;
-import com.tss.controller.FeeController;
 import com.tss.exception.ValidationException;
 import com.tss.util.InputValidator;
-import com.tss.controller.DashboardController;
 
 
 
@@ -56,8 +53,8 @@ public class StudentManagementTest {
 					option.chooseMenu();
 					break;
 				case 6:
-					DashboardController dashController = new DashboardController();
-					dashController.showDashboard();
+					option = new DashboardManagement();
+					option.chooseMenu();
 					break;
 				case 7:
 					System.out.println(">> Exiting... Goodbye!");
@@ -82,7 +79,6 @@ public class StudentManagementTest {
 		System.out.println("║ 6. Dashboard                  ║");
 		System.out.println("║ 7. Exit                       ║");
 		System.out.println("╚═══════════════════════════════╝");
-		System.out.print("Enter your choice: ");
 
 	}
 }

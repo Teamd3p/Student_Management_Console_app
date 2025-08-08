@@ -21,4 +21,13 @@ public class ProfileService {
 
 		return profileDao.insertStudent(profile);
 	}
+	
+	public boolean checkExistanceOfUser(String fullName, String phoneNumber, String userType) {
+	    return profileDao.existsProfileByNamePhoneAndType(fullName, phoneNumber, userType);
+	}
+
+	public boolean checkExistanceOfEmail(String email, String user_type) {
+		return profileDao.checkExistanceOfEmail(email,user_type);
+		
+	}
 }

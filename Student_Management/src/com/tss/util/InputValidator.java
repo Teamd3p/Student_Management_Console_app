@@ -38,11 +38,19 @@ public class InputValidator {
     public static String readAddress(String prompt) throws ValidationException {
         System.out.print(prompt);
         String address = scanner.nextLine().trim();
+
         if (address == null || address.isEmpty()) {
             throw new ValidationException("Address cannot be empty.");
         }
+
+        // Check if the address starts with a letter (A-Z or a-z)
+        if (!address.matches("^[A-Za-z].*")) {
+            throw new ValidationException("Address must start with a letter.");
+        }
+
         return address;
     }
+
 
     public static int readAge(String prompt) throws ValidationException {
         System.out.print(prompt);
@@ -57,15 +65,15 @@ public class InputValidator {
         return age;
     }
 
-    public static int readStudentId(String prompt) throws ValidationException {
+    public static int readId(String prompt) throws ValidationException {
         System.out.print(prompt);
         String input = scanner.nextLine().trim();
         if (!input.matches("\\d+")) {
-            throw new ValidationException("Student ID must be a positive number.");
+            throw new ValidationException("ID must be a positive number.");
         }
         int id = Integer.parseInt(input);
         if (id <= 0) {
-            throw new ValidationException("Student ID must be greater than zero.");
+            throw new ValidationException("ID must be greater than zero.");
         }
         return id;
     }

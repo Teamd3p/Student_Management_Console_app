@@ -21,7 +21,9 @@ public class Student {
         this.setAdmission(admission);
     }
 
-    // Getter only for ID (no setter since it's auto-generated)
+    
+
+	// Getter only for ID (no setter since it's auto-generated)
     public int getStudentId() {
         return studentId;
     }

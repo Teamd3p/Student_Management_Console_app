@@ -65,5 +65,65 @@ public class ProfileDao {
 	        return false;
 	    }
 	}
+	
+	public boolean existsProfileByNamePhoneAndType(String fullName, String phoneNumber, String userType) {
+	    // Choose table & column names based on user type
+	    String tableName;
+	    String idColumn;
+	    String nameColumn;
+
+	    if ("student".equalsIgnoreCase(userType)) {
+	        tableName = "Students";
+	        idColumn = "student_id";
+	        nameColumn = "student_name";
+	    } else if ("teacher".equalsIgnoreCase(userType)) {
+	        tableName = "Teachers";
+	        idColumn = "teacher_id";
+	        nameColumn = "teacher_name";
+	    } else {
+	        throw new IllegalArgumentException("Invalid userType: " + userType);
+	    }
+
+	    String sql = String.format("""
+	        SELECT COUNT(*) 
+	        FROM %s u
+	        JOIN Profiles p ON u.%s = p.user_id
+	        WHERE u.%s = ? 
+	          AND p.phone_number = ? 
+	          AND p.user_type = ?
+	    """, tableName, idColumn, nameColumn);
+
+	    try {
+	        prepareStatement = connection.prepareStatement(sql);
+	        prepareStatement.setString(1, fullName);
+	        prepareStatement.setString(2, phoneNumber);
+	        prepareStatement.setString(3, userType);
+	        ResultSet rs = prepareStatement.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt(1) > 0;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
+
+	public boolean checkExistanceOfEmail(String email, String user_type) {
+		String sql = "SELECT COUNT(*) FROM Profiles WHERE email = ? AND user_type=?";
+		
+		try {
+	        prepareStatement = connection.prepareStatement(sql);
+	        prepareStatement.setString(1, email);
+	        prepareStatement.setString(2, user_type);
+	        ResultSet rs = prepareStatement.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt(1) > 0;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
+
 
 }

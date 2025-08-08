@@ -1,8 +1,8 @@
 package com.tss.dao;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tss.database.DBConnection;
+import com.tss.dto.StudentWithProfileDTO;
+import com.tss.model.Profile;
 import com.tss.model.Student;
 
 public class StudentDao {
@@ -147,4 +149,47 @@ public class StudentDao {
 		
 		return false;
 	}
+
+	public List<StudentWithProfileDTO> getAllActiveStudents() {
+	    List<StudentWithProfileDTO> list = new ArrayList<>();
+
+	    String query = "SELECT * FROM Students " +
+	                   "INNER JOIN Profiles ON Students.student_id = Profiles.user_id " +
+	                   "WHERE Students.is_active = true AND user_type = 'student'";
+
+	    try (Statement stmt = connection.createStatement();
+	         ResultSet rs = stmt.executeQuery(query)) {
+
+	        while (rs.next()) {
+	            Student student = new Student();
+	            student.setStudentId(rs.getInt("student_id"));
+	            student.setStudentName(rs.getString("student_name"));
+	            student.setActive(rs.getBoolean("is_active"));
+
+	            // Convert SQL Timestamp/Date to LocalDateTime
+	            Timestamp admissionTimestamp = rs.getTimestamp("admission");
+	            if (admissionTimestamp != null) {
+	                student.setAdmission(admissionTimestamp.toLocalDateTime());
+	            }
+
+	            Profile profile = new Profile();
+	            profile.setId(rs.getInt("id"));
+	            profile.setPhoneNumber(rs.getString("phone_number"));
+	            profile.setEmail(rs.getString("email"));
+	            profile.setAddress(rs.getString("address"));
+	            profile.setAge(rs.getInt("age"));
+	            profile.setUserType(rs.getString("user_type"));
+	            profile.setUserId(rs.getInt("user_id"));
+
+	            list.add(new StudentWithProfileDTO(student, profile));
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return list;
+	}
+
+
 }
